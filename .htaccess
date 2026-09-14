@@ -1,0 +1,55 @@
+# Deflock St. Johns
+# Apache configuration for Ionos shared hosting.
+
+Options -Indexes
+DirectoryIndex index.php
+ErrorDocument 404 /404.php
+
+# Never serve version control or environment files, even if one gets uploaded.
+RedirectMatch 404 /\.(git|hg|svn|env)
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Force HTTPS. Both tests must fail before the redirect fires, so the site
+  # does not loop behind a TLS-terminating proxy that sets X-Forwarded-Proto.
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # /index.php is just /
+  RewriteCond %{THE_REQUEST} \s/+index\.php[\s?] [NC]
+  RewriteRule ^ / [R=301,L]
+
+  # Anyone who asks for /about.php gets sent to /about.
+  RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
+  RewriteRule ^ /%1 [R=301,L]
+
+  # Serve /about from about.php without changing the address bar.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^([^.]+)$ $1.php [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "no-referrer"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+
+  # The site loads nothing from anywhere else and uses no inline styles or
+  # scripts, so the policy can stay this tight. Relax it only if you add an
+  # embed, a font service or an analytics tag.
+  Header always set Content-Security-Policy "default-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'self'"
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain application/javascript image/svg+xml
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css                "access plus 7 days"
+  ExpiresByType application/javascript  "access plus 7 days"
+  ExpiresByType image/svg+xml           "access plus 30 days"
+</IfModule>

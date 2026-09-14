@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+._*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Local overrides that must not reach the server or the repository
+includes/config.local.php
+*.local
+
+# Anything dropped here while testing
+/tmp/

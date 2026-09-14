@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Deflock St. Johns">
+  <rect width="64" height="64" fill="#0b0b0d"/>
+  <circle cx="32" cy="32" r="15" fill="none" stroke="#ff3b24" stroke-width="7"/>
+  <path d="M13 51 L51 13" stroke="#ff3b24" stroke-width="7" stroke-linecap="square"/>
+</svg>
