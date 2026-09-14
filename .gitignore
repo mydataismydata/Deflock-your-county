@@ -13,3 +13,6 @@ includes/config.local.php
 
 # Anything dropped here while testing
 /tmp/
+
+# Captured mail from the local container
+docker/maildrop/*.eml

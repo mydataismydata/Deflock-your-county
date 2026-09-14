@@ -36,7 +36,11 @@ const CONTACT_SUBJECT_PREFIX = '[deflock-sjc]';
 // Random string, at least 32 characters. Generate a fresh one per install:
 //   php -r "echo bin2hex(random_bytes(32));"
 // The form refuses to send while this is left at the shipped value.
-const FORM_SECRET = 'CHANGE-ME-BEFORE-GOING-LIVE';
+//
+// A DEFLOCK_FORM_SECRET environment variable wins over the value below, which
+// keeps the secret out of the repository on any host that can set one. Ionos
+// shared hosting cannot, so edit the string here for that deployment.
+define('FORM_SECRET', getenv('DEFLOCK_FORM_SECRET') ?: 'CHANGE-ME-BEFORE-GOING-LIVE');
 
 // A submission faster than this many seconds is treated as a bot.
 const FORM_MIN_SECONDS = 4;

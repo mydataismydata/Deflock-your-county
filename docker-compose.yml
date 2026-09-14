@@ -1,0 +1,24 @@
+# Local host for the site. Not used in production.
+#
+#   docker compose up -d        start it
+#   docker compose down         stop it
+#
+# The port is bound to 127.0.0.1 on purpose, so nothing on your network can
+# reach the container.
+
+services:
+  site:
+    build: ./docker
+    container_name: deflock-site
+    ports:
+      - "127.0.0.1:8731:80"
+    volumes:
+      # The project is mounted live. Edit a file and reload the page.
+      - .:/var/www/html
+      # mail() writes here instead of sending. Read docker/maildrop/sent.eml.
+      - ./docker/maildrop:/maildrop
+    environment:
+      # Overrides FORM_SECRET so the contact form works locally without
+      # putting a real secret in the repository.
+      DEFLOCK_FORM_SECRET: local-development-only-secret-0123456789abcdef
+    restart: unless-stopped

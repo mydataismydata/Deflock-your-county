@@ -11,8 +11,12 @@ RedirectMatch 404 /\.(git|hg|svn|env)
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  # Force HTTPS. Both tests must fail before the redirect fires, so the site
-  # does not loop behind a TLS-terminating proxy that sets X-Forwarded-Proto.
+  # Force HTTPS. Every test must fail before the redirect fires. Loopback is
+  # exempt so a local Apache on plain http does not bounce forever, and the
+  # proxy header is checked so the live site does not loop behind Ionos's
+  # TLS termination.
+  RewriteCond %{HTTP_HOST} !^localhost(:[0-9]+)?$ [NC]
+  RewriteCond %{HTTP_HOST} !^127\.0\.0\.1(:[0-9]+)?$ [NC]
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteCond %{HTTPS} !=on
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
