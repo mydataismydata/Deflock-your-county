@@ -1,38 +1,12 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/includes/config.php';
+
 $page  = 'involved';
 $title = 'Get involved';
-$blurb = 'Meeting dates, who to call in St. Johns County, what to say when you reach them, and how to file a public records request.';
-
-/**
- * Elected bodies worth contacting. Fill in the names, email addresses and
- * phone numbers before publishing. Links point at the official directories so
- * the page stays useful even while these are blank.
- */
-$bodies = [
-    [
-        'name'  => 'Board of County Commissioners',
-        'why'   => 'Approves the contract, the budget line and the renewal. This is the body with a vote on whether the cameras stay.',
-        'how'   => 'Five commissioners, elected by district, voted on countywide. Write to the one for your district and copy the rest.',
-        'link'  => ['County commission directory', 'https://www.sjcfl.us'],
-        'seats' => ['District 1', 'District 2', 'District 3', 'District 4', 'District 5'],
-    ],
-    [
-        'name'  => 'St. Johns County Sheriff\'s Office',
-        'why'   => 'Operates the cameras and writes the usage policy. Retention periods and search rules are set here, not by the commission.',
-        'how'   => 'The sheriff is elected countywide and answers to voters directly. Ask for the written ALPR policy by name.',
-        'link'  => ['Sheriff\'s Office', 'https://www.sjso.org'],
-        'seats' => [],
-    ],
-    [
-        'name'  => 'City of St. Augustine Commission',
-        'why'   => 'The city buys its own equipment for its own police department. County policy does not bind it.',
-        'how'   => 'Mayor and four commissioners. Relevant if you live inside city limits.',
-        'link'  => ['City of St. Augustine', 'https://www.citystaug.com'],
-        'seats' => [],
-    ],
-];
+$blurb = 'Meeting dates, who to call in ' . COUNTY . ', what to say when you reach '
+       . 'them, and how to file a public records request.';
 
 require __DIR__ . '/includes/header.php';
 
@@ -90,7 +64,7 @@ $channels = array_filter(CHANNELS, static fn (string $url): bool => trim($url) !
 
     <p class="small quiet mt-s">
       County agendas are published ahead of each meeting at
-      <a href="https://www.sjcfl.us" rel="noopener">sjcfl.us</a>. Check the
+      <a href="<?= e(COUNTY_SITE_URL) ?>" rel="noopener"><?= e(COUNTY_SITE_LABEL) ?></a>. Check the
       agenda before you travel, because items move and meetings get cancelled.
     </p>
 
@@ -136,7 +110,7 @@ $channels = array_filter(CHANNELS, static fn (string $url): bool => trim($url) !
     </p>
 
     <div class="grid grid--3 mt-xl">
-<?php foreach ($bodies as $body): ?>
+<?php foreach (BODIES as $body): ?>
       <div class="card">
         <h3><?= e($body['name']) ?></h3>
         <p><strong><?= e($body['why']) ?></strong></p>
@@ -214,7 +188,7 @@ Is there an address where I can send that in writing? Thank you for your time.</
 Dear Commissioner [name],
 
 I live in [neighborhood], District [number]. I am writing about the automated
-license plate readers operating in St. Johns County.
+license plate readers operating in <?= e(COUNTY) ?>.
 
 I am not asking you to end the program. I am asking that it be governed in
 public. Specifically:
@@ -281,10 +255,8 @@ I would like to know whether this board will do them. Thank you.</div>
     <span class="eyebrow">Public records</span>
     <h2>File a request yourself</h2>
     <p class="measure">
-      Chapter 119 of the Florida Statutes gives any person the right to inspect
-      public records. You do not have to give a reason, you do not have to say
-      who you are, and you do not have to be a Florida resident. An agency may
-      charge for staff time on a large request, so ask for an estimate up front.
+      <a href="<?= e(RECORDS_LAW_URL) ?>" rel="noopener"><?= e(RECORDS_LAW) ?></a>
+      is what makes this work. <?= e(RECORDS_LAW_NOTE) ?>
     </p>
     <p class="measure quiet">
       Send this to the records custodian for the agency you are asking about.
@@ -295,7 +267,7 @@ I would like to know whether this board will do them. Thank you.</div>
 
 To the records custodian,
 
-Under Chapter 119, Florida Statutes, I request copies of the following:
+Under <?= e(RECORDS_LAW) ?>, I request copies of the following:
 
 1. All contracts, purchase orders, invoices and quotes between [agency] and
    Flock Safety, or any other automated license plate reader vendor, from
@@ -316,7 +288,7 @@ Under Chapter 119, Florida Statutes, I request copies of the following:
 
 I would prefer these in electronic form. If any portion is exempt, please cite
 the specific statutory exemption for each withholding. If the cost will exceed
-$25, please give me an estimate before you begin.
+<?= e(RECORDS_FEE_CAP) ?>, please give me an estimate before you begin.
 
 Thank you,
 [Name]
@@ -341,7 +313,7 @@ Thank you,
       <p>
         <a href="https://deflock.me" rel="noopener">DeFlock</a> maps reader
         locations from public contributions and stores them in OpenStreetMap, so
-        an entry survives whether or not any one website does. St. Johns County
+        an entry survives whether or not any one website does. <?= e(COUNTY) ?>
         is thinly covered, which is a gap you can close on your commute.
       </p>
       <p>

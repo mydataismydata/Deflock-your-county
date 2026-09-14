@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/includes/config.php';
+
 $page  = 'resources';
 $title = 'Resources';
 $blurb = 'Camera maps, legal groundwork, reporting on license plate readers, public records tools and local government contacts.';
@@ -72,26 +74,6 @@ $groups = [
         ],
     ],
     [
-        'id'    => 'florida',
-        'title' => 'Florida and St. Johns County',
-        'intro' => 'Florida has one of the broader public records laws in the '
-                 . 'country. Use it.',
-        'links' => [
-            ['Florida Statutes', 'https://www.flsenate.gov/Laws/Statutes',
-             'Chapter 119 is the public records law. Chapter 286 covers open meetings.'],
-            ['Government-in-the-Sunshine Manual', 'https://www.myfloridalegal.com/sunshine-manual',
-             'The Attorney General\'s annual guide to what is public, who must release it and how long they may take.'],
-            ['ACLU of Florida', 'https://www.aclufl.org',
-             'State affiliate. Tracks surveillance legislation in Tallahassee.'],
-            ['St. Johns County', 'https://www.sjcfl.us',
-             'Commission agendas, meeting video, budget documents and the records request portal.'],
-            ['St. Johns County Sheriff\'s Office', 'https://www.sjso.org',
-             'Agency contact details and published policies.'],
-            ['City of St. Augustine', 'https://www.citystaug.com',
-             'The city runs its own police department and its own procurement, separately from the county.'],
-        ],
-    ],
-    [
         'id'    => 'selfdefense',
         'title' => 'Protect yourself in the meantime',
         'intro' => 'None of this fixes the camera on the pole. It reduces how '
@@ -105,6 +87,10 @@ $groups = [
     ],
 ];
 
+// The county block lives in place.php so a fork rewrites one file. It sits
+// after the national material and before the self-defense links.
+array_splice($groups, 4, 0, [LOCAL_RESOURCES]);
+
 require __DIR__ . '/includes/header.php';
 ?>
 
@@ -114,7 +100,7 @@ require __DIR__ . '/includes/header.php';
     <h1>Where to read the primary sources.</h1>
     <p class="lede">
       Everything below is free and none of it is ours. Start at the top if you
-      want to know what is installed near you, or jump to the Florida section if
+      want to know what is installed near you, or jump to the local section if
       you want to file a records request this week.
     </p>
   </div>

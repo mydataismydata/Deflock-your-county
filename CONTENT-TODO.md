@@ -13,13 +13,14 @@ attached or need cutting.
 - `CONTACT_FROM` is `website@example.org`. Must be a real mailbox on the live domain.
 - `FORM_SECRET` is the shipped placeholder. The form will not send until this changes.
 - `CHANNELS` are all empty strings. The footer and Get Involved page print a fallback line while they stay empty.
-- `MEETINGS` both say `TBD`.
+- `MEETINGS` both say `TBD`, and the second carries a St. Augustine street address. Confirm it.
 
-**`get-involved.php`**
+**`includes/place.php`**
 
-- The `$bodies` array has no commissioner names, email addresses or phone numbers. Every district currently renders as "name and email to be added".
-- Confirm the Board of County Commissioners still has five district seats and that the address in `MEETINGS` is current.
+- The `BODIES` array has no commissioner names, email addresses or phone numbers. Every district currently renders as "name and email to be added".
+- Confirm the Board of County Commissioners still has five district seats.
 - Confirm whether St. Augustine Beach should be listed as a fourth body. It runs its own police department.
+- `RECORDS_FEE_CAP` is set to $25. Check what St. Johns County actually charges before leaving that figure in the sample letter.
 
 **`robots.txt`**
 

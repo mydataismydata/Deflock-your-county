@@ -9,7 +9,8 @@ require_once __DIR__ . '/config.php';
 
 $page  = $page  ?? '';
 $title = $title ?? '';
-$blurb = $blurb ?? 'A St. Johns County group organizing against automated license plate readers and other mass surveillance.';
+$blurb = $blurb ?? 'A ' . COUNTY . ' group organizing against automated license plate
+    readers and other mass surveillance.';
 
 $menu = [
     'home'      => ['/',             'Home'],
@@ -43,7 +44,7 @@ $fullTitle = $title === '' ? SITE_NAME : $title . ' | ' . SITE_NAME;
 <header class="masthead">
   <div class="shell masthead__inner">
     <a class="wordmark" href="/">
-      De<span>flock</span> St. Johns
+      <?= e(BRAND_HEAD) ?><span><?= e(BRAND_TAIL) ?></span> <?= e(COUNTY_SHORT) ?>
       <small><?= e(SITE_TAGLINE) ?></small>
     </a>
 

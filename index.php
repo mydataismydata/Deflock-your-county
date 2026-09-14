@@ -1,22 +1,26 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/includes/config.php';
+
 $page  = 'home';
-$title = 'Plate readers in St. Johns County';
-$blurb = 'Automated license plate readers photograph and log every vehicle that passes them. Deflock St. Johns is a county residents group organizing for a public say in that.';
+$title = 'Plate readers in ' . COUNTY;
+$blurb = 'Automated license plate readers photograph and log every vehicle that passes '
+       . 'them. ' . SITE_NAME . ' is a county residents group organizing for a public '
+       . 'say in that.';
 
 require __DIR__ . '/includes/header.php';
 ?>
 
 <section class="hero">
   <div class="shell">
-    <span class="eyebrow">St. Johns County, Florida</span>
+    <span class="eyebrow"><?= e(SITE_TAGLINE) ?></span>
     <h1>Your car is photographed, logged and searchable.</h1>
     <p class="lede">
       An automated license plate reader records every vehicle that drives past it.
-      Not the stolen ones. Not the ones on a warrant list. Every one. Deflock
-      St. Johns is a group of county residents who think a decision like that
-      belongs in public, on the record, with a vote attached.
+      Not the stolen ones. Not the ones on a warrant list. Every one.
+      <?= e(SITE_NAME) ?> is a group of county residents who think a decision
+      like that belongs in public, on the record, with a vote attached.
     </p>
     <div class="btn-row">
       <a class="btn btn--loud" href="/get-involved">Get involved</a>
@@ -67,7 +71,7 @@ require __DIR__ . '/includes/header.php';
         <h3>The search is not local</h3>
         <p>
           Agencies can open their cameras to other agencies, including
-          departments in other states. A camera bought with St. Johns County
+          departments in other states. A camera bought with <?= e(COUNTY) ?>
           money can answer a question asked a thousand miles away.
         </p>
       </div>

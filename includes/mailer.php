@@ -31,8 +31,8 @@ function header_encode(string $value): string
 /**
  * Build a "Display Name <address>" header value.
  *
- * The display name is quoted, because a name like "Deflock St. Johns" carries
- * a period and strict mail servers reject that in an unquoted atom.
+ * The display name is quoted. A name can carry a period or a comma, and
+ * strict mail servers reject either one in an unquoted atom.
  */
 function header_address(string $name, string $email): string
 {
@@ -104,11 +104,15 @@ function send_contact_message(string $name, string $email, string $topic, string
 
     $subject = header_encode(CONTACT_SUBJECT_PREFIX . ' ' . $topic . ' from ' . $name);
 
+    // The labelled fields are collapsed onto single lines. A name carrying a
+    // newline cannot forge a header, because PHP keeps headers and body apart,
+    // but it can still fake a "Bcc:" line in the body and mislead whoever
+    // reads it. The message itself keeps its line breaks.
     $body = "Sent from the " . SITE_NAME . " contact form.\n"
           . "Time: " . gmdate('Y-m-d H:i:s') . " UTC\n\n"
-          . "Name:  " . $name . "\n"
-          . "Email: " . $email . "\n"
-          . "Topic: " . $topic . "\n\n"
+          . "Name:  " . header_safe($name) . "\n"
+          . "Email: " . header_safe($email) . "\n"
+          . "Topic: " . header_safe($topic) . "\n\n"
           . "-----------------------------------------------------------\n\n"
           . $message . "\n\n"
           . "-----------------------------------------------------------\n"

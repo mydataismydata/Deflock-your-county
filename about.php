@@ -1,9 +1,12 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/includes/config.php';
+
 $page  = 'about';
 $title = 'About the group';
-$blurb = 'Deflock St. Johns is an unaffiliated group of county residents working on how automated license plate readers are bought, governed and audited here.';
+$blurb = SITE_NAME . ' is an unaffiliated group of county residents working on how '
+       . 'automated license plate readers are bought, governed and audited here.';
 
 require __DIR__ . '/includes/header.php';
 ?>
@@ -13,7 +16,7 @@ require __DIR__ . '/includes/header.php';
     <span class="eyebrow">About</span>
     <h1>Neighbors, reading contracts.</h1>
     <p class="lede">
-      We are residents of St. Johns County. No staff, no budget, no party
+      We are residents of <?= e(COUNTY) ?>. No staff, no budget, no party
       affiliation and no connection to any vendor. What we have is time, a
       public records law, and the view that surveillance bought with county
       money should be governed by the county's residents.
@@ -27,7 +30,7 @@ require __DIR__ . '/includes/header.php';
 
       <h2>Why this, and why here</h2>
       <p>
-        Automated license plate readers arrived in Florida jurisdictions the way
+        Automated license plate readers arrived in <?= e(STATE) ?> jurisdictions the way
         most surveillance does. A vendor offers a trial. The trial produces an
         arrest. The arrest produces a press release. A renewal goes on a consent
         agenda and passes without discussion, and the county now runs a
@@ -39,7 +42,7 @@ require __DIR__ . '/includes/header.php';
         from outside the building.
       </p>
       <p>
-        St. Johns County is not unusual. That is the point. The same vendor
+        <?= e(COUNTY) ?> is not unusual. That is the point. The same vendor
         pitch is running in counties across the country, and the response has to
         be local because the contracts are local.
       </p>
@@ -58,8 +61,8 @@ require __DIR__ . '/includes/header.php';
         <li>
           <strong>File records requests.</strong> Contracts, invoices, usage
           policies, audit logs and data sharing agreements are public records
-          under Chapter 119 of the Florida Statutes. We ask for them and publish
-          what comes back.
+          under <?= e(RECORDS_LAW) ?>. We ask for them and publish what comes
+          back.
         </li>
         <li>
           <strong>Show up.</strong> Commission meetings have a public comment

@@ -5,7 +5,7 @@ require_once __DIR__ . '/includes/mailer.php';
 
 $page  = 'contact';
 $title = 'Contact';
-$blurb = 'Reach Deflock St. Johns. One form, one inbox, nothing stored on the server.';
+$blurb = 'Reach ' . SITE_NAME . '. One form, one inbox, nothing stored on the server.';
 
 const CONTACT_TOPICS = [
     'General question',
@@ -245,11 +245,13 @@ require __DIR__ . '/includes/header.php';
             <a href="/get-involved">Get Involved</a> page has the short version.
             Write anyway if none of it fits.
           </p>
+<?php if (LEGAL_HELP_URL !== ''): ?>
           <p class="small quiet">
             We are not lawyers and cannot advise you on a case. If you need
-            legal help, the <a href="https://www.aclufl.org" rel="noopener">ACLU
-            of Florida</a> takes intake requests.
+            legal help, the <a href="<?= e(LEGAL_HELP_URL) ?>" rel="noopener"><?= e(LEGAL_HELP_NAME) ?></a>
+            takes intake requests.
           </p>
+<?php endif; ?>
         </div>
 
       </aside>

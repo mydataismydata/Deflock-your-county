@@ -1,17 +1,19 @@
 <?php
 /**
- * Site configuration.
+ * Settings for one installation: addresses, the form secret, meeting dates and
+ * social links. Edit it once after uploading to the server.
  *
- * Every value you are likely to change lives in this file. Edit it once after
- * uploading to the server. Nothing here is stored in a database.
+ * Anything that names a county, a state, a statute or an elected body lives in
+ * place.php instead. Nothing here or there is stored in a database.
  */
 
 declare(strict_types=1);
 
-// ---------------------------------------------------------------- identity --
+// Everything that names a county, a state or an elected body lives in
+// place.php. Fork the site to another county by rewriting that file alone.
+require_once __DIR__ . '/place.php';
 
-const SITE_NAME    = 'Deflock St. Johns';
-const SITE_TAGLINE = 'St. Johns County, Florida';
+// ---------------------------------------------------------------- identity --
 
 // Absolute URL of the live site, no trailing slash. Used for canonical tags.
 const SITE_URL = 'https://example.org';
@@ -24,7 +26,7 @@ const CONTACT_TO = 'hello@example.org';
 // The envelope sender. This MUST be a mailbox on the domain the site runs on.
 // Ionos rejects or spam-folders mail claiming to come from an outside domain.
 const CONTACT_FROM      = 'website@example.org';
-const CONTACT_FROM_NAME = 'Deflock St. Johns website';
+const CONTACT_FROM_NAME = SITE_NAME . ' website';
 
 // Prefix on the subject line of every delivered message.
 const CONTACT_SUBJECT_PREFIX = '[deflock-sjc]';
@@ -68,7 +70,7 @@ const MEETINGS = [
     [
         'when'  => 'TBD',
         'what'  => 'Board of County Commissioners public comment',
-        'where' => 'County Administration Building, 500 San Sebastian View, St. Augustine',
+        'where' => 'County Administration Building, 500 San Sebastian View, ' . COUNTY_SEAT,
         'note'  => 'Check the published agenda before you go. Times move.',
     ],
 ];
