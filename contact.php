@@ -207,7 +207,7 @@ require __DIR__ . '/includes/header.php';
 
         <input type="hidden" name="t" value="<?= e(form_token()) ?>">
 
-        <button class="btn btn--loud" type="submit">Send message</button>
+        <button class="btn" type="submit">Send message</button>
 
       </form>
 

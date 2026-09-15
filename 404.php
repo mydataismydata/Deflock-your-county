@@ -21,7 +21,7 @@ require __DIR__ . '/includes/header.php';
       are all in the menu above.
     </p>
     <div class="btn-row">
-      <a class="btn btn--loud" href="/">Back to the front page</a>
+      <a class="btn" href="/">Back to the front page</a>
       <a class="btn btn--ghost" href="/contact">Report the broken link</a>
     </div>
   </div>

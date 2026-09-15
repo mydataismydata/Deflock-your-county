@@ -12,8 +12,8 @@ $title = $title ?? '';
 $blurb = $blurb ?? 'A ' . COUNTY . ' group organizing against automated license plate
     readers and other mass surveillance.';
 
+// Home is reachable through the wordmark; the numbered menu lists the rest.
 $menu = [
-    'home'      => ['/',             'Home'],
     'about'     => ['/about',        'About'],
     'resources' => ['/resources',    'Resources'],
     'involved'  => ['/get-involved', 'Get Involved'],
@@ -29,7 +29,7 @@ $fullTitle = $title === '' ? SITE_NAME : $title . ' | ' . SITE_NAME;
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($fullTitle) ?></title>
 <meta name="description" content="<?= e($blurb) ?>">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="light">
 <meta property="og:title" content="<?= e($fullTitle) ?>">
 <meta property="og:description" content="<?= e($blurb) ?>">
 <meta property="og:type" content="website">
@@ -43,18 +43,15 @@ $fullTitle = $title === '' ? SITE_NAME : $title . ' | ' . SITE_NAME;
 
 <header class="masthead">
   <div class="shell masthead__inner">
-    <a class="wordmark" href="/">
-      <?= e(BRAND_HEAD) ?><span><?= e(BRAND_TAIL) ?></span> <?= e(COUNTY_SHORT) ?>
-      <small><?= e(SITE_TAGLINE) ?></small>
-    </a>
+    <a class="wordmark" href="/"><?= e(SITE_NAME) ?></a>
 
     <button class="nav-toggle" type="button" hidden
             aria-expanded="false" aria-controls="primary-nav">Menu</button>
 
     <nav class="nav" id="primary-nav" aria-label="Primary">
       <ul>
-<?php foreach ($menu as $slug => [$href, $label]): ?>
-        <li><a href="<?= e($href) ?>"<?= $slug === $page ? ' aria-current="page"' : '' ?>><?= e($label) ?></a></li>
+<?php $i = 0; foreach ($menu as $slug => [$href, $label]): $i++; ?>
+        <li><a href="<?= e($href) ?>"<?= $slug === $page ? ' aria-current="page"' : '' ?>><span class="nav__num"><?= str_pad((string) $i, 2, '0', STR_PAD_LEFT) ?></span><?= e($label) ?></a></li>
 <?php endforeach; ?>
       </ul>
     </nav>

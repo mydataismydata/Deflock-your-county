@@ -23,7 +23,7 @@ $channels = array_filter(CHANNELS, static fn (string $url): bool => trim($url) !
       something you can finish in an evening.
     </p>
     <div class="btn-row">
-      <a class="btn btn--loud" href="#officials">Write to an official</a>
+      <a class="btn" href="#officials">Write to an official</a>
       <a class="btn btn--ghost" href="#meetings">See the meetings</a>
     </div>
   </div>

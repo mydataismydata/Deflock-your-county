@@ -23,8 +23,8 @@ const STATE = 'Florida';
 // The seat or largest municipality. Used in the mapping and meetings copy.
 const COUNTY_SEAT = 'St. Augustine';
 
-// The wordmark prints the first word in white and the second in the accent
-// color, then the short county name: De|flock| St. Johns.
+// The two halves of the campaign name. They are concatenated into SITE_NAME,
+// which the masthead prints as one word followed by the short county name.
 const BRAND_HEAD = 'De';
 const BRAND_TAIL = 'flock';
 

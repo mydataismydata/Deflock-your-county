@@ -14,21 +14,24 @@ require __DIR__ . '/includes/header.php';
 <section class="hero">
   <div class="shell">
     <span class="eyebrow">About</span>
-    <h1>Neighbors, reading contracts.</h1>
-    <p class="lede">
-      We are residents of <?= e(COUNTY) ?>. No staff, no budget, no party
-      affiliation and no connection to any vendor. What we have is time, a
-      public records law, and the view that surveillance bought with county
-      money should be governed by the county's residents.
-    </p>
+    <h1>We are normal people who don't want mass surveillance &mdash; that's all.</h1>
+    <div class="hero__row">
+      <p class="lede">
+        We are residents of <?= e(COUNTY) ?>. No staff, no budget, no party
+        affiliation and no connection to any vendor. What we have is the view
+        that surveillance should be bound by reasonable suspicion of a crime,
+        which does not include driving to the Publix or dropping your kids off
+        at school.
+      </p>
+    </div>
   </div>
 </section>
 
 <section class="bay">
   <div class="shell">
-    <div class="measure stack">
 
-      <h2>Why this, and why here</h2>
+    <span class="tag">How did this get in <?= e(COUNTY) ?>?</span>
+    <div class="measure stack">
       <p>
         Automated license plate readers arrived in <?= e(STATE) ?> jurisdictions the way
         most surveillance does. A vendor offers a trial. The trial produces an
@@ -46,60 +49,88 @@ require __DIR__ . '/includes/header.php';
         pitch is running in counties across the country, and the response has to
         be local because the contracts are local.
       </p>
-
-      <h2>What we actually do</h2>
-      <p>
-        Four things, in rough order of how much time they take.
-      </p>
-
-      <ul class="ticks">
-        <li>
-          <strong>Map the hardware.</strong> Cameras get photographed and logged
-          on <a href="https://deflock.me" rel="noopener">DeFlock</a>, an open map
-          of reader locations built on OpenStreetMap. Anybody can add one.
-        </li>
-        <li>
-          <strong>File records requests.</strong> Contracts, invoices, usage
-          policies, audit logs and data sharing agreements are public records
-          under <?= e(RECORDS_LAW) ?>. We ask for them and publish what comes
-          back.
-        </li>
-        <li>
-          <strong>Show up.</strong> Commission meetings have a public comment
-          period. Most of the time nobody uses it to talk about this.
-        </li>
-        <li>
-          <strong>Explain it to neighbors.</strong> Most people have never heard
-          of a Vehicle Fingerprint and are not pleased to learn what one is.
-        </li>
-      </ul>
-
-      <h2>What we are not asking for</h2>
-      <p>
-        It saves everyone time to be blunt about this, because it is the first
-        thing we get accused of.
-      </p>
-      <p>
-        We are not asking anyone to stop investigating crimes. We are not asking
-        for deputies to be defunded, and we take no position on the sheriff's
-        budget. We are not asking residents to break, obscure or interfere with
-        any camera, and we will not help anyone who wants to.
-      </p>
-      <p>
-        We are asking that a system which records everybody be subject to a
-        published policy, a warrant requirement, a public audit and a renewal
-        vote. That is the whole ask.
-      </p>
-
     </div>
+
   </div>
 </section>
 
-<section class="bay bay--raised">
+<section class="bay">
   <div class="shell">
 
-    <span class="eyebrow">How we operate</span>
-    <h2>Four rules we hold ourselves to</h2>
+    <span class="tag">What we can do now</span>
+    <h2>Four things, in rough order of how much time they take</h2>
+
+    <div class="rows mt-l">
+
+      <div class="row">
+        <span class="row__num">1</span>
+        <h3>Show up</h3>
+        <p>
+          Commission meetings have a public comment period. Most of the time
+          nobody uses it to talk about this.
+        </p>
+      </div>
+
+      <div class="row">
+        <span class="row__num">2</span>
+        <h3>Explain it to neighbors</h3>
+        <p>
+          Most people have never heard of a Vehicle Fingerprint and are not
+          pleased to learn what one is.
+        </p>
+      </div>
+
+      <div class="row">
+        <span class="row__num">3</span>
+        <h3>File records requests</h3>
+        <p>
+          Contracts, invoices, usage policies, audit logs and data sharing
+          agreements are public records under <?= e(RECORDS_LAW) ?>. We ask for
+          them and publish what comes back.
+        </p>
+      </div>
+
+      <div class="row">
+        <span class="row__num">4</span>
+        <h3>Map the hardware</h3>
+        <p>
+          Cameras get photographed and logged on
+          <a href="https://deflock.me" rel="noopener">DeFlock</a>, an open map
+          of reader locations built on OpenStreetMap. Anybody can add one.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="bay">
+  <div class="shell">
+
+    <span class="tag">What we are not asking for</span>
+    <div class="measure stack">
+      <p>
+        We are not asking anyone to stop investigating crimes. We are not asking
+        for deputies to be defunded, and we take no position on the sheriff's
+        budget. We are not asking residents to vandalize or destroy any camera,
+        and we will not help anyone who wants to.
+      </p>
+      <p>
+        <strong>We are asking that a system which records anybody be subject to a
+        published policy, a warrant requirement and public awareness when it is
+        not. That is the whole ask.</strong>
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<section class="bay">
+  <div class="shell">
+
+    <span class="tag">How we operate</span>
+    <h2>Rules we hold ourselves to</h2>
 
     <div class="grid grid--2 mt-l">
 
@@ -146,15 +177,16 @@ require __DIR__ . '/includes/header.php';
 
 <section class="bay">
   <div class="shell">
-    <div class="slab measure">
+    <hr class="mb-0">
+    <div class="measure mt-xl">
       <h2 class="h-sub">There is no membership to join</h2>
       <p>
         Come to a meeting, or do not. Send one email to one commissioner and you
         have already done more than most people in the county. Start on the
         Get Involved page.
       </p>
-      <p class="mb-0">
-        <a class="btn btn--invert" href="/get-involved">See what to do</a>
+      <p class="mb-0 mt-m">
+        <a class="btn" href="/get-involved">See what to do &rarr;</a>
       </p>
     </div>
   </div>

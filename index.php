@@ -12,19 +12,25 @@ $blurb = 'Automated license plate readers photograph and log every vehicle that 
 require __DIR__ . '/includes/header.php';
 ?>
 
-<section class="hero">
+<section class="hero hero--sky">
+  <div class="clouds" aria-hidden="true">
+    <i class="cloud"></i><i class="cloud"></i><i class="cloud"></i><i class="cloud"></i><i class="cloud"></i>
+  </div>
   <div class="shell">
     <span class="eyebrow"><?= e(SITE_TAGLINE) ?></span>
-    <h1>Your car is photographed, logged and searchable.</h1>
-    <p class="lede">
-      An automated license plate reader records every vehicle that drives past it.
-      Not the stolen ones. Not the ones on a warrant list. Every one.
-      <?= e(SITE_NAME) ?> is a group of county residents who think a decision
-      like that belongs in public, on the record, with a vote attached.
-    </p>
-    <div class="btn-row">
-      <a class="btn btn--loud" href="/get-involved">Get involved</a>
-      <a class="btn btn--ghost" href="#problem">Read the problem</a>
+    <h1>You are being recorded, profiled and tracked</h1>
+    <div class="hero__row">
+      <p class="lede">
+        "Automated License Plate Readers", or ALPRs, are not passively taking
+        snapshots of license plates. They are recording your plate, your car
+        make &amp; model, your bumper stickers and tracking your routes. These
+        do not just track plates, nor only criminals with warrants &mdash; they
+        track every law-abiding driver in <?= e(COUNTY) ?>.
+      </p>
+      <div class="hero__cta">
+        <a class="btn" href="/get-involved">Get involved &rarr;</a>
+        <a class="scroll-hint" href="#problem">Scroll</a>
+      </div>
     </div>
   </div>
 </section>
@@ -32,23 +38,23 @@ require __DIR__ . '/includes/header.php';
 <section class="bay" id="problem">
   <div class="shell">
 
-    <span class="eyebrow">The problem</span>
-    <h2>What the camera on the pole is doing</h2>
+    <span class="tag">The problem</span>
+    <h2>What ALPRs do</h2>
 
     <div class="measure stack">
       <p>
-        A fixed plate reader points at a lane of traffic and fires as each
-        vehicle passes. Software reads the plate and the issuing state. Flock
-        Safety, the vendor behind most of these installations, also records body
-        type, color, roof racks, bumper stickers and visible damage, and markets
-        the combination as a "Vehicle Fingerprint" that can find a car whose
-        plate was never captured.
+        An Automated License Plate Reader points at a lane of traffic and fires
+        as each vehicle passes. Software reads the plate and the issuing state.
+        Flock Safety, the vendor behind many of these installations, also
+        records body type, color, roof racks, bumper stickers and visible
+        damage, and markets the combination as a "Vehicle Fingerprint" that can
+        find a car whose plate was never captured.
       </p>
       <p>
         Each hit is stamped with a time and the camera's location. String a few
         cameras together and you have a partial map of where a car went and when.
-        String a few hundred together and you have something closer to a travel
-        history for everyone in the county.
+        String a few hundred together and you have a travel history for everyone
+        in the county.
       </p>
       <p>
         None of this begins with a suspect. The database is built first, from
@@ -56,9 +62,20 @@ require __DIR__ . '/includes/header.php';
       </p>
     </div>
 
-    <div class="grid grid--3 mt-xxl">
+    <div class="rows mt-xl">
 
-      <div class="card">
+      <div class="row">
+        <span class="row__num">1</span>
+        <h3>No warrant stands between</h3>
+        <p>
+          We already have a system in place which allows law enforcement to
+          track a suspect &mdash; a judge issues a warrant. This process
+          bypasses that entirely.
+        </p>
+      </div>
+
+      <div class="row">
+        <span class="row__num">2</span>
         <h3>The record outlasts the trip</h3>
         <p>
           Flock's standard configuration keeps captures for 30 days before
@@ -67,83 +84,15 @@ require __DIR__ . '/includes/header.php';
         </p>
       </div>
 
-      <div class="card">
+      <div class="row">
+        <span class="row__num">3</span>
         <h3>The search is not local</h3>
         <p>
-          Agencies can open their cameras to other agencies, including
-          departments in other states. A camera bought with <?= e(COUNTY) ?>
-          money can answer a question asked a thousand miles away.
+          Agencies outside <?= e(COUNTY) ?> can, will, and have searched for
+          plates inside our county feed.
         </p>
       </div>
 
-      <div class="card">
-        <h3>No warrant stands between</h3>
-        <p>
-          A query is typed into a web console. Whether an officer needs a judge
-          to sign off first depends on department policy, and most policies are
-          written by the department.
-        </p>
-      </div>
-
-    </div>
-
-    <div class="flagline">
-      Reporting by 404 Media in 2025 documented plate reader searches run for
-      immigration enforcement and, in one Texas case, for a woman whose family
-      reported she had ended a pregnancy. The cameras did not decide that. The
-      people with console access did.
-      <cite>Verify and link the original reporting before this page goes live.</cite>
-    </div>
-
-  </div>
-</section>
-
-<section class="bay bay--raised">
-  <div class="shell">
-
-    <span class="eyebrow">What we want</span>
-    <h2>Four asks, none of them radical</h2>
-    <p class="measure lede">
-      We are not asking anyone to ignore a crime. We are asking that a system
-      that watches everyone be governed like one.
-    </p>
-
-    <ol class="steps mt-xl w-form">
-      <li>
-        <h3>Publish the contract</h3>
-        <p>
-          Residents should be able to read what the county bought, what it
-          costs, how long it runs and what the vendor is allowed to do with the
-          data.
-        </p>
-      </li>
-      <li>
-        <h3>Require a warrant to search</h3>
-        <p>
-          Writing down where a person has driven for the past month is a search.
-          It should take a judge, with the narrow exceptions courts already
-          recognize.
-        </p>
-      </li>
-      <li>
-        <h3>Publish the audit log</h3>
-        <p>
-          Every query leaves a record: who ran it, when, and the case number
-          they attached. A quarterly summary of that log, released publicly,
-          costs the county an afternoon.
-        </p>
-      </li>
-      <li>
-        <h3>Put an end date on it</h3>
-        <p>
-          Renewal should require a public hearing and an affirmative vote, not a
-          line item that rolls over while nobody is looking.
-        </p>
-      </li>
-    </ol>
-
-    <div class="btn-row">
-      <a class="btn" href="/get-involved#officials">Send these to your commissioner</a>
     </div>
 
   </div>
@@ -152,16 +101,65 @@ require __DIR__ . '/includes/header.php';
 <section class="bay">
   <div class="shell">
 
-    <span class="eyebrow">Where to go next</span>
-    <h2>Pick a door</h2>
+    <span class="tag">What we want</span>
+    <h2>We were warned about mass surveillance</h2>
+    <p class="measure quote">
+      "The right of the people to be secure in their persons, houses, papers,
+      and effects, against unreasonable searches and seizures, shall not be
+      violated, and no Warrants shall issue, but upon probable cause, supported
+      by Oath or affirmation, and particularly describing the place to be
+      searched, and the persons or things to be seized."
+    </p>
 
-    <div class="grid grid--2 mt-l">
+    <div class="asks mt-xl">
+      <div>
+        <span class="ask__num">1</span>
+        <h3>Publish the contract</h3>
+        <p>
+          Residents should be able to read what the county bought, what it
+          costs, how long it runs and what the vendor is allowed to do with the
+          data.
+        </p>
+      </div>
+      <div>
+        <span class="ask__num">2</span>
+        <h3>No recording without a warrant</h3>
+        <p>
+          Keeping a record of where a person has driven for the past month is a
+          search. It should take a judge, with the narrow exceptions courts
+          already recognize.
+        </p>
+      </div>
+      <div>
+        <span class="ask__num">3</span>
+        <h3>Put an end date on it</h3>
+        <p>
+          Renewal should require a public hearing and an affirmative vote, not a
+          line item that rolls over while nobody is looking.
+        </p>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <a class="btn" href="/get-involved#officials">Send these to your commissioner &rarr;</a>
+    </div>
+
+  </div>
+</section>
+
+<section class="bay">
+  <div class="shell">
+
+    <span class="tag">What can you do?</span>
+    <h2>Here's how you can help</h2>
+
+    <div class="grid grid--3 mt-l">
 
       <a class="card" href="/get-involved">
         <h3>Get involved</h3>
         <p>
-          Meeting dates, who to call, and a script for the three minutes you get
-          at public comment.
+          Meeting dates, who to contact, and core concepts for the three minutes
+          you get at public comment.
         </p>
         <span class="card__more">Take an action &rarr;</span>
       </a>
@@ -169,10 +167,10 @@ require __DIR__ . '/includes/header.php';
       <a class="card" href="/resources">
         <h3>Resources</h3>
         <p>
-          The camera map, the legal groundwork, the reporting, and how to
-          request county records yourself.
+          Tools and links that you can use to get informed about Flock and
+          ALPRs.
         </p>
-        <span class="card__more">Read up &rarr;</span>
+        <span class="card__more">Find out more &rarr;</span>
       </a>
 
       <a class="card" href="/about">
@@ -182,15 +180,6 @@ require __DIR__ . '/includes/header.php';
           asking for.
         </p>
         <span class="card__more">Meet the group &rarr;</span>
-      </a>
-
-      <a class="card" href="/contact">
-        <h3>Contact</h3>
-        <p>
-          Spotted a camera, have a record to share, or want to help. One form,
-          one inbox.
-        </p>
-        <span class="card__more">Say something &rarr;</span>
       </a>
 
     </div>

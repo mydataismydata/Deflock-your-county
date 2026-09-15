@@ -25,7 +25,7 @@ $links = array_filter(CHANNELS, static fn (string $url): bool => trim($url) !== 
       <div>
         <h2>Where to find us</h2>
 <?php if ($links === []): ?>
-        <p class="quiet">Accounts are not set up yet. Use the <a href="/contact">contact form</a> to reach us.</p>
+        <p>We are real people in <?= e(COUNTY) ?>. Our <a href="/contact">contact form</a> will send an email to one of us.</p>
 <?php else: ?>
         <ul>
 <?php foreach ($links as $name => $url): ?>

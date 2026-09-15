@@ -39,13 +39,17 @@ Each of these is written as fact on a page. Attach a link, or cut the sentence.
 - That Flock Safety records body type, color, roof racks, bumper stickers and visible damage, and markets it as "Vehicle Fingerprint". Source: Flock's own product documentation.
 - That Flock's standard configuration keeps captures for 30 days. Confirm against current vendor documentation, because defaults change.
 
-**`index.php`, the pull quote**
+**`index.php`, "The search is not local"**
 
-- The 404 Media reporting on searches run for immigration enforcement, and the Texas case involving a woman whose family reported she had ended a pregnancy. Link the original articles. The page currently carries a visible note saying this is unverified, which needs removing once the links are in.
+- "Agencies outside St. Johns County can, will, and have searched for plates inside our county feed." The first two are true of how the vendor's sharing network is built. **"Have" is a claim about this county specifically and nothing on this site supports it yet.** Either get it from an audit log through a records request, or soften the sentence.
 
-**`index.php`, "No warrant stands between"**
+**Removed in the redesign, no longer needs sourcing**
 
-- That whether a warrant is required depends on department policy. True as a general statement about most jurisdictions. Check whether St. Johns County has published a policy that says otherwise before leaving it.
+- The 404 Media pull quote about immigration enforcement and the Texas pregnancy case is gone from the home page. If you put it back anywhere, it needs the original links.
+
+**`index.php`, the Fourth Amendment quote**
+
+- Quoted accurately and in the public domain. Nothing to check.
 
 **Anything about St. Johns County specifically**
 
@@ -59,6 +63,12 @@ each one resolves before publishing, particularly:
 - `https://www.myfloridalegal.com/sunshine-manual` (the Attorney General's site has been reorganized)
 - `https://www.eff.org/issues/automated-license-plate-readers-alpr`
 - `https://www.sjcfl.us`, `https://www.sjso.org`, `https://www.citystaug.com`
+
+## Left inconsistent by the redesign
+
+- The home page lists **three** asks. `get-involved.php` lists **four**, keeping "Release the audit log quarterly". Decide which is the campaign position and make both pages agree.
+- The redesigned pages end their calls to action with an arrow, following the design note that CTAs are underlined text links with a trailing arrow. `404.php`, `get-involved.php` and `contact.php` were not in the handoff and their link labels have no arrow.
+- `assets/fonts/` is empty. See the README in there. The system fallbacks render correctly until the files are added.
 
 ## Wording to review
 

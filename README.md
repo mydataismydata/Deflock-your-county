@@ -160,6 +160,13 @@ The pages use no inline `style` attributes, which is what lets `.htaccess` ship
 a Content-Security-Policy with no `unsafe-inline`. If you add an inline style
 the browser will drop it. Add a class instead.
 
+Type is Archivo for the interface and IBM Plex Mono for labels and the sample
+scripts. Both are declared as self-hosted `@font-face` rules and neither file is
+committed, so the browser falls back to the system stack until you add them.
+`assets/fonts/README.md` says which files to drop in. Loading them from a font
+CDN instead would contradict the line in the footer promising that the site
+loads nothing from a third party.
+
 ## Before it goes live
 
 `CONTENT-TODO.md` lists every placeholder and every factual claim that needs a
