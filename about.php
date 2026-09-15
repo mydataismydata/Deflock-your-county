@@ -95,7 +95,7 @@ require __DIR__ . '/includes/header.php';
         <h3>Map the hardware</h3>
         <p>
           Cameras get photographed and logged on
-          <a href="https://deflock.me" rel="noopener">DeFlock</a>, an open map
+          <a href="https://deflock.org" rel="noopener">DeFlock</a>, an open map
           of reader locations built on OpenStreetMap. Anybody can add one.
         </p>
       </div>

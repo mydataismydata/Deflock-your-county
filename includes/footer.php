@@ -38,7 +38,7 @@ $links = array_filter(CHANNELS, static fn (string $url): bool => trim($url) !== 
       <div>
         <h2>Start here</h2>
         <ul>
-          <li><a href="https://deflock.me" rel="noopener">Find the cameras near you</a></li>
+          <li><a href="https://deflock.org" rel="noopener">Find the cameras near you</a></li>
           <li><a href="/get-involved#officials">Write to your commissioner</a></li>
           <li><a href="/get-involved#records">File a records request</a></li>
         </ul>

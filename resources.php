@@ -14,15 +14,17 @@ $blurb = 'Camera maps, legal groundwork, reporting on license plate readers, pub
 $groups = [
     [
         'id'    => 'maps',
-        'title' => 'Find the cameras',
-        'intro' => 'Start by looking at what is already installed. Both maps are '
-                 . 'crowdsourced, which means they are incomplete until somebody '
-                 . 'local fills the gaps.',
+        'title' => 'Look up your own area',
+        'intro' => 'Start with your own plate, then look at what is installed '
+                 . 'around you. The maps are crowdsourced, which means they stay '
+                 . 'incomplete until somebody local fills the gaps.',
         'links' => [
-            ['DeFlock', 'https://deflock.me',
-             'Open map of license plate reader locations, built on OpenStreetMap data. Add a camera in a couple of minutes.'],
+            ['Have I Been Flocked?', 'https://haveibeenflocked.com/',
+             'Type in your plate and see whether it appears in the Flock search logs released so far. The Agencies menu at the top breaks the same records down by department, so you can read what your local agency has been searching for.'],
+            ['DeFlock', 'https://deflock.org',
+             'Open-source map of license plate reader locations, built on OpenStreetMap data. Adding a camera takes a couple of minutes.'],
             ['Atlas of Surveillance', 'https://atlasofsurveillance.org',
-             'Searchable database of police surveillance technology by agency, from EFF and the Reynolds School of Journalism at the University of Nevada, Reno.'],
+             'Documents police technology by agency, from EFF and the Reynolds School of Journalism at the University of Nevada, Reno. Useful for finding what else your department runs.'],
             ['OpenStreetMap', 'https://www.openstreetmap.org',
              'The underlying map. DeFlock submissions land here, so an edit outlives any one project.'],
         ],
@@ -49,6 +51,8 @@ $groups = [
         'intro' => 'Whether a month of location history counts as a search under '
                  . 'the Fourth Amendment is being argued in court right now.',
         'links' => [
+            ['The IJ Database of ALPR Abuse', 'https://ij.org/the-ij-database-of-alpr-abuse/',
+             'The Institute for Justice has cataloged more than 200 incidents of plate reader abuse: romantic stalking, wrongful stops and detentions, use by people who are not law enforcement, and other misconduct. Documented and mapped.'],
             ['Institute for Justice', 'https://ij.org',
              'Litigating Fourth Amendment challenges to municipal camera networks, including the case against Norfolk, Virginia.'],
             ['Restore The Fourth', 'https://restorethe4th.com',
@@ -69,8 +73,8 @@ $groups = [
              'Sustained investigative coverage of Flock Safety, including audit logs obtained by records request.'],
             ['EFF Deeplinks', 'https://www.eff.org/deeplinks',
              'EFF staff blog. Faster than the issue pages and usually where new findings appear first.'],
-            ['MuckRock', 'https://www.muckrock.com',
-             'Public records request platform with an archive of documents other people have already pried loose.'],
+            ['MuckRock', 'https://www.muckrock.com/',
+             'Nonprofit newsroom and records-request platform. Journalists, researchers and the public file requests through it, and the results stay published, so you can read what other people have already pried loose.'],
         ],
     ],
     [
@@ -99,9 +103,9 @@ require __DIR__ . '/includes/header.php';
     <span class="eyebrow">Resources</span>
     <h1>Where to read the primary sources.</h1>
     <p class="lede">
-      Everything below is free and none of it is ours. Start at the top if you
-      want to know what is installed near you, or jump to the local section if
-      you want to file a records request this week.
+      Everything below is free and almost none of it is ours. Start at the top
+      if you want to know whether your own plate has been searched, or jump to
+      the local section for the documents agencies here have already released.
     </p>
   </div>
 </section>

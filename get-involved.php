@@ -311,7 +311,7 @@ Thank you,
 
     <div class="measure stack">
       <p>
-        <a href="https://deflock.me" rel="noopener">DeFlock</a> maps reader
+        <a href="https://deflock.org" rel="noopener">DeFlock</a> maps reader
         locations from public contributions and stores them in OpenStreetMap, so
         an entry survives whether or not any one website does. <?= e(COUNTY) ?>
         is thinly covered, which is a gap you can close on your commute.
@@ -324,7 +324,7 @@ Thank you,
     </div>
 
     <div class="btn-row">
-      <a class="btn" href="https://deflock.me" rel="noopener">Open the map</a>
+      <a class="btn" href="https://deflock.org" rel="noopener">Open the map</a>
       <a class="btn btn--ghost" href="/contact">Send us a sighting</a>
     </div>
 

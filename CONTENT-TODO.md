@@ -53,22 +53,29 @@ Each of these is written as fact on a page. Attach a link, or cut the sentence.
 
 **Anything about St. Johns County specifically**
 
-- Nothing on this site yet states that St. Johns County operates plate readers, how many, or under what contract. Establish that through a records request before adding it. A wrong number is the fastest way to lose the argument in a commission chamber.
+- No page yet states that St. Johns County operates plate readers, how many, or under what contract. **That blocker is now liftable.** The records folder linked from the Resources page already holds a redacted sheriff's office plate reader policy, Flock contract riders dating to September 2022, a 2025 expansion document and training material. Read them and write the county-specific section from the documents, citing each one.
+- A wrong number is still the fastest way to lose the argument in a commission chamber. Quote the paperwork, link the file.
 
-## Links to test
+**The records folder is on Google Drive**
 
-Every external link was written from memory and none has been fetched. Check
-each one resolves before publishing, particularly:
+- It is public, which is what makes it useful. Two things follow. Anyone who clicks it hands Google a request, which sits awkwardly beside the footer promise about third parties, so it is worth saying on the page that the link leaves the site. And the folder stays useful only while its sharing setting stays "anyone with the link"; if that is ever tightened the Resources page will point at a sign-in wall.
 
-- `https://www.myfloridalegal.com/sunshine-manual` (the Attorney General's site has been reorganized)
-- `https://www.eff.org/issues/automated-license-plate-readers-alpr`
-- `https://www.sjcfl.us`, `https://www.sjso.org`, `https://www.citystaug.com`
+## Links
 
-## Left inconsistent by the redesign
+Every outbound link on the site was fetched and checked on 15 September 2026.
+All 25 resolve. Two notes:
 
-- The home page lists **three** asks. `get-involved.php` lists **four**, keeping "Release the audit log quarterly". Decide which is the campaign position and make both pages agree.
-- The redesigned pages end their calls to action with an arrow, following the design note that CTAs are underlined text links with a trailing arrow. `404.php`, `get-involved.php` and `contact.php` were not in the handoff and their link labels have no arrow.
-- `assets/fonts/` is empty. See the README in there. The system fallbacks render correctly until the files are added.
+- **deflock.me now redirects to deflock.org.** Every link was moved to the .org
+  address, so there is no redirect hop.
+- **The Sunshine Manual link was dead.** `myfloridalegal.com/sunshine-manual`
+  returned 404; the Attorney General moved it under `/open-government/`. Fixed,
+  and the page it now points at carries the 2025 edition.
+
+`ij.org` and `muckrock.com` answer 403 to automated requests. Both are behind
+bot protection and load normally in a browser; that is not a broken link.
+
+Recheck this list before launch and once a quarter after. Government sites
+reorganise without redirects, which is how the Sunshine Manual link broke.
 
 ## Wording to review
 

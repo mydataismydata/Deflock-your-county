@@ -99,7 +99,7 @@ const LOCAL_RESOURCES = [
     'links' => [
         [STATE . ' Statutes', RECORDS_LAW_URL,
          'Chapter 119 is the public records law. Chapter 286 covers open meetings.'],
-        ['Government-in-the-Sunshine Manual', 'https://www.myfloridalegal.com/sunshine-manual',
+        ['Government-in-the-Sunshine Manual', 'https://www.myfloridalegal.com/open-government/sunshine-manual',
          'The Attorney General\'s annual guide to what is public, who must release it and how long they may take.'],
         [LEGAL_HELP_NAME, LEGAL_HELP_URL,
          'State affiliate. Tracks surveillance legislation in Tallahassee.'],
@@ -109,5 +109,7 @@ const LOCAL_RESOURCES = [
          'Agency contact details and published policies.'],
         ['City of ' . COUNTY_SEAT, 'https://www.citystaug.com',
          'The city runs its own police department and its own procurement, separately from the county.'],
+        ['Public records we have received', 'https://drive.google.com/drive/folders/1ZieGt1Gx8h4ieFz3p_Wq0wIxPxSAk5dI',
+         'Contracts, the sheriff\'s plate reader policy, training material and released record sets, exactly as the agencies sent them. Read them yourself rather than taking our word for any of it.'],
     ],
 ];

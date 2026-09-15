@@ -233,7 +233,7 @@ require __DIR__ . '/includes/header.php';
           </p>
           <p>
             <strong>Found a camera?</strong> Add it to
-            <a href="https://deflock.me" rel="noopener">DeFlock</a> first, then
+            <a href="https://deflock.org" rel="noopener">DeFlock</a> first, then
             tell us. The map entry is the part that lasts.
           </p>
           <p>
