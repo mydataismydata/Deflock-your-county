@@ -499,34 +499,58 @@ a.card:hover { border-color: var(--ink); color: var(--ink); }
 
 .colophon {
   border-top: 1px solid var(--rule);
-  padding-block: 3.5rem 2rem;
-  margin-top: var(--bay);
+  padding-block: 2.5rem 1.25rem;
+  margin-top: clamp(2rem, 1.5rem + 1.5vw, 3rem);
 }
 .colophon h2 {
   font: 500 12px var(--face-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-dim);
-  margin-bottom: 1rem;
+  margin-bottom: 0.9rem;
 }
-.colophon ul { list-style: none; padding: 0; }
-.colophon li { margin-bottom: 0.5rem; }
+.colophon ul { list-style: none; padding: 0; margin-bottom: 0; }
+.colophon li { margin-bottom: 0.45rem; }
+.colophon li:last-child { margin-bottom: 0; }
 .colophon a { color: var(--ink); font-size: 15px; border-bottom: none; }
 .colophon a:hover { color: var(--ink-soft); text-decoration: underline; }
-.colophon p { font-size: 15px; line-height: 1.6; color: var(--ink-soft); }
+.colophon p { font-size: 15px; line-height: 1.6; color: var(--ink-soft); margin-bottom: 0.7rem; }
+.colophon p:last-child { margin-bottom: 0; }
+
+/* The middle column holds sentences, so it takes the width the two link
+   columns do not need. */
+.colophon__cols {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.5fr) minmax(0, 1.1fr);
+  gap: 2rem 3rem;
+  align-items: start;
+}
+/* Two columns: the link lists sit side by side and the prose runs under both,
+   so the short middle column does not leave a hole. */
+@media (max-width: 56rem) {
+  .colophon__cols { grid-template-columns: 1fr 1fr; }
+  .colophon__cols > :nth-child(1) { grid-area: 1 / 1; }
+  .colophon__cols > :nth-child(3) { grid-area: 1 / 2; }
+  .colophon__cols > :nth-child(2) { grid-area: 2 / 1 / 3 / -1; }
+}
+/* One column on a phone. The placements above have to be handed back, or the
+   second column they name survives into this layout. */
+@media (max-width: 36rem) {
+  .colophon__cols { grid-template-columns: 1fr; gap: 1.75rem; }
+  .colophon__cols > :nth-child(1),
+  .colophon__cols > :nth-child(2),
+  .colophon__cols > :nth-child(3) { grid-area: auto; }
+}
 
 .colophon__base {
   border-top: 1px solid var(--rule);
-  margin-top: 3rem;
-  padding-top: 1.5rem;
+  margin-top: 2rem;
+  padding-top: 1.1rem;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 2.5rem;
-  justify-content: space-between;
+  justify-content: flex-end;
   color: var(--ink-dim);
-  font-size: 13px;
 }
-.colophon__base p { margin: 0; max-width: 52ch; color: var(--ink-dim); }
+.colophon__base p { margin: 0; text-align: right; color: var(--ink-dim); }
 
 @media print {
   .masthead, .nav, .colophon__base, .btn-row, .clouds { display: none; }

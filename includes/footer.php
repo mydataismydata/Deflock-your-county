@@ -2,14 +2,12 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/config.php';
-
-$links = array_filter(CHANNELS, static fn (string $url): bool => trim($url) !== '');
 ?>
 </main>
 
 <footer class="colophon">
   <div class="shell">
-    <div class="grid grid--3">
+    <div class="colophon__cols">
 
       <div>
         <h2>Pages</h2>
@@ -23,16 +21,14 @@ $links = array_filter(CHANNELS, static fn (string $url): bool => trim($url) !== 
       </div>
 
       <div>
-        <h2>Where to find us</h2>
-<?php if ($links === []): ?>
-        <p>We are real people in <?= e(COUNTY) ?>. Our <a href="/contact">contact form</a> will send an email to one of us.</p>
-<?php else: ?>
-        <ul>
-<?php foreach ($links as $name => $url): ?>
-          <li><a href="<?= e($url) ?>" rel="me noopener"><?= e($name) ?></a></li>
-<?php endforeach; ?>
-        </ul>
-<?php endif; ?>
+        <h2>Who we are</h2>
+        <p>
+          We are real people in <?= e(COUNTY) ?> who want to stop mass
+          surveillance in our community.
+        </p>
+        <p>
+          We are not a law firm and nothing on this site is legal advice.
+        </p>
       </div>
 
       <div>
@@ -47,10 +43,6 @@ $links = array_filter(CHANNELS, static fn (string $url): bool => trim($url) !== 
     </div>
 
     <div class="colophon__base">
-      <p>
-        <?= e(SITE_NAME) ?> is an unaffiliated group of county residents. We are not
-        a law firm and nothing here is legal advice.
-      </p>
       <p>
         This site sets no cookies, runs no analytics and loads nothing from a
         third&nbsp;party.

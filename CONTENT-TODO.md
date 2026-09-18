@@ -12,7 +12,7 @@ attached or need cutting.
 - `CONTACT_TO` is `hello@example.org`.
 - `CONTACT_FROM` is `website@example.org`. Must be a real mailbox on the live domain.
 - `FORM_SECRET` is the shipped placeholder. The form will not send until this changes.
-- `CHANNELS` are all empty strings. The footer and Get Involved page print a fallback line while they stay empty.
+- `CHANNELS` are all empty strings. The Get Involved page prints a fallback line while they stay empty. The footer no longer lists them.
 - `MEETINGS` both say `TBD`, and the second carries a St. Augustine street address. Confirm it.
 
 **`includes/place.php`**
