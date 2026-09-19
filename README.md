@@ -31,13 +31,15 @@ docker/            The image for that container, and the captured-mail drop
 includes/
   place.php        Every string that names a county, state, statute or official
   config.php       Your install: mail addresses, form secret, meetings, socials
-  header.php       Document head, masthead, primary nav
+  header.php       Document head, fixed header, grain overlay, primary nav
   footer.php       Footer and closing markup
   mailer.php       Form tokens and the single mail() call
   .htaccess        Denies web access to this directory
 
 assets/css/site.css   One stylesheet. Design tokens are in :root at the top.
-assets/js/nav.js      Collapses the nav on narrow screens. Nothing else.
+assets/js/scene-motion.js  Heading reveal, scene brightening, header state, menu.
+assets/fonts/         Four self-hosted woff2 files. Nothing loads from a CDN.
+assets/img/           The four photographs, as webp.
 .htaccess             Clean URLs, HTTPS redirect, security headers, caching
 ```
 
@@ -152,20 +154,38 @@ php -d sendmail_path='cat >> /tmp/sent.eml' -S localhost:8000 router.php
 
 ## Restyling
 
-Open `assets/css/site.css` and change the tokens in `:root`. Colors, type
-scale, line widths, border weight and the button shadow offset all come from
-there. Nothing below that block hardcodes a color.
+Open `assets/css/site.css` and change the tokens in `:root`. Colours, the type
+scale, the shell widths, the section rhythm, the corner radii and every duration
+come from there. Nothing below that block hardcodes a colour.
+
+The stylesheet and the script are cached for a week by `.htaccess`, so both are
+linked with the file's modification time on the end of the URL. Editing either
+one changes the stamp, and a returning visitor gets the new file instead of the
+week-old one.
 
 The pages use no inline `style` attributes, which is what lets `.htaccess` ship
 a Content-Security-Policy with no `unsafe-inline`. If you add an inline style
 the browser will drop it. Add a class instead.
 
-Type is Archivo for the interface and IBM Plex Mono for labels and the sample
-scripts. Both are declared as self-hosted `@font-face` rules and neither file is
-committed, so the browser falls back to the system stack until you add them.
-`assets/fonts/README.md` says which files to drop in. Loading them from a font
-CDN instead would contradict the line in the footer promising that the site
-loads nothing from a third party.
+Four typefaces, four jobs, no overlap. DM Serif Display sets every heading.
+Instrument Serif sets the wordmark and nothing else. IBM Plex Sans sets
+everything read in sentences. Geist Mono sets anything that is data rather than
+language: the meeting dates, the commissioner contact lines, the scripts.
+
+All four are committed to `assets/fonts/` as latin-subset woff2 and declared as
+`@font-face` rules. IBM Plex Sans and Geist Mono are variable fonts, so one file
+each covers every weight. Loading them from a font CDN instead would contradict
+the line in the footer promising that the site loads nothing from a third party.
+
+The page is black and every text colour is white at a fixed opacity. Depth comes
+from hairlines rather than from boxes, and there is one accent hue. The design
+language is documented in full in `.working/scene-design-system/README.md`.
+
+`assets/js/scene-motion.js` carries the movement: headings arrive a word at a
+time on first sight, a scene's photograph brightens as it crosses the screen,
+the header turns solid after 24px of scroll, and the menu collapses behind a
+button under 48rem. Everything but the menu stops under
+`prefers-reduced-motion: reduce`, and the headings then render as written.
 
 ## Before it goes live
 

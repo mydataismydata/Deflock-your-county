@@ -12,7 +12,9 @@ attached or need cutting.
 - `CONTACT_TO` is `hello@example.org`.
 - `CONTACT_FROM` is `website@example.org`. Must be a real mailbox on the live domain.
 - `FORM_SECRET` is the shipped placeholder. The form will not send until this changes.
-- `CHANNELS` are all empty strings. The Get Involved page prints a fallback line while they stay empty. The footer no longer lists them.
+- `CHANNELS` are all empty strings, and nothing reads them any more. The Scene redesign
+  dropped the "Follow along" block from Get Involved, which was the last thing that printed
+  them. Either fill them in and add a block back, or delete the constant.
 - `MEETINGS` carries the county board dates through 15 December 2026, read from the county
   calendar on 18 September 2026. Top them up when that list runs short. The group holds no
   meetings of its own; add them here if that changes.
@@ -32,7 +34,31 @@ attached or need cutting.
 
 **`assets/img/favicon.svg`**
 
-- Placeholder mark: a lens with a slash through it. Replace if the group adopts a logo.
+- Placeholder mark: a lens with a slash through it. Replace if the group adopts a logo. The
+  header and footer print the site name in Instrument Serif and carry no mark, so the favicon
+  is the only place a logo would appear today.
+
+**Photographs**
+
+The redesign runs on four images and wants three more. What is in `assets/img/` now:
+
+| File | Where |
+| --- | --- |
+| `cameras.webp` | Home hero: a reader and a dome camera on a pole |
+| `supreme-court.webp` | Home, "End the program" |
+| `flag.webp` | Get Involved hero |
+| `deflock-map.webp` | Resources hero |
+
+Three home scenes have no photograph yet and print a mono caption in the corner naming the
+shot they are waiting for:
+
+- a reader at an intersection, shot from the public road
+- a bare pole, or a camera coming down
+- a resident at the public comment podium, no face toward camera
+
+Until those exist the scenes render as near-black plates, which reads as deliberate. Drop the
+`<span class="photo-note">` out of `index.php` if you would rather not advertise the gap. The
+About and Contact heroes are text on black by design and need nothing.
 
 ## Claims that need a source before publishing
 
