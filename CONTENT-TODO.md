@@ -13,7 +13,9 @@ attached or need cutting.
 - `CONTACT_FROM` is `website@example.org`. Must be a real mailbox on the live domain.
 - `FORM_SECRET` is the shipped placeholder. The form will not send until this changes.
 - `CHANNELS` are all empty strings. The Get Involved page prints a fallback line while they stay empty. The footer no longer lists them.
-- `MEETINGS` both say `TBD`, and the second carries a St. Augustine street address. Confirm it.
+- `MEETINGS` carries the county board dates through 15 December 2026, read from the county
+  calendar on 18 September 2026. Top them up when that list runs short. Our own organizing
+  meeting is still `TBD`.
 
 **`includes/place.php`**
 

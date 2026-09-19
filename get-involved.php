@@ -63,9 +63,10 @@ $channels = array_filter(CHANNELS, static fn (string $url): bool => trim($url) !
 <?php endif; ?>
 
     <p class="small quiet mt-s">
-      County agendas are published ahead of each meeting at
-      <a href="<?= e(COUNTY_SITE_URL) ?>" rel="noopener"><?= e(COUNTY_SITE_LABEL) ?></a>. Check the
-      agenda before you travel, because items move and meetings get cancelled.
+      <?= e(COUNTY_MEETING_RULE) ?> Dates and agendas go up on the
+      <a href="<?= e(COUNTY_CALENDAR_URL) ?>" rel="noopener">county calendar</a>
+      ahead of each meeting. Check the agenda before you travel, because items
+      move and meetings get cancelled.
     </p>
 
   </div>

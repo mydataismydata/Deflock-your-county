@@ -37,6 +37,16 @@ const SITE_TAGLINE = COUNTY . ', ' . STATE;
 const COUNTY_SITE_LABEL = 'sjcfl.us';
 const COUNTY_SITE_URL   = 'https://www.sjcfl.us';
 
+// Where the county publishes its board meeting dates and agendas.
+const COUNTY_CALENDAR_URL = 'https://www.sjcfl.us/bcc-calendar/';
+
+// Where the board sits, and the standing schedule it keeps. Both are quoted
+// from the county's own Board of County Commissioners page. The rule outlives
+// any particular date in MEETINGS, so it is printed alongside the list.
+const COUNTY_MEETING_PLACE = 'County Auditorium, 500 San Sebastian View, ' . COUNTY_SEAT;
+const COUNTY_MEETING_RULE  = 'The board meets the first and third Tuesday of each month at '
+                           . '9:00 am, other than the first Tuesday of January and of July.';
+
 // ---------------------------------------------------------- public records --
 
 // How the records law is cited in a request letter.

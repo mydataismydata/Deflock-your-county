@@ -64,6 +64,9 @@ const CHANNELS = [
 
 // Upcoming meetings, soonest first. Clear the array to show a standing
 // "nothing scheduled" message instead.
+// Our own meeting comes first, then the county board dates as the county
+// calendar listed them on 18 September 2026. The county publishes a rolling
+// window of a few months, so top these up when the list runs short.
 const MEETINGS = [
     [
         'when'  => 'TBD',
@@ -71,12 +74,12 @@ const MEETINGS = [
         'where' => 'Location to be announced',
         'note'  => 'Open to anyone. No experience needed, no commitment asked.',
     ],
-    [
-        'when'  => 'TBD',
-        'what'  => 'Board of County Commissioners public comment',
-        'where' => 'County Administration Building, 500 San Sebastian View, ' . COUNTY_SEAT,
-        'note'  => 'Check the published agenda before you go. Times move.',
-    ],
+    ['when' => 'Oct 6, 2026',  'what' => 'Board of County Commissioners', 'where' => COUNTY_MEETING_PLACE, 'note' => '9:00 am'],
+    ['when' => 'Oct 20, 2026', 'what' => 'Board of County Commissioners', 'where' => COUNTY_MEETING_PLACE, 'note' => '9:00 am'],
+    ['when' => 'Nov 3, 2026',  'what' => 'Board of County Commissioners', 'where' => COUNTY_MEETING_PLACE, 'note' => '9:00 am'],
+    ['when' => 'Nov 17, 2026', 'what' => 'Board of County Commissioners', 'where' => COUNTY_MEETING_PLACE, 'note' => '9:00 am'],
+    ['when' => 'Dec 1, 2026',  'what' => 'Board of County Commissioners', 'where' => COUNTY_MEETING_PLACE, 'note' => '9:00 am'],
+    ['when' => 'Dec 15, 2026', 'what' => 'Board of County Commissioners', 'where' => COUNTY_MEETING_PLACE, 'note' => '9:00 am'],
 ];
 
 // ---------------------------------------------------------------- helpers --
