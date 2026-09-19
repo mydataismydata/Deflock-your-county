@@ -64,16 +64,10 @@ const CHANNELS = [
 
 // Upcoming meetings, soonest first. Clear the array to show a standing
 // "nothing scheduled" message instead.
-// Our own meeting comes first, then the county board dates as the county
-// calendar listed them on 18 September 2026. The county publishes a rolling
-// window of a few months, so top these up when the list runs short.
+// The county board dates as the county calendar listed them on 18 September
+// 2026. The county publishes a rolling window of a few months, so top these up
+// when the list runs short. Add our own meetings here when we hold any.
 const MEETINGS = [
-    [
-        'when'  => 'TBD',
-        'what'  => 'Monthly organizing meeting',
-        'where' => 'Location to be announced',
-        'note'  => 'Open to anyone. No experience needed, no commitment asked.',
-    ],
     ['when' => 'Oct 6, 2026',  'what' => 'Board of County Commissioners', 'where' => COUNTY_MEETING_PLACE, 'note' => '9:00 am'],
     ['when' => 'Oct 20, 2026', 'what' => 'Board of County Commissioners', 'where' => COUNTY_MEETING_PLACE, 'note' => '9:00 am'],
     ['when' => 'Nov 3, 2026',  'what' => 'Board of County Commissioners', 'where' => COUNTY_MEETING_PLACE, 'note' => '9:00 am'],

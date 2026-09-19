@@ -14,8 +14,8 @@ attached or need cutting.
 - `FORM_SECRET` is the shipped placeholder. The form will not send until this changes.
 - `CHANNELS` are all empty strings. The Get Involved page prints a fallback line while they stay empty. The footer no longer lists them.
 - `MEETINGS` carries the county board dates through 15 December 2026, read from the county
-  calendar on 18 September 2026. Top them up when that list runs short. Our own organizing
-  meeting is still `TBD`.
+  calendar on 18 September 2026. Top them up when that list runs short. The group holds no
+  meetings of its own; add them here if that changes.
 
 **`includes/place.php`**
 

@@ -188,9 +188,9 @@ require __DIR__ . '/includes/header.php';
     <div class="measure mt-xl">
       <h2 class="h-sub">There is no membership to join</h2>
       <p>
-        Come to a meeting, or do not. Send one email to one commissioner and you
-        have already done more than most people in the county. Start on the
-        Get Involved page.
+        Speak at a commission meeting, or do not. Send one email to one
+        commissioner and you have already done more than most people in the
+        county. Start on the Get Involved page.
       </p>
       <p class="mb-0 mt-m">
         <a class="btn" href="/get-involved">See what to do &rarr;</a>

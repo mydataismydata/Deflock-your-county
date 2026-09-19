@@ -83,7 +83,7 @@ $channels = array_filter(CHANNELS, static fn (string $url): bool => trim($url) !
     <p class="measure">
       Accounts are not up yet. Until they are, the
       <a href="/contact">contact form</a> is the way to reach us and the way to
-      get told about the next meeting.
+      hear when something is going on the commission agenda.
     </p>
 <?php else: ?>
     <p class="measure quiet">
