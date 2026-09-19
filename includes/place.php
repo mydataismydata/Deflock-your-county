@@ -20,6 +20,9 @@ const COUNTY_SHORT = 'St. Johns';
 
 const STATE = 'Florida';
 
+// The postal abbreviation, for the address block at the foot of a letter.
+const STATE_ABBR = 'FL';
+
 // The seat or largest municipality. Used in the mapping and meetings copy.
 const COUNTY_SEAT = 'St. Augustine';
 

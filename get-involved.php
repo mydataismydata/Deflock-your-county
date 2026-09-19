@@ -2,6 +2,41 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/letters.php';
+
+// A different draft on every request, so two people who copy the letter on
+// the same afternoon do not send the same one. Twenty-six snippets make 5,040
+// combinations. Nothing between us and the reader may freeze one of them.
+header('Cache-Control: private, no-cache, must-revalidate');
+
+$pick = static function (array $choices): string {
+    return $choices[random_int(0, count($choices) - 1)];
+};
+
+$asks = <<<'TEXT'
+* Vote Against Renewal & Cancel the Contract: End the current Flock Safety agreement as soon as terms allow.
+* Turn the Cameras Off and Take Them Down: Remove every unit the county pays for, fixed or vehicle-mounted.
+* Delete What Has Been Collected: Explicitly require the vendor to purge all local logs and confirm the deletion in writing.
+* Take the Vote in the Open: Place this item on a regular agenda with dedicated public comment, not as a consent item.
+TEXT;
+
+$sources = "Sources:";
+foreach (LETTER_SOURCES as [$label, $url]) {
+    $sources .= "\n" . $label . "\n" . $url . "\n";
+}
+
+$letter = implode("\n\n", [
+    'Subject: ' . $pick(LETTER_SUBJECT),
+    'Dear Commissioner [Last name],',
+    $pick(LETTER_STANDING),
+    $pick(LETTER_EVIDENCE),
+    $pick(LETTER_VALUES),
+    $pick(LETTER_LEADIN),
+    $asks,
+    $pick(LETTER_CLOSE),
+    "Sincerely,\n[Your Name]\n[Your Street Address / Neighborhood]\n" . COUNTY . ', ' . STATE_ABBR,
+    rtrim($sources),
+]);
 
 $page  = 'involved';
 $title = 'Get involved';
@@ -208,31 +243,14 @@ Is there an address where I can send that in writing? Thank you for your time.</
     <div class="split split--label rule-top rule-top--faint mt-l">
       <div>
         <h3 class="h-block">By email</h3>
-        <p class="note mt-s">Written messages to a commission are public record, which is the point. Put your district in the first line so it is not filed as an out-of-county form letter.</p>
+        <p class="note mt-s">Written messages to a commission are public record, which is the point. This draft is different every time the page loads, so no two people send the same letter. Change a sentence to your own words anyway.</p>
       </div>
-<pre class="script">Subject: Please vote to end the license plate reader contract
-
-Dear Commissioner [name],
-
-I live in [neighborhood], District [number]. I am writing about the automated license plate readers operating in <?= e(COUNTY) ?>.
-
-I am asking you to end the program. Specifically:
-
-1. Vote against the next renewal, and cancel the contract that is running.
-2. Turn the cameras off and take them down.
-3. Delete the captures the county holds. Get written confirmation from the vendor, and from every agency the county shared with, that their copies are deleted too.
-4. Take that vote at a regular meeting with public comment, not on consent.
-
-These cameras photograph every car that passes them. They keep the plate, the make, the color and any marking on the vehicle, and they stamp each record with a time and a place. Nobody in that record is suspected of anything. The Fourth Amendment requires probable cause and a description of what is to be searched, and a system that records everyone offers neither.
-
-None of this stops an investigation. A judge can still issue a warrant for anyone the sheriff's office has reason to suspect.
-
-Will you vote to end the contract? I would like a yes or a no.
-
-Thank you,
-[Full name]
-[Street address]
-[Phone or email]</pre>
+<pre class="script"><?= e($letter) ?></pre>
+      <p class="mt-s">
+        <a class="arrow-link" href="/get-involved?draft=<?= e((string) random_int(1000, 9999)) ?>#scripts">Show me a different draft
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+        </a>
+      </p>
     </div>
 
     <div class="split split--label rule-top rule-top--faint mt-l">
