@@ -154,27 +154,28 @@ $seats = array_merge(...array_column(BODIES, 'seats'));
 
     <h3 class="h-sub">The four asks</h3>
     <p class="measure">
-      Keep every message to these. They are specific, they are cheap for the
-      county to do, and none of them stops an investigation. That last part
-      matters, because the usual answer to this campaign is that we want to
-      protect criminals.
+      One demand, and four steps that carry it out. Keep every message to these.
+      The usual answer to this campaign is that we want to protect criminals, so
+      say the other half out loud: a judge can still issue a warrant for anyone
+      the sheriff's office has reason to suspect, which is the whole purpose of
+      a warrant.
     </p>
 
     <ol class="steps w-form mt-m">
       <li>
-        <h3>Publish the contract and the cost</h3>
-        <p>The vendor, the term, the annual price and what the vendor may do with the data.</p>
+        <h3>Vote against renewal and cancel the contract</h3>
+        <p>Do not renew it, and end the term that is running as soon as the contract allows.</p>
       </li>
       <li>
-        <h3>Require a warrant to search history</h3>
-        <p>With the emergency exceptions courts already recognize. Live hotlist alerts are a separate question from pulling a month of someone's movements.</p>
+        <h3>Turn the cameras off and take them down</h3>
+        <p>Every unit the county pays for, whether it is fixed to a pole or mounted on a vehicle.</p>
       </li>
       <li>
-        <h3>Release the audit log quarterly</h3>
-        <p>Number of searches, which outside agencies ran them, and the case types. The system already records all of it.</p>
+        <h3>Delete what has been collected</h3>
+        <p>Including the copies on the vendor's servers and anything shared with outside agencies. Ask each of them to confirm the deletion in writing.</p>
       </li>
       <li>
-        <h3>Vote on renewal in the open</h3>
+        <h3>Take the vote in the open</h3>
         <p>A regular agenda item with public comment, not a consent item that passes unread.</p>
       </li>
     </ol>
@@ -189,12 +190,13 @@ $seats = array_merge(...array_column(BODIES, 'seats'));
 
 I'm calling about the automated license plate readers in the county.
 
-I'd like the Commissioner to ask three things before that contract comes up
-again: how long the captures are kept, which outside agencies can search them,
-and whether a warrant is required to pull someone's history.
+I'd like the Commissioner to vote against renewing that contract, and to have
+the cameras taken down. These cameras photograph every car that passes them and
+keep the record. That is a search of people nobody suspects of anything, and I
+do not think the county has the authority to run one.
 
-I'm not asking anyone to stop investigating crimes. I'm asking for the policy to
-be published.
+This does not stop any investigation. If deputies have reason to suspect
+somebody, they can go to a judge and get a warrant.
 
 Is there an address where I can send that in writing? Thank you for your time.</div>
 
@@ -204,27 +206,32 @@ Is there an address where I can send that in writing? Thank you for your time.</
       Put your district in the first line so it is not filed as an out-of-county
       form letter.
     </p>
-    <div class="script w-form">Subject: License plate readers, before the next renewal
+    <div class="script w-form">Subject: Please vote to end the license plate reader contract
 
 Dear Commissioner [name],
 
 I live in [neighborhood], District [number]. I am writing about the automated
 license plate readers operating in <?= e(COUNTY) ?>.
 
-I am not asking you to end the program. I am asking that it be governed in
-public. Specifically:
+I am asking you to end the program. Specifically:
 
-1. Publish the contract, the annual cost and the term.
-2. Publish the usage policy, including how long captures are kept and who is
-   allowed to run a search.
-3. Require a warrant for any search of historical location data, with the
-   emergency exceptions courts already recognize.
-4. Release a quarterly summary of the audit log: how many searches were run,
-   by which agencies, and for what case types.
-5. Bring renewal to a regular agenda with public comment, not a consent item.
+1. Vote against the next renewal, and cancel the contract that is running.
+2. Turn the cameras off and take them down.
+3. Delete the captures the county holds. Get written confirmation from the
+   vendor, and from every agency the county shared with, that their copies are
+   deleted too.
+4. Take that vote at a regular meeting with public comment, not on consent.
 
-Could you tell me which of these the county already does, and whether you would
-support the rest?
+These cameras photograph every car that passes them. They keep the plate, the
+make, the color and any marking on the vehicle, and they stamp each record with
+a time and a place. Nobody in that record is suspected of anything. The Fourth
+Amendment requires probable cause and a description of what is to be searched,
+and a system that records everyone offers neither.
+
+None of this stops an investigation. A judge can still issue a warrant for
+anyone the sheriff's office has reason to suspect.
+
+Will you vote to end the contract? I would like a yes or a no.
 
 Thank you,
 [Full name]
@@ -245,24 +252,29 @@ These cameras photograph every car that passes them. Not the ones on a hotlist.
 Every one. The record keeps the plate, the make, the color, any bumper sticker
 or damage, and it is stamped with the time and the location of the camera.
 
-I am not asking this board to end the program. I am asking for four things.
+Nobody in that record is suspected of anything. That is a search of everyone,
+run first and justified afterwards, and I do not believe this county has the
+authority to run it.
 
-One. Publish the contract and the usage policy on the county website.
-Two. Require a warrant before anyone searches a person's history.
-Three. Release a summary of the audit log every quarter.
-Four. Vote on renewal at a regular meeting, with public comment, not on consent.
+I am asking this board to end the program.
 
-The county already knows how to do every one of those. None of them stops a
-single investigation.
+One. Vote against renewal and cancel the contract.
+Two. Turn the cameras off and take them down.
+Three. Delete what has been collected, including the vendor's copies.
+Four. Take that vote at a regular meeting, with public comment, not on consent.
 
-I would like to know whether this board will do them. Thank you.</div>
+This stops no investigation. If deputies have reason to suspect somebody, they
+can go to a judge and get a warrant, the same as they did before these cameras
+went up.
+
+I would like to know whether this board will end it. Thank you.</div>
 
     <div class="callout w-form mt-xl">
       <h3>Three things that make a message land</h3>
       <ul class="mb-0">
         <li>Use your own words for at least one sentence. Identical letters get counted once.</li>
         <li>Give your district. Officials sort constituents from everyone else first.</li>
-        <li>Ask a question that needs an answer. "Will you support this?" is harder to file away than "please consider."</li>
+        <li>Ask a question that needs an answer. "Will you vote to end the contract?" is harder to file away than "please consider."</li>
       </ul>
     </div>
 

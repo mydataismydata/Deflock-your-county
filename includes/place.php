@@ -102,7 +102,7 @@ const BODIES = [
     [
         'name'  => COUNTY . ' Sheriff\'s Office',
         'why'   => 'Operates the cameras and writes the usage policy. Retention periods and search rules are set here, not by the commission.',
-        'how'   => 'The sheriff is elected countywide and answers to voters directly. Ask for the written policy by name.',
+        'how'   => 'The sheriff is elected countywide and answers to voters directly. Ask when the cameras come off the poles, and ask for the written policy while they are still up.',
         'link'  => ['Sheriff\'s Office', 'https://www.sjso.org'],
         'seats' => [],
     ],

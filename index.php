@@ -6,8 +6,8 @@ require_once __DIR__ . '/includes/config.php';
 $page  = 'home';
 $title = 'Plate readers in ' . COUNTY;
 $blurb = 'Automated license plate readers photograph and log every vehicle that passes '
-       . 'them. ' . SITE_NAME . ' is a county residents group organizing for a public '
-       . 'say in that.';
+       . 'them. ' . SITE_NAME . ' is a county residents group asking the county to shut '
+       . 'the program down.';
 
 require __DIR__ . '/includes/header.php';
 ?>
@@ -21,11 +21,11 @@ require __DIR__ . '/includes/header.php';
     <h1>You are being recorded, profiled and tracked</h1>
     <div class="hero__row">
       <p class="lede">
-        "Automated License Plate Readers", or ALPRs, are not passively taking
-        snapshots of license plates. They are recording your plate, your car
-        make &amp; model, your bumper stickers and tracking your routes. These
-        do not just track plates, nor only criminals with warrants &mdash; they
-        track every law-abiding driver in <?= e(COUNTY) ?>.
+        "Automated License Plate Readers", or ALPRs, do not take passive
+        snapshots of license plates. They record your plate, your car make and
+        model, your bumper stickers and the route you drove. Every driver in
+        <?= e(COUNTY) ?> is in that record, and not one of them was suspected of
+        anything. We are asking the county to shut the program down.
       </p>
       <div class="hero__cta">
         <a class="btn" href="/get-involved">Get involved &rarr;</a>
@@ -99,7 +99,7 @@ require __DIR__ . '/includes/header.php';
   <div class="shell">
 
     <span class="tag">What we want</span>
-    <h2>We were warned about mass surveillance</h2>
+    <h2>End the program</h2>
     <p class="measure quote">
       "The right of the people to be secure in their persons, houses, papers,
       and effects, against unreasonable searches and seizures, shall not be
@@ -108,31 +108,52 @@ require __DIR__ . '/includes/header.php';
       searched, and the persons or things to be seized."
     </p>
 
+    <div class="measure stack mt-l">
+      <p>
+        A warrant needs probable cause and a description of the place to be
+        searched. A camera that photographs every car has neither. It runs the
+        search first and looks for a reason afterwards, which is the order that
+        sentence was written to prevent.
+      </p>
+      <p>
+        In <a href="https://www.law.cornell.edu/supremecourt/text/16-402" rel="noopener">Carpenter
+        v. United States</a> the Supreme Court held that pulling a person's
+        historical location records is a search and needs a warrant. A plate
+        reader network builds that record for the whole county before anybody
+        asks for it.
+      </p>
+      <p>
+        <strong>Our position is that the program is an unreasonable search and
+        that the county should end it.</strong> A shorter retention period would
+        not fix that. Photographing everyone does not become reasonable because
+        the paperwork around it improves.
+      </p>
+    </div>
+
     <div class="asks mt-xl">
       <div>
         <span class="ask__num">1</span>
-        <h3>Publish the contract</h3>
+        <h3>Cancel the contract</h3>
         <p>
-          Residents should be able to read what the county bought, what it
-          costs, how long it runs and what the vendor is allowed to do with the
-          data.
+          Vote against the next renewal, and end the term that is running as
+          soon as the contract allows.
         </p>
       </div>
       <div>
         <span class="ask__num">2</span>
-        <h3>No recording without a warrant</h3>
+        <h3>Take the cameras down</h3>
         <p>
-          Keeping a record of where a person has driven for the past month is a
-          search. It should take a judge, with the narrow exceptions courts
-          already recognize.
+          Every unit the county pays for, whether it is fixed to a pole or
+          mounted on a vehicle.
         </p>
       </div>
       <div>
         <span class="ask__num">3</span>
-        <h3>Put an end date on it</h3>
+        <h3>Delete what was collected</h3>
         <p>
-          Renewal should require a public hearing and an affirmative vote, not a
-          line item that rolls over while nobody is looking.
+          Including the copies on the vendor's servers and anything shared with
+          agencies outside the county. Ask each of them to confirm it in
+          writing.
         </p>
       </div>
     </div>
@@ -173,8 +194,8 @@ require __DIR__ . '/includes/header.php';
       <a class="card" href="/about">
         <h3>About us</h3>
         <p>
-          Who is behind this, what we are asking for, and what we are not
-          asking for.
+          Who is behind this, what we are asking the county to do, and the
+          rules we hold ourselves to.
         </p>
         <span class="card__more">Meet the group &rarr;</span>
       </a>

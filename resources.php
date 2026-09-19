@@ -51,6 +51,8 @@ $groups = [
         'intro' => 'Whether a month of location history counts as a search under '
                  . 'the Fourth Amendment is being argued in court right now.',
         'links' => [
+            ['Carpenter v. United States', 'https://www.law.cornell.edu/supremecourt/text/16-402',
+             'The 2018 Supreme Court decision holding that pulling a person\'s historical location records is a search that needs a warrant. It is the case our argument rests on, so read it rather than taking our summary of it.'],
             ['The IJ Database of ALPR Abuse', 'https://ij.org/the-ij-database-of-alpr-abuse/',
              'The Institute for Justice has cataloged more than 200 incidents of plate reader abuse: romantic stalking, wrongful stops and detentions, use by people who are not law enforcement, and other misconduct. Documented and mapped.'],
             ['Institute for Justice', 'https://ij.org',

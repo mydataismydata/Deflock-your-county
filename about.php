@@ -5,8 +5,8 @@ require_once __DIR__ . '/includes/config.php';
 
 $page  = 'about';
 $title = 'About the group';
-$blurb = SITE_NAME . ' is an unaffiliated group of county residents working on how '
-       . 'automated license plate readers are bought, governed and audited here.';
+$blurb = SITE_NAME . ' is an unaffiliated group of county residents asking the county '
+       . 'to end its automated license plate reader program.';
 
 require __DIR__ . '/includes/header.php';
 ?>
@@ -14,14 +14,14 @@ require __DIR__ . '/includes/header.php';
 <section class="hero">
   <div class="shell">
     <span class="eyebrow">About</span>
-    <h1>We are normal people who don't want mass surveillance &mdash; that's all.</h1>
+    <h1>We are normal people who do not want mass surveillance.</h1>
     <div class="hero__row">
       <p class="lede">
         We are residents of <?= e(COUNTY) ?>. No staff, no budget, no party
         affiliation and no connection to any vendor. What we have is the view
-        that surveillance should be bound by reasonable suspicion of a crime,
-        which does not include driving to the Publix or dropping your kids off
-        at school.
+        that a camera network recording every driver in the county is an
+        unreasonable search, and that the county should switch it off. Driving
+        to the Publix is not probable cause.
       </p>
     </div>
   </div>
@@ -104,18 +104,29 @@ require __DIR__ . '/includes/header.php';
 <section class="bay">
   <div class="shell">
 
-    <span class="tag">What we are not asking for</span>
+    <span class="tag">What we are asking for</span>
     <div class="measure stack">
       <p>
-        We are not asking anyone to stop investigating crimes. We are not asking
-        for deputies to be defunded, and we take no position on the sheriff's
-        budget. We are not asking residents to vandalize or destroy any camera,
-        and we will not help anyone who wants to.
+        <strong>End the program.</strong> Cancel the contract, take the cameras
+        down, and delete what they have already collected. That is the ask.
       </p>
       <p>
-        <strong>We are asking that a system which records anybody be subject to a
-        published policy, a warrant requirement and public awareness when it is
-        not. That is the whole ask.</strong>
+        We do not campaign for a shorter retention period or a tighter search
+        rule. Those arguments accept the record as legitimate and then haggle
+        over its housekeeping. Photographing every car and keeping the result is
+        a search of people nobody suspects, and the Fourth Amendment does not
+        leave room for the county to run one.
+      </p>
+      <p>
+        We mean the county taking the cameras down, by a vote, on the record. We
+        do not touch the hardware and we will not help anyone who wants to.
+        Damaging a camera hands the other side its argument and puts the person
+        who did it in front of a judge.
+      </p>
+      <p>
+        Deputies investigated crimes before these cameras went up and can
+        investigate them after they come down. Where there is reason to suspect
+        a person, a judge can issue a warrant. That is what a warrant is for.
       </p>
     </div>
 
