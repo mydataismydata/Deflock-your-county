@@ -12,6 +12,13 @@ require __DIR__ . '/includes/header.php';
 ?>
 
 <section class="hero">
+  <div class="hero__media" aria-hidden="true">
+    <img class="hero__media--network drift" src="/assets/img/network.webp" alt=""
+         width="1024" height="1024" fetchpriority="high">
+    <div class="hero__vignette"></div>
+    <div class="hero__scrim"></div>
+  </div>
+
   <div class="hero__inner shell">
     <p class="eyebrow"><span class="dot" aria-hidden="true"></span> The anonymization claim</p>
     <h1 class="display-1" data-reveal>Anonymized tracking is <span class="accent">still tracking</span>.</h1>
