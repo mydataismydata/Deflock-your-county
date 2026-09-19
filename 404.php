@@ -13,16 +13,16 @@ require __DIR__ . '/includes/header.php';
 ?>
 
 <section class="hero">
-  <div class="shell">
-    <span class="eyebrow">404</span>
-    <h1>Nothing at this address.</h1>
-    <p class="lede">
+  <div class="hero__inner shell">
+    <p class="eyebrow"><span class="dot" aria-hidden="true"></span> 404</p>
+    <h1 class="display-1" data-reveal>Nothing at this <span class="accent">address</span>.</h1>
+    <p class="lede lede--lg">
       The page was moved, renamed or never existed. The five pages this site has
       are all in the menu above.
     </p>
-    <div class="btn-row">
-      <a class="btn" href="/">Back to the front page</a>
-      <a class="btn btn--ghost" href="/contact">Report the broken link</a>
+    <div class="pill-row">
+      <a class="pill" href="/">Back to the front page &rarr;</a>
+      <a class="pill pill--ghost" href="/contact">Report the broken link</a>
     </div>
   </div>
 </section>

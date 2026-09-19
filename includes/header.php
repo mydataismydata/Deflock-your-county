@@ -12,7 +12,7 @@ $title = $title ?? '';
 $blurb = $blurb ?? 'A ' . COUNTY . ' group organizing against automated license plate
     readers and other mass surveillance.';
 
-// Home is reachable through the wordmark; the numbered menu lists the rest.
+// Home is reachable through the wordmark; the menu lists the rest.
 $menu = [
     'about'     => ['/about',        'About'],
     'resources' => ['/resources',    'Resources'],
@@ -29,31 +29,35 @@ $fullTitle = $title === '' ? SITE_NAME : $title . ' | ' . SITE_NAME;
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($fullTitle) ?></title>
 <meta name="description" content="<?= e($blurb) ?>">
-<meta name="color-scheme" content="light">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#000000">
 <meta property="og:title" content="<?= e($fullTitle) ?>">
 <meta property="og:description" content="<?= e($blurb) ?>">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="<?= e(SITE_NAME) ?>">
-<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="<?= e(asset('/assets/css/site.css')) ?>">
+<link rel="preload" href="/assets/fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-sans-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
 </head>
 <body>
 
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="masthead">
-  <div class="shell masthead__inner">
+<!-- One film over the whole page, so every screen shares the same grain. -->
+<div class="grain" aria-hidden="true"></div>
+
+<header class="site-header" data-scrolled="false">
+  <div class="site-header__bar">
     <a class="wordmark" href="/"><?= e(SITE_NAME) ?></a>
 
     <button class="nav-toggle" type="button" hidden
             aria-expanded="false" aria-controls="primary-nav">Menu</button>
 
-    <nav class="nav" id="primary-nav" aria-label="Primary">
-      <ul>
-<?php $i = 0; foreach ($menu as $slug => [$href, $label]): $i++; ?>
-        <li><a href="<?= e($href) ?>"<?= $slug === $page ? ' aria-current="page"' : '' ?>><span class="nav__num"><?= str_pad((string) $i, 2, '0', STR_PAD_LEFT) ?></span><?= e($label) ?></a></li>
+    <nav class="site-nav" id="primary-nav" aria-label="Primary">
+<?php foreach ($menu as $slug => [$href, $label]): ?>
+      <a href="<?= e($href) ?>"<?= $slug === $page ? ' aria-current="page"' : '' ?>><?= e($label) ?></a>
 <?php endforeach; ?>
-      </ul>
     </nav>
   </div>
 </header>

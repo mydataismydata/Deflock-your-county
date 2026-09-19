@@ -5,7 +5,8 @@ require_once __DIR__ . '/includes/config.php';
 
 $page  = 'resources';
 $title = 'Resources';
-$blurb = 'Camera maps, legal groundwork, reporting on license plate readers, public records tools and local government contacts.';
+$blurb = 'Camera maps, legal groundwork, reporting on license plate readers, public\n'
+       . 'records tools and local government contacts. Everything here is public.';
 
 /**
  * Edit this array to change the page. Each group is a heading, an intro
@@ -101,30 +102,45 @@ require __DIR__ . '/includes/header.php';
 ?>
 
 <section class="hero">
-  <div class="shell">
-    <span class="eyebrow">Resources</span>
-    <h1>Where to read the primary sources.</h1>
-    <p class="lede">
-      Everything below is free and almost none of it is ours. Start at the top
-      if you want to know whether your own plate has been searched, or jump to
-      the local section for the documents agencies here have already released.
+  <div class="hero__media" aria-hidden="true">
+    <img class="drift" src="/assets/img/deflock-map.webp" alt=""
+         width="2940" height="1846" fetchpriority="high">
+    <div class="hero__scrim"></div>
+  </div>
+
+  <div class="hero__inner shell">
+    <p class="eyebrow"><span class="dot" aria-hidden="true"></span> Resources</p>
+    <h1 class="display-1" data-reveal>Where to read the <span class="accent">primary sources</span>.</h1>
+    <p class="lede lede--lg">
+      Everything below is created and shared by concerned citizens. It pulls in
+      public and crowdsourced data to help understand the scope of surveillance
+      in our country.
     </p>
   </div>
 </section>
 
-<?php foreach ($groups as $i => $group): ?>
-<section class="bay<?= $i % 2 === 1 ? ' bay--raised' : '' ?>" id="<?= e($group['id']) ?>">
+<?php foreach ($groups as $group): ?>
+<?php if ($group['id'] === LOCAL_RESOURCES['id']): ?>
+<!-- The turn from the national material to the local. One line, on its own. -->
+<section class="section section--tight">
   <div class="shell">
-    <h2><?= e($group['title']) ?></h2>
-    <p class="measure quiet"><?= e($group['intro']) ?></p>
+    <p class="quote">Read them yourself rather than taking our word for any of it.</p>
+  </div>
+</section>
+<?php endif; ?>
 
-    <ul class="linklist mt-m">
+<section class="section" id="<?= e($group['id']) ?>">
+  <div class="shell">
+    <h2 class="h-section" data-reveal><?= e(rtrim($group['title'], '.')) ?>.</h2>
+    <p class="lede lede--tight"><?= e($group['intro']) ?></p>
+
+    <ul class="rows mt-m">
 <?php foreach ($group['links'] as [$label, $url, $note]): ?>
       <li>
-        <a href="<?= e($url) ?>" rel="noopener">
-          <b><?= e($label) ?></b>
-          <span><?= e($note) ?></span>
+        <a class="row-name" href="<?= e($url) ?>" rel="noopener"><?= e($label) ?>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
         </a>
+        <p><?= e($note) ?></p>
       </li>
 <?php endforeach; ?>
     </ul>
@@ -132,16 +148,19 @@ require __DIR__ . '/includes/header.php';
 </section>
 <?php endforeach; ?>
 
-<section class="bay">
+<section class="section section--close">
   <div class="shell">
-    <div class="callout measure">
-      <h3>Something missing?</h3>
-      <p>
+    <div class="panel">
+      <h2 class="display-3">Something missing?</h2>
+      <p class="lede">
         Send it to us. We add links that publish documents, explain the
         technology or help somebody file a request. We do not add anything that
         tells people to interfere with equipment.
       </p>
-      <p class="mb-0"><a href="/contact">Suggest a resource</a></p>
+      <div class="pill-row">
+        <a class="pill" href="/contact">Suggest a resource &rarr;</a>
+        <a class="pill pill--ghost" href="/get-involved">Get involved</a>
+      </div>
     </div>
   </div>
 </section>
