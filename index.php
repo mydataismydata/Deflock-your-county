@@ -65,7 +65,6 @@ require __DIR__ . '/includes/header.php';
     <div class="rows mt-xl">
 
       <div class="row">
-        <span class="row__num">1</span>
         <h3>No warrant stands between</h3>
         <p>
           We already have a system in place which allows law enforcement to
@@ -75,7 +74,6 @@ require __DIR__ . '/includes/header.php';
       </div>
 
       <div class="row">
-        <span class="row__num">2</span>
         <h3>The record outlasts the trip</h3>
         <p>
           Flock's standard configuration keeps captures for 30 days before
@@ -85,7 +83,6 @@ require __DIR__ . '/includes/header.php';
       </div>
 
       <div class="row">
-        <span class="row__num">3</span>
         <h3>The search is not local</h3>
         <p>
           Agencies outside <?= e(COUNTY) ?> can, will, and have searched for

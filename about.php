@@ -63,7 +63,6 @@ require __DIR__ . '/includes/header.php';
     <div class="rows mt-l">
 
       <div class="row">
-        <span class="row__num">1</span>
         <h3>Show up</h3>
         <p>
           Commission meetings have a public comment period. Most of the time
@@ -72,7 +71,6 @@ require __DIR__ . '/includes/header.php';
       </div>
 
       <div class="row">
-        <span class="row__num">2</span>
         <h3>Explain it to neighbors</h3>
         <p>
           Most people have never heard of a Vehicle Fingerprint and are not
@@ -81,7 +79,6 @@ require __DIR__ . '/includes/header.php';
       </div>
 
       <div class="row">
-        <span class="row__num">3</span>
         <h3>File records requests</h3>
         <p>
           Contracts, invoices, usage policies, audit logs and data sharing
@@ -91,7 +88,6 @@ require __DIR__ . '/includes/header.php';
       </div>
 
       <div class="row">
-        <span class="row__num">4</span>
         <h3>Map the hardware</h3>
         <p>
           Cameras get photographed and logged on

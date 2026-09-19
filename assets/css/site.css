@@ -339,19 +339,19 @@ button.btn:hover { background: var(--ink-soft); }
 a.card { color: var(--ink); }
 a.card:hover { border-color: var(--ink); color: var(--ink); }
 
-/* Numbered hairline rows: the problem list, "what we actually do" … */
+/* Hairline rows: the problem list, "what we actually do" … The heading takes
+   a fifth of the width and the explanation takes the rest. */
 .rows { border-top: 1px solid var(--rule); }
 .row {
   display: grid;
-  grid-template-columns: minmax(80px, 120px) minmax(200px, 1fr) 1.6fr;
-  gap: 1.5rem;
-  padding: 1.8rem 0;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 4fr);
+  gap: 2rem;
+  padding: 1.25rem 0;
   border-bottom: 1px solid var(--rule);
 }
-.row__num { font: 500 13px var(--face-mono); color: var(--ink-dim); }
-.row h3 { margin: 0; font-size: 21px; }
+.row h3 { margin: 0; font-size: 19px; line-height: 1.25; }
 .row p { margin: 0; font-size: 15.5px; line-height: 1.6; color: var(--ink-soft); }
-@media (max-width: 44rem) { .row { grid-template-columns: 1fr; gap: 0.5rem; } }
+@media (max-width: 44rem) { .row { grid-template-columns: 1fr; gap: 0.5rem; padding: 1.1rem 0; } }
 
 /* The asks: numbered columns */
 .asks {
