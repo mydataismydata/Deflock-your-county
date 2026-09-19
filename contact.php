@@ -226,6 +226,17 @@ require __DIR__ . '/includes/header.php';
     </div>
 
     <aside class="sidenote">
+<?php if (CONTACT_PHONE !== ''): ?>
+      <div>
+        <h3>Prefer to call?</h3>
+        <p>
+          <a class="callnumber" href="tel:<?= e(CONTACT_PHONE_TEL) ?>"><?= e(CONTACT_PHONE) ?></a><br>
+          For anything long, or anything with a document attached, the form is
+          better. It leaves a written record and does not depend on somebody
+          picking up.
+        </p>
+      </div>
+<?php endif; ?>
       <div>
         <h3>What happens to what you send.</h3>
         <p>

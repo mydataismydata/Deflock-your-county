@@ -862,6 +862,19 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
 /* A commissioner's email and phone, set in mono so they are easy to copy and
    easy to read back over a phone. */
 .seat-contact { font-family: var(--face-mono); font-size: var(--t-small); color: var(--ink-70); }
+
+/* Our own number, which is the one on the site a reader is actually meant to
+   tap. An inline link is about 18px tall, so it gets the same 44px target as
+   every other control. */
+.callnumber {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-family: var(--face-mono);
+  font-size: var(--t-body);
+  color: var(--ink-85);
+}
+.callnumber:hover { color: var(--ink); }
 .seat-contact:hover { color: var(--ink); }
 .seat-sep { color: var(--ink-50); }
 .rows p strong { color: var(--ink-90); font-weight: 600; }

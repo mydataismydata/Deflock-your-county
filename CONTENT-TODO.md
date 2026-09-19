@@ -12,6 +12,11 @@ attached or need cutting.
 - `CONTACT_TO` is `hello@example.org`.
 - `CONTACT_FROM` is `website@example.org`. Must be a real mailbox on the live domain.
 - `FORM_SECRET` is the shipped placeholder. The form will not send until this changes.
+- `CONTACT_PHONE` is a burner, added 19 September 2026, printed on the contact page and
+  nowhere else. It is a plain `tel:` link with no obfuscation, because obfuscation does not
+  survive a scraper that runs JavaScript and it costs tap-to-call. If the spam gets bad the
+  phone gets turned off; set both `CONTACT_PHONE` and `CONTACT_PHONE_TEL` to empty strings
+  and the block disappears. The two must agree, and nothing checks that they do.
 - `CHANNELS` are all empty strings, and nothing reads them any more. The Scene redesign
   dropped the "Follow along" block from Get Involved, which was the last thing that printed
   them. Either fill them in and add a block back, or delete the constant.

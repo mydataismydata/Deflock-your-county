@@ -31,6 +31,15 @@ const CONTACT_FROM_NAME = SITE_NAME . ' website';
 // Prefix on the subject line of every delivered message.
 const CONTACT_SUBJECT_PREFIX = '[deflock-sjc]';
 
+// A phone number for the group, printed on the contact page and nowhere else.
+// Leave both empty to drop the block.
+//
+// The two have to agree. The first is what a reader sees, the second is what
+// the link dials, in the format a phone expects. Same pair as the seats in
+// place.php.
+const CONTACT_PHONE     = '(904) 960-0104';
+const CONTACT_PHONE_TEL = '+19049600104';
+
 // ------------------------------------------------------------ form defense --
 
 // Random string, at least 32 characters. Generate a fresh one per install:
