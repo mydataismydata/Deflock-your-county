@@ -32,11 +32,13 @@ attached or need cutting.
 
 - Update the commented sitemap host, or delete the line.
 
-**`assets/img/favicon.svg`**
+**`assets/img/favicon-32.png`, `assets/img/favicon-180.png`**
 
-- Placeholder mark: a lens with a slash through it. Replace if the group adopts a logo. The
-  header and footer print the site name in Instrument Serif and carry no mark, so the favicon
-  is the only place a logo would appear today.
+- The group's mark: a white eye with a red slash on black, supplied 19 September 2026. The
+  placeholder lens SVG it replaced is gone. The header and footer print the site name in
+  Instrument Serif and carry no mark, so these are the only place the logo appears today.
+- Both are rasters cut from a 1024px original. A vector version would be sharper in a browser
+  tab, where the 32px file is the one that gets used.
 
 **Photographs**
 

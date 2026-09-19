@@ -38,7 +38,8 @@ $fullTitle = $title === '' ? SITE_NAME : $title . ' | ' . SITE_NAME;
 <link rel="stylesheet" href="<?= e(asset('/assets/css/site.css')) ?>">
 <link rel="preload" href="/assets/fonts/dm-serif-display-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/ibm-plex-sans-var.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="<?= e(asset('/assets/img/favicon-32.png')) ?>" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="<?= e(asset('/assets/img/favicon-180.png')) ?>">
 </head>
 <body>
 
