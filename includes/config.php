@@ -78,6 +78,24 @@ const MEETINGS = [
 
 // ---------------------------------------------------------------- helpers --
 
+if (!function_exists('asset')) {
+    /**
+     * A site-root path with the file's modification time on the end.
+     *
+     * The stylesheet and the script are cached for a week by .htaccess, so
+     * without this a returning visitor keeps the old CSS for seven days after
+     * a deploy and sees new markup in an old skin. The stamp changes when the
+     * file does, and not otherwise.
+     */
+    function asset(string $path): string
+    {
+        $file  = dirname(__DIR__) . $path;
+        $stamp = is_file($file) ? filemtime($file) : false;
+
+        return $stamp === false ? $path : $path . '?v=' . $stamp;
+    }
+}
+
 if (!function_exists('e')) {
     /** Escape a string for safe output inside HTML. */
     function e(?string $value): string
