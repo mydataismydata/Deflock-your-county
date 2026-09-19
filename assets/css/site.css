@@ -58,7 +58,7 @@
   --shell:   80rem;
   --measure: 66ch;
   --gap:     clamp(1.25rem, 0.8rem + 2vw, 2.25rem);
-  --bay:     clamp(3rem, 2rem + 4.5vw, 4.5rem);
+  --bay:     clamp(2rem, 1.25rem + 3vw, 3rem);
 }
 
 /* --------------------------------------------------------------- reset -- */
