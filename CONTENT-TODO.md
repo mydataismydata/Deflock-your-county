@@ -32,13 +32,15 @@ attached or need cutting.
 
 - Update the commented sitemap host, or delete the line.
 
-**`assets/img/favicon-32.png`, `assets/img/favicon-180.png`**
+**`assets/img/favicon.svg`, `favicon-32.png`, `favicon-180.png`**
 
 - The group's mark: a white eye with a red slash on black, supplied 19 September 2026. The
-  placeholder lens SVG it replaced is gone. The header and footer print the site name in
+  placeholder lens it replaced is gone. The header and footer print the site name in
   Instrument Serif and carry no mark, so these are the only place the logo appears today.
-- Both are rasters cut from a 1024px original. A vector version would be sharper in a browser
-  tab, where the 32px file is the one that gets used.
+- The SVG is traced from the supplied 1024px original and is what modern browsers use. The
+  two PNGs are cut from the same file: 32px for browsers with no SVG icon support, 180px for
+  an iOS home screen, which ignores SVG either way.
+- Redraw the SVG, not the PNGs, if the mark ever changes. Then re-cut the PNGs from it.
 
 **Photographs**
 

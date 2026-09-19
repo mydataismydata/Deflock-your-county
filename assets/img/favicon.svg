@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="An eye with a line struck through it">
+  <rect width="1024" height="1024" fill="#050608"/>
+  <!-- The lens is two arcs of one circle: R 434.5, corners at y 531. -->
+  <path d="M122 531A434.5 434.5 0 0 1 904 531A434.5 434.5 0 0 1 122 531Z" fill="#ffffff"/>
+  <circle cx="515" cy="533" r="186" fill="#050608"/>
+  <circle cx="537" cy="492" r="92" fill="#ffffff"/>
+  <path d="M230 260 788 802" fill="none" stroke="#e2282a" stroke-width="68" stroke-linecap="round"/>
+</svg>
