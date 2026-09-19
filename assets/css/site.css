@@ -284,6 +284,13 @@ a:hover { color: var(--accent); }
 .site-nav a:hover,
 .site-nav a[aria-current="page"] { color: var(--ink); }
 
+/* The hidden attribute hides an element through a rule in the browser's own
+   stylesheet, which any author rule setting display outranks. The menu and its
+   button both set display, so without these two selectors the script can set
+   hidden all it likes and nothing moves. */
+.site-nav[hidden],
+.nav-toggle[hidden] { display: none; }
+
 /* The menu button appears only where the row of links will not fit. The markup
    ships with the nav open, so the menu still works with scripting off. */
 .nav-toggle {
