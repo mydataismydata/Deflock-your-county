@@ -78,9 +78,13 @@ About and Contact heroes are text on black by design and need nothing.
   If either is ever challenged, a link is the whole defence.
 - It is not in the top navigation. It is reached from the home page problem section and from
   the footer page list.
-- The hero carries `assets/img/network.webp`, a supplied graphic rather than a photograph.
-  Its vignette is in the stylesheet, not baked into the file, so the asset stays reusable
-  and the darkening can be tuned. The other four images have their treatment baked in.
+- The hero carries `assets/img/network.webp` and the de-identification section carries
+  `assets/img/redacted-plate.webp`. Both vignettes are in the stylesheet, not baked into
+  the files, so the assets stay reusable and the darkening can be tuned. The four images
+  on the other pages have their treatment baked in.
+- The plate photograph is the argument that section makes: the plate is blurred and the
+  car, the road and the weather are all still there. Do not replace it with a picture of
+  a camera.
 
 ## Claims that need a source before publishing
 

@@ -872,6 +872,69 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
   }
 }
 
+/* A section that carries a photograph behind its text. Heroes and scenes do
+   this already; an ordinary section does not, because most of them do not need
+   it. This one exists for the de-identification section, where the picture is
+   the argument: the plate is blurred and the car, the road and the weather are
+   all still there.
+
+   Three gradients on one layer. The vertical one takes the image to solid
+   black at the top and the bottom, so it fades into the sections either side
+   instead of ending on a hard edge. The radial one holds open the part of the
+   frame worth seeing. The horizontal one lays a dark bed under the text
+   column. The photograph underneath is a bright overcast grey, so it runs at a
+   little over a third and still needs all three. */
+.section--media { position: relative; overflow: hidden; }
+.section--media > .shell { position: relative; z-index: 2; }
+
+.section__media { position: absolute; inset: 0; pointer-events: none; }
+.section__media > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.55;
+}
+.section__vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom,
+      #000 0%,
+      rgba(0, 0, 0, 0.22) 24%,
+      rgba(0, 0, 0, 0.22) 74%,
+      #000 100%),
+    radial-gradient(ellipse 62% 60% at 70% 58%,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.35) 58%,
+      rgba(0, 0, 0, 0.85) 86%,
+      #000 100%),
+    linear-gradient(to right,
+      rgba(0, 0, 0, 0.9) 0%,
+      rgba(0, 0, 0, 0.72) 38%,
+      rgba(0, 0, 0, 0.08) 72%,
+      rgba(0, 0, 0, 0.3) 100%);
+}
+
+/* Narrow screens put the text across the whole frame, so the bed becomes an
+   even wash and the picture drops further back. */
+@media (max-width: 64rem) {
+  .section__media > img { opacity: 0.4; }
+  .section__vignette {
+    background:
+      linear-gradient(to bottom,
+        #000 0%,
+        rgba(0, 0, 0, 0.62) 22%,
+        rgba(0, 0, 0, 0.62) 78%,
+        #000 100%),
+      radial-gradient(ellipse 85% 60% at 50% 55%,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0.7) 55%,
+        #000 100%);
+  }
+}
+
 /* A scene still waiting for its photograph. It holds the shape and prints the
    shot it is waiting for in the corner. Delete the note element and the scene
    is simply black. */

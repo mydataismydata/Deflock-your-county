@@ -102,7 +102,13 @@ require __DIR__ . '/includes/header.php';
 </section>
 
 <!-- ======================================================= de-ident ==== -->
-<section class="section" id="de-identification">
+<section class="section section--media" id="de-identification">
+  <div class="section__media" aria-hidden="true">
+    <img class="drift drift--mid" src="/assets/img/redacted-plate.webp" alt=""
+         width="1024" height="1024" loading="lazy">
+    <div class="section__vignette"></div>
+  </div>
+
   <div class="shell">
     <h2 class="h-section" data-reveal>The strategy of de-identification.</h2>
     <div class="prose mt-m">
