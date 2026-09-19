@@ -36,8 +36,8 @@ $channels = array_filter(CHANNELS, static fn (string $url): bool => trim($url) !
     <span class="eyebrow">Calendar</span>
     <h2>Upcoming meetings</h2>
     <p class="measure quiet">
-      Our own meetings are open to anyone. County meetings are public by law and
-      you do not need permission to speak at one, only a sign-up slip.
+      County meetings are public and all residents can speak during public
+      comment.
     </p>
 
 <?php if (MEETINGS === []): ?>
