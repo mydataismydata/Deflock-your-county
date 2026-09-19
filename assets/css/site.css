@@ -211,6 +211,13 @@ hr { border: 0; border-top: 1px solid var(--rule); margin: var(--bay) 0; }
 /* -------------------------------------------------------------- blocks -- */
 
 .bay { padding-block: var(--bay); }
+/* A section's closing paragraph keeps its own bottom margin, which lands on top
+   of the bay below it. The bay alone sets the gap between sections. */
+.bay > .shell > :last-child,
+.bay > .shell > :last-child > :last-child,
+.hero > .shell > :last-child { margin-bottom: 0; }
+/* An hr opening a section repeats the boundary that the bay already draws. */
+.shell > hr:first-child { margin-top: 0; }
 .bay--tight { padding-block: clamp(2rem, 1.4rem + 3vw, 3rem); }
 .bay--raised { border-top: 1px solid var(--rule); }
 
