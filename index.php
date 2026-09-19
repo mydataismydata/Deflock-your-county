@@ -97,6 +97,12 @@ require __DIR__ . '/includes/header.php';
         </p>
       </li>
     </ul>
+
+    <p class="mt-m">
+      <a class="arrow-link" href="/anonymized">They will tell you the data is anonymized
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+      </a>
+    </p>
   </div>
 </section>
 

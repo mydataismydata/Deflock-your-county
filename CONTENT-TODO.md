@@ -69,6 +69,16 @@ Until those exist the scenes render as near-black plates, which reads as deliber
 `<span class="photo-note">` out of `index.php` if you would rather not advertise the gap. The
 About and Contact heroes are text on black by design and need nothing.
 
+**`anonymized.php`**
+
+- The page argues that "anonymized" plate reader data is not anonymous. Supplied 19 September
+  2026 and published close to verbatim. It is argument rather than reporting, and it carries
+  no citations. Two sentences make claims about Flock's commercial conduct: that aggregate
+  movement data is sold, and that the record is "available to any entity with enough money".
+  If either is ever challenged, a link is the whole defence.
+- It is not in the top navigation. It is reached from the home page problem section and from
+  the footer page list.
+
 ## Claims that need a source before publishing
 
 Each of these is written as fact on a page. Attach a link, or cut the sentence.
