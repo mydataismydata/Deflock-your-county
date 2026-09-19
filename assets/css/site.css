@@ -584,5 +584,5 @@ a.card:hover { border-color: var(--ink); color: var(--ink); }
 .w-note { max-width: 44rem; }
 
 .pair { align-items: start; gap: clamp(2.5rem, 5vw, 4.5rem); }
-.seatlist { padding-left: 0; list-style: none; font: 400 12.5px var(--face-mono); color: var(--ink-dim); }
-.seatlist li { margin-bottom: 0.25rem; }
+/* Email and phone in a directory row, set in mono so they are easy to copy. */
+.seat__contact { font: 400 13px var(--face-mono); }

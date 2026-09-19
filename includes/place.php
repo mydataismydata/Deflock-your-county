@@ -37,7 +37,9 @@ const SITE_TAGLINE = COUNTY . ', ' . STATE;
 const COUNTY_SITE_LABEL = 'sjcfl.us';
 const COUNTY_SITE_URL   = 'https://www.sjcfl.us';
 
-// Where the county publishes its board meeting dates and agendas.
+// The board's own page, which lists every commissioner, and the page where the
+// county publishes its meeting dates and agendas.
+const COUNTY_BOARD_URL    = 'https://www.sjcfl.us/board-of-county-commissioners/';
 const COUNTY_CALENDAR_URL = 'https://www.sjcfl.us/bcc-calendar/';
 
 // Where the board sits, and the standing schedule it keeps. Both are quoted
@@ -80,8 +82,22 @@ const BODIES = [
         'name'  => 'Board of County Commissioners',
         'why'   => 'Approves the contract, the budget line and the renewal. This is the body with a vote on whether the cameras stay.',
         'how'   => 'Five commissioners, elected by district, voted on countywide. Write to the one for your district and copy the rest.',
-        'link'  => ['County commission directory', COUNTY_SITE_URL],
-        'seats' => ['District 1', 'District 2', 'District 3', 'District 4', 'District 5'],
+        'link'  => ['County commission directory', COUNTY_BOARD_URL],
+        // The five commissioners as the county's own district pages list them.
+        // These are the office lines. The county publishes a cell number for
+        // each commissioner as well; we point people at the office.
+        'seats' => [
+            ['district' => 'District 1', 'name' => 'Christian Whitehurst', 'role' => '',
+             'email' => 'bcc1cwhitehurst@sjcfl.us', 'phone' => '(904) 209-0301', 'tel' => '+19042090301'],
+            ['district' => 'District 2', 'name' => 'Sarah Arnold', 'role' => '',
+             'email' => 'bcc2sarnold@sjcfl.us', 'phone' => '(904) 209-0302', 'tel' => '+19042090302'],
+            ['district' => 'District 3', 'name' => 'Clay Murphy', 'role' => 'Chair',
+             'email' => 'bcc3cmurphy@sjcfl.us', 'phone' => '(904) 209-0303', 'tel' => '+19042090303'],
+            ['district' => 'District 4', 'name' => 'Krista Joseph', 'role' => '',
+             'email' => 'bcc4kjoseph@sjcfl.us', 'phone' => '(904) 209-0304', 'tel' => '+19042090304'],
+            ['district' => 'District 5', 'name' => 'Ann Taylor', 'role' => 'Vice-Chair',
+             'email' => 'bcc5ataylor@sjcfl.us', 'phone' => '(904) 209-0305', 'tel' => '+19042090305'],
+        ],
     ],
     [
         'name'  => COUNTY . ' Sheriff\'s Office',

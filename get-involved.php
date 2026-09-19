@@ -116,19 +116,39 @@ $channels = array_filter(CHANNELS, static fn (string $url): bool => trim($url) !
         <h3><?= e($body['name']) ?></h3>
         <p><strong><?= e($body['why']) ?></strong></p>
         <p class="quiet"><?= e($body['how']) ?></p>
-<?php if ($body['seats'] !== []): ?>
-        <ul class="small quiet seatlist">
-<?php foreach ($body['seats'] as $seat): ?>
-          <li><?= e($seat) ?>: name and email to be added</li>
-<?php endforeach; ?>
-        </ul>
-<?php endif; ?>
         <span class="card__more">
           <a href="<?= e($body['link'][1]) ?>" rel="noopener"><?= e($body['link'][0]) ?> &rarr;</a>
         </span>
       </div>
 <?php endforeach; ?>
     </div>
+
+<?php
+$seats = array_merge(...array_column(BODIES, 'seats'));
+?>
+<?php if ($seats !== []): ?>
+    <h3 class="h-sub mt-xl">Who represents you</h3>
+    <p class="measure quiet">
+      Write to your own district first. Copying the other four costs you nothing
+      and puts your name on four more records.
+    </p>
+
+    <div class="rows mt-m">
+<?php foreach ($seats as $seat): ?>
+      <div class="row">
+        <h3><?= e($seat['district']) ?></h3>
+        <p>
+          <strong><?= e($seat['name']) ?></strong><?= $seat['role'] !== '' ? ', ' . e($seat['role']) : '' ?><br>
+          <span class="seat__contact">
+            <a href="mailto:<?= e($seat['email']) ?>"><?= e($seat['email']) ?></a>
+            &middot;
+            <a href="tel:<?= e($seat['tel']) ?>"><?= e($seat['phone']) ?></a>
+          </span>
+        </p>
+      </div>
+<?php endforeach; ?>
+    </div>
+<?php endif; ?>
 
     <hr>
 

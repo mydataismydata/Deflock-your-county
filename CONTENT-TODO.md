@@ -19,8 +19,10 @@ attached or need cutting.
 
 **`includes/place.php`**
 
-- The `BODIES` array has no commissioner names, email addresses or phone numbers. Every district currently renders as "name and email to be added".
-- Confirm the Board of County Commissioners still has five district seats.
+- `BODIES` carries all five commissioners with their office email and office phone, read from
+  the county's district pages on 18 September 2026. Terms expire in 2026 for Districts 2 and 4
+  and in 2028 for Districts 1, 3 and 5, so check the names after each election.
+- The county also publishes a cell number for each commissioner. We list the office line only.
 - Confirm whether St. Augustine Beach should be listed as a fourth body. It runs its own police department.
 - `RECORDS_FEE_CAP` is set to $25. Check what St. Johns County actually charges before leaving that figure in the sample letter.
 
