@@ -45,6 +45,13 @@ const COUNTY_SITE_URL   = 'https://www.sjcfl.us';
 const COUNTY_BOARD_URL    = 'https://www.sjcfl.us/board-of-county-commissioners/';
 const COUNTY_CALENDAR_URL = 'https://www.sjcfl.us/bcc-calendar/';
 
+// The precinct map, which is how somebody works out which district they live
+// in before they write to anybody. Set it to an empty string to drop the
+// sentence that offers it. This one is a poster-sized PDF of about 9MB, and
+// the page says so, because that matters on a phone.
+const COUNTY_DISTRICT_MAP      = 'https://irp.cdn-website.com/ed388134/files/uploaded/0520.BCC-PCT-Poll_36x24.pdf';
+const COUNTY_DISTRICT_MAP_NOTE = 'PDF, 9MB';
+
 // Where the board sits, and the standing schedule it keeps. Both are quoted
 // from the county's own Board of County Commissioners page. The rule outlives
 // any particular date in MEETINGS, so it is printed alongside the list.

@@ -195,6 +195,13 @@ require __DIR__ . '/includes/header.php';
       Write to your own district first. Copying the other four costs you nothing
       and puts your name on four more records.
     </p>
+<?php if (COUNTY_DISTRICT_MAP !== ''): ?>
+    <p class="note mt-s">
+      Not sure which district you live in? The county's precinct map shows all
+      five. <a class="plain-link" href="<?= e(COUNTY_DISTRICT_MAP) ?>" rel="noopener">Open the district map</a><?= COUNTY_DISTRICT_MAP_NOTE !== '' ? ' (' . e(COUNTY_DISTRICT_MAP_NOTE) . ')' : '' ?>.
+      It is on the county's file host rather than here.
+    </p>
+<?php endif; ?>
 
     <ul class="rows mt-s">
 <?php foreach ($seats as $seat): ?>

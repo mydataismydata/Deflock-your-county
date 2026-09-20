@@ -35,6 +35,11 @@ attached or need cutting.
   the county's district pages on 18 September 2026. Terms expire in 2026 for Districts 2 and 4
   and in 2028 for Districts 1, 3 and 5, so check the names after each election.
 - The county also publishes a cell number for each commissioner. We list the office line only.
+- `COUNTY_DISTRICT_MAP` points at the precinct map, linked above the list of districts because
+  most people do not know which one they live in. Two things about it. It is 9MB, which the
+  page states, and it is served from `irp.cdn-website.com` rather than from `sjcfl.us`, so the
+  address is a file host the county happens to use and could change without notice. Recheck it
+  with the rest of the links. Setting the constant to an empty string drops the sentence.
 - The City of St. Augustine was removed from `BODIES` on 20 September 2026: it runs no
   separate Flock system, so there is nothing to write to it about. It still appears in
   `LOCAL_RESOURCES`, described as running "its own police department and its own
