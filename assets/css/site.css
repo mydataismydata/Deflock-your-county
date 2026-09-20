@@ -972,8 +972,10 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
   stroke: var(--accent);
   stroke-width: 3;
   stroke-linecap: round;
-  /* About a fifth of the circumference, so it reads as a sweep, not a ring. */
-  stroke-dasharray: 77 275;
+  /* The circle carries pathLength="100", so this is a percentage of the way
+     round whatever radius it has: about a fifth, which reads as a sweep rather
+     than a ring. Changing the radius needs no change here. */
+  stroke-dasharray: 22 78;
   transform-box: fill-box;
   transform-origin: center;
   animation: lensring-spin 3.4s linear infinite;

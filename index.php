@@ -21,7 +21,9 @@ require __DIR__ . '/includes/header.php';
        and the slice keep it there at every window size. -->
   <svg class="lensring" viewBox="0 0 1264 848" preserveAspectRatio="xMidYMid slice"
        aria-hidden="true" focusable="false">
-    <circle class="lensring__arc" cx="834" cy="325" r="56"/>
+    <!-- r is in the photograph's own pixels. One unit is a little under one
+         screen pixel at a typical window, so nudge it in ones. -->
+    <circle class="lensring__arc" cx="834" cy="325" r="51" pathLength="100"/>
   </svg>
 
   <div class="scene__scrim" aria-hidden="true"></div>
