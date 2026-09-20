@@ -65,10 +65,17 @@ foreach (MEETINGS as $m) {
     }
     $stamp = strtotime($m['when']);
     if ($stamp === false) {
-        $series[$key]['dates'][] = $lower($m['when']);
+        // An entry the date parser does not understand still gets a block, with
+        // whatever was written in config.php printed as it stands.
+        $series[$key]['dates'][] = ['month' => '', 'day' => $m['when'], 'weekday' => '', 'year' => ''];
         continue;
     }
-    $series[$key]['dates'][] = $lower(date('M j', $stamp));
+    $series[$key]['dates'][] = [
+        'month'   => date('M', $stamp),
+        'day'     => date('j', $stamp),
+        'weekday' => date('D', $stamp),
+        'year'    => date('Y', $stamp),
+    ];
     $series[$key]['years'][date('Y', $stamp)] = true;
 }
 
@@ -118,12 +125,29 @@ require __DIR__ . '/includes/header.php';
 <?php else: ?>
 <?php foreach ($series as $s): ?>
     <div class="rule-top mt-l">
-      <p class="label-mono">
-        <?= e($lower($s['what'])) ?> &middot; <?= e($lower($s['where'])) ?><?= $s['note'] !== '' ? ' &middot; ' . e($lower($s['note'])) : '' ?>
-      </p>
-      <p class="dateline">
-        <?= e(implode(' · ', array_merge($s['dates'], array_keys($s['years'])))) ?>
-      </p>
+      <p class="label-mono"><?= e($lower($s['what'])) ?></p>
+      <p class="meetwhen__place"><?= e($s['where']) ?></p>
+<?php if ($s['note'] !== ''): ?>
+      <p class="meetwhen__time"><?= e($s['note']) ?></p>
+<?php endif; ?>
+
+      <ul class="meetdates">
+<?php foreach ($s['dates'] as $d): ?>
+        <li>
+<?php if ($d['month'] !== ''): ?>
+          <span class="m"><?= e($d['month']) ?></span>
+          <span class="d"><?= e($d['day']) ?></span>
+          <span class="w"><?= e($lower($d['weekday'])) ?><?= count($s['years']) > 1 ? ' ' . e($d['year']) : '' ?></span>
+<?php else: ?>
+          <span class="d"><?= e($d['day']) ?></span>
+<?php endif; ?>
+        </li>
+<?php endforeach; ?>
+      </ul>
+
+<?php if (count($s['years']) === 1): ?>
+      <p class="label-mono mt-s"><?= e((string) array_key_first($s['years'])) ?></p>
+<?php endif; ?>
     </div>
 <?php endforeach; ?>
 <?php endif; ?>

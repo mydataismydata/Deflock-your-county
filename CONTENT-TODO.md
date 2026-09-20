@@ -21,7 +21,9 @@ attached or need cutting.
   dropped the "Follow along" block from Get Involved, which was the last thing that printed
   them. Either fill them in and add a block back, or delete the constant.
 - `MEETINGS` carries the county board dates through 15 December 2026, read from the county
-  calendar on 18 September 2026. Top them up when that list runs short. The group holds no
+  calendar on 18 September 2026. Each entry renders as its own block with the weekday
+  worked out from the date, so `when` has to be something `strtotime()` understands.
+  Anything it cannot parse still gets a block, printed as written. Top them up when that list runs short. The group holds no
   meetings of its own; add them here if that changes.
 
 **`includes/place.php`**

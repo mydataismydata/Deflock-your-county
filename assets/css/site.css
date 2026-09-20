@@ -1000,13 +1000,65 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
 .rule-top        { border-top: 1px solid var(--line-strong); padding-top: 1.5rem; }
 .rule-top--faint { border-top-color: var(--line); }
 
-/* The meeting dates, printed from the MEETINGS array as one line. */
-.dateline {
+/* Upcoming meetings. Everything here was one line of 11px lowercase mono,
+   which is the right size for a label and the wrong size for the two things a
+   reader has actually come for: where it is and what time to be there. */
+
+.meetwhen__place {
+  margin-top: 0.85rem;
+  max-width: 34rem;
+  font-size: 1.25rem;
+  line-height: 1.35;
+  color: var(--ink-90);
+  text-wrap: pretty;
+}
+.meetwhen__time {
+  margin-top: 0.5rem;
   font-family: var(--face-mono);
-  font-size: var(--t-lede);
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+/* One block per date, so six meetings read as six things rather than as a
+   line of text with separators in it. Same hairline grid as the rest of the
+   site: the 1px gaps are the rules, and the cells sit just off black so the
+   lines stay visible where they cross. */
+.meetdates {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  gap: 1px;
+  margin-top: 2.25rem;
+  border: 1px solid var(--line-mid);
+  background: var(--line-mid);
+}
+.meetdates > li {
+  display: grid;
+  gap: 0.3rem;
+  justify-items: center;
+  background: var(--bg-cell);
+  padding: 1.35rem 0.75rem;
+}
+.meetdates .m {
+  font-family: var(--face-mono);
+  font-size: var(--t-mono);
+  letter-spacing: var(--track-badge);
+  text-transform: uppercase;
+  color: var(--ink-60);
+}
+.meetdates .d {
+  font-family: var(--face-display);
+  font-size: 2.25rem;
+  line-height: 1;
+  letter-spacing: var(--track-display);
+  color: var(--ink);
+}
+.meetdates .w {
+  font-family: var(--face-mono);
+  font-size: var(--t-mono);
   letter-spacing: var(--track-mono);
-  color: var(--ink-85);
-  margin-top: 1.5rem;
+  text-transform: lowercase;
+  color: var(--ink-55);
 }
 
 /* A commissioner's email and phone, set in mono so they are easy to copy and
