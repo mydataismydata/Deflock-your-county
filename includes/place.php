@@ -88,8 +88,8 @@ const LEGAL_HELP_URL  = 'https://www.aclufl.org';
 const BODIES = [
     [
         'name'  => 'Board of County Commissioners',
-        'why'   => 'Approves the contract, the budget line and the renewal. This is the body with a vote on whether the cameras stay.',
-        'how'   => 'Five commissioners, elected by district, voted on countywide. Write to the one for your district and copy the rest.',
+        'why'   => 'Approves the budget and approves zoning variances on county roads for ALPR camera usage.',
+        'how'   => 'Five commissioners, one per district, are elected countywide. Write to yours and copy the rest.',
         'link'  => ['County commission directory', COUNTY_BOARD_URL],
         // The five commissioners as the county's own district pages list them.
         // These are the office lines. The county publishes a cell number for
@@ -112,13 +112,6 @@ const BODIES = [
         'why'   => 'Operates the cameras and writes the usage policy. Retention periods and search rules are set here, not by the commission.',
         'how'   => 'The sheriff is elected countywide and answers to voters directly. Ask when the cameras come off the poles, and ask for the written policy while they are still up.',
         'link'  => ['Sheriff\'s Office', 'https://www.sjso.org'],
-        'seats' => [],
-    ],
-    [
-        'name'  => 'City of ' . COUNTY_SEAT . ' Commission',
-        'why'   => 'The city buys its own equipment for its own police department. County policy does not bind it.',
-        'how'   => 'Mayor and four commissioners. Relevant if you live inside city limits.',
-        'link'  => ['City of ' . COUNTY_SEAT, 'https://www.citystaug.com'],
         'seats' => [],
     ],
 ];

@@ -170,7 +170,9 @@ require __DIR__ . '/includes/header.php';
       Sending the right question to the wrong one wastes a letter.
     </p>
 
-    <div class="defs defs--three">
+    <!-- Three across only when there are three. Two bodies in a three-column
+         grid leaves a hole where the third used to be. -->
+    <div class="defs<?= count(BODIES) > 2 ? ' defs--three' : '' ?>">
 <?php foreach (BODIES as $body): ?>
       <div>
         <h3><?= e($body['name']) ?></h3>

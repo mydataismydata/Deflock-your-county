@@ -35,7 +35,14 @@ attached or need cutting.
   the county's district pages on 18 September 2026. Terms expire in 2026 for Districts 2 and 4
   and in 2028 for Districts 1, 3 and 5, so check the names after each election.
 - The county also publishes a cell number for each commissioner. We list the office line only.
-- Confirm whether St. Augustine Beach should be listed as a fourth body. It runs its own police department.
+- The City of St. Augustine was removed from `BODIES` on 20 September 2026: it runs no
+  separate Flock system, so there is nothing to write to it about. It still appears in
+  `LOCAL_RESOURCES`, described as running "its own police department and its own
+  procurement, separately from the county". That sentence is about procurement in
+  general rather than ALPRs, but it sits close to the claim that was just corrected.
+  Reword it or drop the entry.
+- St. Augustine Beach was an open question about a fourth body. The same reasoning
+  probably closes it: no separate system, nothing to ask for.
 - `RECORDS_FEE_CAP` is set to $25. Check what St. Johns County actually charges before leaving that figure in the sample letter.
 
 **`robots.txt`**
