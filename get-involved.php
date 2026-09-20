@@ -25,6 +25,11 @@ foreach (LETTER_SOURCES as [$label, $url]) {
     $sources .= "\n" . $label . "\n" . $url . "\n";
 }
 
+$sheriffLetter = 'Subject: ' . SHERIFF_LETTER_SUBJECT . "\n\n" . SHERIFF_LETTER_BODY;
+foreach (SHERIFF_LETTER_SOURCE as [$label, $url]) {
+    $sheriffLetter .= "\n\nSource:\n" . $label . "\n" . $url;
+}
+
 $letter = implode("\n\n", [
     'Subject: ' . $pick(LETTER_SUBJECT),
     'Dear Commissioner [Last name],',
@@ -220,7 +225,7 @@ require __DIR__ . '/includes/header.php';
   <div class="shell">
     <h2 class="h-section" data-reveal>Word for word.</h2>
     <p class="lede lede--tight">
-      Three scripts, ready to use. Use your own words for at least one sentence,
+      Four scripts, ready to use. Use your own words for at least one sentence,
       give your district, and ask a question that needs an answer.
     </p>
 
@@ -251,6 +256,14 @@ Is there an address where I can send that in writing? Thank you for your time.</
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
         </a>
       </p>
+    </div>
+
+    <div class="split split--label rule-top rule-top--faint mt-l">
+      <div>
+        <h3 class="h-block">To the sheriff</h3>
+        <p class="note mt-s">The sheriff's office operates the cameras and writes the policy. The board holds the contract. This one goes to the sheriff, and it is the same letter for everybody.</p>
+      </div>
+<pre class="script"><?= e($sheriffLetter) ?></pre>
     </div>
 
     <div class="split split--label rule-top rule-top--faint mt-l">

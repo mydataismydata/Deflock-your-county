@@ -52,6 +52,11 @@ const COUNTY_MEETING_PLACE = 'County Auditorium, 500 San Sebastian View, ' . COU
 const COUNTY_MEETING_RULE  = 'The board meets the first and third Tuesday of each month at '
                            . '9:00 am, other than the first Tuesday of January and of July.';
 
+// How the sheriff is addressed at the top of a letter. The sheriff runs the
+// cameras and writes the policy; the board holds the contract. Elected
+// countywide, so check the name after each election.
+const SHERIFF_SALUTATION = 'Sheriff Hardwick';
+
 // ---------------------------------------------------------- public records --
 
 // How the records law is cited in a request letter.

@@ -1,6 +1,7 @@
 <?php
 /**
- * The interchangeable parts of the email to a commissioner.
+ * The letters: the interchangeable parts of the email to a commissioner, and
+ * the fixed one to the sheriff.
  *
  * The page picks one entry from each array per request, so two people who copy
  * the draft on the same afternoon do not send the same letter. Five subjects,
@@ -140,4 +141,54 @@ const LETTER_SOURCES = [
      'https://haveibeenflocked.com/pd/3775-st-johns-county-fl-so/audit?sort=date_desc'],
     ['Sheriff Hardwick interviewed by The 904 Now',
      'https://youtu.be/jaG-TAOtfbg'],
+];
+
+// --------------------------------------------- the letter to the sheriff --
+//
+// One fixed letter, not a set of parts. The commissioner letter varies because
+// five people receive the same pile and identical copies read as one copy. The
+// sheriff receives one pile, and somebody writing once does not need a draft
+// that differs from their neighbour's.
+//
+// The asks are worded for the office that operates the cameras rather than the
+// one that signs the contract, which is why they do not match the four on the
+// Get Involved page word for word.
+
+const SHERIFF_LETTER_SUBJECT = 'Demand to Decommission ALPR Systems & Stop Data Sharing';
+
+const SHERIFF_LETTER_BODY =
+      'Dear ' . SHERIFF_SALUTATION . ",\n"
+    . "\n"
+    . 'As a ' . COUNTY . ' taxpayer, I am writing to state my strong opposition '
+    . "to your agency's deployment of warrantless mass surveillance infrastructure.\n"
+    . "\n"
+    . 'Public data from HaveIBeenFlocked.com shows that our local vehicle '
+    . "tracking data has been fully shared nationwide.\n"
+    . "\n"
+    . 'Public safety relies on trust, not indiscriminate surveillance. I call on '
+    . 'you to coordinate with the County Commission to implement these changes '
+    . "immediately:\n"
+    . "\n"
+    . '* Cancel the Contract: Oppose renewal and terminate the Flock platform '
+    . "agreement at the earliest legal date.\n"
+    . '* Turn the Cameras Off and Take Them Down: Immediately shut down and '
+    . "dismantle all fixed utility pole and vehicle-mounted systems.\n"
+    . '* Delete What Has Been Collected: Ensure all historical resident data is '
+    . "purged from the vendor's servers and provide written confirmation to the "
+    . "community.\n"
+    . '* Support Open Public Hearings: Address these capabilities openly in a '
+    . "regular commission meeting rather than via a consent agenda.\n"
+    . "\n"
+    . 'I look forward to your prompt response on how you intend to phase out '
+    . "these systems.\n"
+    . "\n"
+    . "Sincerely,\n"
+    . "[Your Name]\n"
+    . "[Your Street Address / Neighborhood]\n"
+    . COUNTY . ', ' . STATE_ABBR;
+
+// The one checkable claim in that letter, so it carries the link.
+const SHERIFF_LETTER_SOURCE = [
+    [COUNTY . ' Sheriff\'s Office search audit log',
+     'https://haveibeenflocked.com/pd/3775-st-johns-county-fl-so/audit?sort=date_desc'],
 ];

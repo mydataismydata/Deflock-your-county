@@ -26,6 +26,9 @@ attached or need cutting.
 
 **`includes/place.php`**
 
+- `SHERIFF_SALUTATION` is "Sheriff Hardwick", used once, at the top of the letter to the
+  sheriff. Elected countywide, so check it after each election.
+
 - `BODIES` carries all five commissioners with their office email and office phone, read from
   the county's district pages on 18 September 2026. Terms expire in 2026 for Districts 2 and 4
   and in 2028 for Districts 1, 3 and 5, so check the names after each election.
