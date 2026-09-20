@@ -41,19 +41,26 @@ require __DIR__ . '/includes/header.php';
       Here is the breakdown of why this data remains highly valuable and how it
       exposes individuals despite claims of redaction.
     </p>
+
     <div class="prose mt-m">
       <p>
         In the world of data science, location data, meaning records of where a
-        specific vehicle is at a specific time, is inherently non-anonymous.
-        Even if you remove a name or a plate number, you are left with a
-        "pattern of life." If an unidentified vehicle is seen entering a
-        community every night at 6:00 PM and at a specific office building every
-        morning at 8:30 AM, you have essentially identified the individual
-        associated with that vehicle without ever needing a license plate
-        number. By correlating these movement patterns with other public
-        datasets, such as property records, voter rolls and social media
-        check-ins, "connecting the dots" is not just possible; it is trivial for
-        automated systems.
+        specific vehicle is at a specific time, is <strong>inherently
+        non-anonymous</strong>. Even if you remove a name or a plate number, you
+        are left with a "pattern of life."
+      </p>
+
+      <p class="callout">
+        If an unidentified vehicle is seen entering a community every night at
+        6:00 PM and at a specific office building every morning at 8:30 AM, you
+        have essentially <strong>identified the individual</strong> associated
+        with that vehicle without ever needing a license plate number.
+      </p>
+
+      <p>
+        By correlating these movement patterns with other public datasets, such
+        as property records, voter rolls and social media check-ins, "connecting
+        the dots" is not just possible; it is trivial for automated systems.
       </p>
     </div>
   </div>
@@ -75,16 +82,6 @@ require __DIR__ . '/includes/header.php';
           Selling aggregate traffic patterns, peak congestion times, and
           movement flow between jurisdictions is extremely valuable to
           commercial interests, urban planners, and insurance companies.
-        </p>
-      </li>
-      <li>
-        <span class="row-name">Network effect</span>
-        <p>
-          The more data Flock collects, the more valuable their system becomes
-          to law enforcement agencies. By hosting data from thousands of
-          jurisdictions, they create a national dragnet. The value lies in the
-          "connective tissue" of the network, being able to track a vehicle
-          across state lines or county borders.
         </p>
       </li>
       <li>
@@ -111,12 +108,13 @@ require __DIR__ . '/includes/header.php';
 
   <div class="shell">
     <h2 class="h-section" data-reveal>The strategy of de-identification.</h2>
+
     <div class="prose mt-m">
       <p>
-        When companies claim they scrub PII, meaning personally identifiable
-        information, they are usually referring to stripping out the name,
-        address, or owner info linked directly to the plate in their internal
-        database. However, they retain the "unique identifier" of the plate
+        When companies claim they scrub personally identifiable information,
+        they are usually referring to stripping out the name, address, or owner
+        info linked directly to the plate in their internal database. However,
+        <strong>they retain the "unique identifier"</strong> of the plate
         itself. Because the plate is persistent, it acts as a permanent tracking
         ID.
       </p>
@@ -126,50 +124,36 @@ require __DIR__ . '/includes/header.php';
         The tracking remains continuous; only the link to the government
         registration record is ostensibly "hidden" from certain users.
       </p>
+      <p>
+        This is not merely a technical issue; it is a <strong>feature of the
+        surveillance state</strong>. By creating a massive, centralized, and
+        "anonymized" database, Flock and its partners achieve two goals:
+      </p>
     </div>
-  </div>
-</section>
 
-<!-- ================================================== institutional ==== -->
-<section class="section" id="institutional">
-  <div class="shell">
-    <h2 class="h-section" data-reveal>The institutional reality.</h2>
-    <p class="lede lede--tight">
-      This is not merely a technical issue; it is a feature of the surveillance
-      state. By creating a massive, centralized, and "anonymized" database, Flock
-      and its partners achieve two goals.
-    </p>
-
-    <div class="defs">
-      <div>
-        <h3>Liability mitigation</h3>
-        <p>They can claim they are not tracking "people," just "data points."</p>
-      </div>
-      <div>
-        <h3>Systemic power</h3>
-        <p>
-          They build a permanent, searchable historical record of human movement
-          that is available to any entity with enough money or the right
-          "mutual aid" access.
-        </p>
-      </div>
-    </div>
+    <ul class="bullets">
+      <li>They can claim they are not tracking "people," just "data points."</li>
+      <li>
+        They build a permanent, searchable historical record of human movement
+        that is available to any entity with enough money or the right
+        "mutual aid" access.
+      </li>
+    </ul>
   </div>
 </section>
 
 <!-- ======================================================== closing ==== -->
-<section class="section section--tight">
+<section class="section">
   <div class="shell">
-    <p class="quote">
-      In short, "anonymized" tracking is still tracking.
-    </p>
+    <h2 class="h-section" data-reveal>In short, "anonymized" tracking is still tracking.</h2>
     <div class="prose mt-m">
       <p>
-        The ability to identify an individual through movement patterns is a
-        standard capability of modern data analytics. When you possess the
-        coordinates and timestamps for a specific vehicle's daily habits, you
-        have stripped away the privacy of the person operating that vehicle,
-        regardless of whether you have attached a name to the file.
+        The ability to <strong>identify an individual</strong> through movement
+        patterns is a standard capability of modern data analytics. When you
+        possess the coordinates and timestamps for a specific vehicle's daily
+        habits, you have <strong>stripped away the privacy</strong> of the
+        person operating that vehicle, regardless of whether you have attached a
+        name to the file.
       </p>
     </div>
   </div>
@@ -178,14 +162,14 @@ require __DIR__ . '/includes/header.php';
 <section class="section section--close">
   <div class="shell">
     <div class="panel">
-      <h2 class="display-3">This is what the county pays for.</h2>
+      <h2 class="display-3">Your county taxes pay for all of this.</h2>
       <p class="lede">
-        The board votes on the contract, the budget line and the renewal. One
-        email to one commissioner puts a resident's name on the record against
-        it.
+        The county commissioners approve the sheriff's budget and the renewal
+        cost. Email your commissioner to let them know that we, the people, are
+        against this.
       </p>
       <div class="pill-row">
-        <a class="pill" href="/get-involved">Write to your commissioner &rarr;</a>
+        <a class="pill" href="/get-involved#officials">Email your commissioner &rarr;</a>
         <a class="pill pill--ghost" href="/resources">Read the primary sources</a>
       </div>
     </div>

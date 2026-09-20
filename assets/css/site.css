@@ -891,9 +891,17 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
 .section__media > img {
   position: absolute;
   inset: 0;
-  width: 100%;
+  /* Wider than the section, anchored left, so the visible window falls on the
+     left of the frame and the car sits right of centre, clear of the text.
+     Widening crops harder top and bottom, so the vertical position is pushed
+     past the middle to keep the whole car in shot. */
+  width: 112%;
+  /* The base img rule caps every image at the width of its container, which
+     silently undoes the line above. */
+  max-width: none;
   height: 100%;
   object-fit: cover;
+  object-position: 50% 60%;
   opacity: 0.55;
 }
 .section__vignette {
@@ -952,6 +960,41 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
   color: rgba(255, 255, 255, 0.3);
   text-align: right;
 }
+
+/* A sentence lifted out of the prose around it. A cyan rule and a step up in
+   size, not a box: the site has one raised surface and this is not it. */
+.callout {
+  max-width: var(--measure);
+  border-left: 2px solid var(--line-accent);
+  padding-left: 1.75rem;
+  margin-block: 2.5rem;
+  font-size: var(--t-lede-lg);
+  line-height: 1.5;
+  color: var(--ink-85);
+  text-wrap: pretty;
+}
+
+/* A plain bulleted list inside prose. The marker is a hairline dash rather
+   than a disc, which is the only kind of bullet the rest of the site draws. */
+.bullets { display: grid; gap: 1rem; margin-top: 1.5rem; max-width: var(--measure); }
+.bullets > li {
+  display: grid;
+  grid-template-columns: 1.25rem 1fr;
+  gap: 1rem;
+  font-size: var(--t-lede);
+  line-height: var(--lh-prose);
+  color: var(--ink-80);
+  text-wrap: pretty;
+}
+.bullets > li::before {
+  content: "";
+  margin-top: 0.85em;
+  height: 1px;
+  background: var(--accent);
+}
+
+/* Emphasis inside running prose, at the weight the definition lists use. */
+.prose strong, .callout strong, .bullets strong { color: var(--ink); font-weight: 600; }
 
 /* A hairline that opens a block rather than separating two. */
 .rule-top        { border-top: 1px solid var(--line-strong); padding-top: 1.5rem; }
