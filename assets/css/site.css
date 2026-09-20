@@ -789,6 +789,7 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
   }
   html { scroll-behavior: auto; }
   .drift { animation: none; }
+  .lensring { display: none; }
   [data-reveal][data-reveal-ready]:not([data-reveal-done]) .word { opacity: 1; transform: none; }
 }
 
@@ -941,6 +942,50 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
         rgba(0, 0, 0, 0.7) 55%,
         #000 100%);
   }
+}
+
+/* The arc that traces the lens of the plate reader on the home page.
+
+   It has to land on the lens at every window size, and the photograph behind
+   it is cropped by object-fit: cover. An SVG with the image's own dimensions
+   as its viewBox and preserveAspectRatio="xMidYMid slice" crops by exactly the
+   same rule, so a circle drawn at the lens's coordinates in the photograph
+   stays on the lens without any script measuring anything.
+
+   It runs the drift as well, so it moves with the picture rather than sliding
+   across it. Both belong to one animation declaration on purpose: .drift and
+   this rule both set the animation shorthand, so putting the class in the
+   markup would have silently replaced one with the other. */
+.lensring {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 70%;
+  height: 100%;
+  pointer-events: none;
+  transform-origin: 65% 40%;
+  animation:
+    lensring-cycle 13s ease-in-out infinite,
+    drift 70s ease-in-out infinite alternate;
+}
+.lensring__arc {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  /* About a fifth of the circumference, so it reads as a sweep, not a ring. */
+  stroke-dasharray: 77 275;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: lensring-spin 3.4s linear infinite;
+}
+@keyframes lensring-spin { to { transform: rotate(360deg); } }
+
+/* Four seconds on, nine off. It should look like something the camera does
+   now and then, not like a loading spinner. */
+@keyframes lensring-cycle {
+  0%, 6%    { opacity: 0; }
+  15%, 33%  { opacity: 0.5; }
+  42%, 100% { opacity: 0; }
 }
 
 /* A scene still waiting for its photograph. It holds the shape and prints the

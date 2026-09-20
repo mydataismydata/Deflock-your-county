@@ -17,6 +17,13 @@ require __DIR__ . '/includes/header.php';
   <img class="scene__media scene__media--pole drift" src="/assets/img/cameras.webp"
        alt="A Flock Safety plate reader and a dome camera mounted on a wooden utility pole against a black sky"
        width="1264" height="848" fetchpriority="high">
+  <!-- The lens of the reader, at its coordinates in the photograph. The viewBox
+       and the slice keep it there at every window size. -->
+  <svg class="lensring" viewBox="0 0 1264 848" preserveAspectRatio="xMidYMid slice"
+       aria-hidden="true" focusable="false">
+    <circle class="lensring__arc" cx="834" cy="325" r="56"/>
+  </svg>
+
   <div class="scene__scrim" aria-hidden="true"></div>
 
   <div class="scene__inner shell shell--narrow">

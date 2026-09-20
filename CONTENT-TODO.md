@@ -54,6 +54,12 @@ attached or need cutting.
 
 **Photographs**
 
+The home hero has an arc that traces the lens of the plate reader every thirteen seconds.
+It is positioned by drawing a circle at the lens's coordinates in `cameras.webp`, inside an
+SVG whose `viewBox` is the photograph's own dimensions. Replacing that photograph means
+moving the circle: measure the lens in the new file and change `cx`, `cy` and `r` in
+`index.php`, or delete the `<svg class="lensring">` block.
+
 The redesign runs on four images and wants three more. What is in `assets/img/` now:
 
 | File | Where |
