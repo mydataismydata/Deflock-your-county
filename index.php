@@ -35,8 +35,10 @@ require __DIR__ . '/includes/header.php';
       "Automated License Plate Readers", or ALPRs, do not take passive snapshots
       of license plates. They record your plate, your car make and model, your
       bumper stickers and the route you drove. Every driver in <?= e(COUNTY) ?>
-      is in that record, and not one of them was suspected of anything. We are
-      asking the county to shut the program down.
+      is in that record, leaving them vulnerable to constitutionally illegal,
+      warrantless searches and misidentification for crimes they did not commit
+      by AI with an alarming error rate. We are asking the county to shut the
+      program down.
     </p>
     <div class="pill-row">
       <a class="pill" href="/get-involved">Get involved &rarr;</a>

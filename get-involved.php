@@ -164,9 +164,9 @@ require __DIR__ . '/includes/header.php';
 <!-- ===================================================== officials ==== -->
 <section class="section" id="officials">
   <div class="shell">
-    <h2 class="h-section" data-reveal>Who decides, and what to ask them.</h2>
+    <h2 class="h-section" data-reveal>Who decides and what to ask them.</h2>
     <p class="lede lede--tight">
-      Two different bodies matter here and they answer different questions.
+      Two different bodies matter here, and they answer different questions.
       Sending the right question to the wrong one wastes a letter.
     </p>
 
@@ -225,11 +225,12 @@ require __DIR__ . '/includes/header.php';
   <div class="shell">
     <h2 class="h-section" data-reveal>The four asks.</h2>
     <p class="lede lede--tight">
-      One demand, and four steps that carry it out. Keep every message to these.
-      The usual answer to this campaign is that we want to protect criminals, so
-      say the other half out loud: a judge can still issue a warrant for anyone
-      the sheriff's office has reason to suspect, which is the whole purpose of
-      a warrant.
+      One demand, and four steps that carry it out. Include these points in your
+      message to keep it oriented to actions that will resolve the problem. The
+      usual answer to this campaign is that we want to protect criminals, so say
+      the other half out loud: a judge can still issue a warrant for anyone the
+      sheriff's office has reason to suspect, which is the whole purpose of a
+      warrant.
     </p>
 
     <div class="defs">

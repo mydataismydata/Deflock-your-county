@@ -29,7 +29,7 @@ const COUNTY_SEAT = 'St. Augustine';
 // The two halves of the campaign name. They are concatenated into SITE_NAME,
 // which the masthead prints as one word followed by the short county name.
 const BRAND_HEAD = 'De';
-const BRAND_TAIL = 'flock';
+const BRAND_TAIL = 'Flock';
 
 const SITE_NAME    = BRAND_HEAD . BRAND_TAIL . ' ' . COUNTY_SHORT;
 const SITE_TAGLINE = COUNTY . ', ' . STATE;
@@ -96,7 +96,7 @@ const BODIES = [
     [
         'name'  => 'Board of County Commissioners',
         'why'   => 'Approves the budget and approves zoning variances on county roads for ALPR camera usage.',
-        'how'   => 'Five commissioners, one per district, are elected countywide. Write to yours and copy the rest.',
+        'how'   => 'Five commissioners, one per district, are elected countywide. Write to the commissioner of your precinct and let them know you are opposed to mass surveillance and that you support the ordinance to phase it out. Copy the rest of the commissioners on the message.',
         'link'  => ['County commission directory', COUNTY_BOARD_URL],
         // The five commissioners as the county's own district pages list them.
         // These are the office lines. The county publishes a cell number for
@@ -117,7 +117,7 @@ const BODIES = [
     [
         'name'  => COUNTY . ' Sheriff\'s Office',
         'why'   => 'Operates the cameras and writes the usage policy. Retention periods and search rules are set here, not by the commission.',
-        'how'   => 'The sheriff is elected countywide and answers to voters directly. Ask when the cameras come off the poles, and ask for the written policy while they are still up.',
+        'how'   => 'The sheriff is elected countywide and answers to voters directly. Write to the Sheriff and request a copy of his surveillance policies, and ask him when the cameras will be coming down.',
         'link'  => ['Sheriff\'s Office', 'https://www.sjso.org'],
         'seats' => [],
     ],

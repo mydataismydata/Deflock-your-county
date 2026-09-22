@@ -23,12 +23,12 @@ require __DIR__ . '/includes/header.php';
     <p class="eyebrow"><span class="dot" aria-hidden="true"></span> The anonymization claim</p>
     <h1 class="display-1" data-reveal>Anonymized tracking is <span class="accent">still tracking</span>.</h1>
     <p class="lede lede--lg">
-      The claim that this data is truly anonymous or "scrubbed" is a foundational
-      element of the surveillance industry's marketing, designed to appease
-      privacy concerns while preserving the commercial and operational utility
-      of the database. In reality, the value of this data is immense, and the
-      concept of "anonymization" in the context of persistent, location-based
-      tracking is a fiction.
+      The claim that this data is truly anonymous, or "scrubbed," is a
+      foundational element of the surveillance industry's marketing, designed to
+      appease privacy concerns while preserving the commercial and operational
+      utility of the database. In reality, the value of this data is immense,
+      and the concept of "anonymization" in the context of persistent,
+      location-based tracking is a fiction.
     </p>
   </div>
 </section>
@@ -165,8 +165,8 @@ require __DIR__ . '/includes/header.php';
       <h2 class="display-3">Your county taxes pay for all of this.</h2>
       <p class="lede">
         The county commissioners approve the sheriff's budget and the renewal
-        cost. Email your commissioner to let them know that we, the people, are
-        against this.
+        cost. Email your commissioner to let them know that
+        <em>we the people</em> are against this.
       </p>
       <div class="pill-row">
         <a class="pill" href="/get-involved#officials">Email your commissioner &rarr;</a>

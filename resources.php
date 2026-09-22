@@ -23,7 +23,7 @@ $groups = [
             ['Have I Been Flocked?', 'https://haveibeenflocked.com/',
              'Type in your plate and see whether it appears in the Flock search logs released so far. The Agencies menu at the top breaks the same records down by department, so you can read what your local agency has been searching for.'],
             ['DeFlock', 'https://deflock.org',
-             'Open-source map of license plate reader locations, built on OpenStreetMap data. Adding a camera takes a couple of minutes.'],
+             'Open-source map of license plate reader locations, built on OpenStreetMap data. Adding a camera takes a couple minutes.'],
             ['Atlas of Surveillance', 'https://atlasofsurveillance.org',
              'Documents police technology by agency, from EFF and the Reynolds School of Journalism at the University of Nevada, Reno. Useful for finding what else your department runs.'],
             ['OpenStreetMap', 'https://www.openstreetmap.org',
@@ -54,8 +54,6 @@ $groups = [
         'links' => [
             ['Carpenter v. United States', 'https://www.law.cornell.edu/supremecourt/text/16-402',
              'The 2018 Supreme Court decision holding that pulling a person\'s historical location records is a search that needs a warrant. It is the case our argument rests on, so read it rather than taking our summary of it.'],
-            ['The IJ Database of ALPR Abuse', 'https://ij.org/the-ij-database-of-alpr-abuse/',
-             'The Institute for Justice has cataloged more than 200 incidents of plate reader abuse: romantic stalking, wrongful stops and detentions, use by people who are not law enforcement, and other misconduct. Documented and mapped.'],
             ['Institute for Justice', 'https://ij.org',
              'Litigating Fourth Amendment challenges to municipal camera networks, including the case against Norfolk, Virginia.'],
             ['Restore The Fourth', 'https://restorethe4th.com',
@@ -154,7 +152,7 @@ require __DIR__ . '/includes/header.php';
       <h2 class="display-3">Something missing?</h2>
       <p class="lede">
         Send it to us. We add links that publish documents, explain the
-        technology or help somebody file a request. We do not add anything that
+        technology, or help somebody file a request. We do not add anything that
         tells people to interfere with equipment.
       </p>
       <div class="pill-row">

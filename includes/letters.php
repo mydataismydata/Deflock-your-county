@@ -160,7 +160,8 @@ const SHERIFF_LETTER_BODY =
       'Dear ' . SHERIFF_SALUTATION . ",\n"
     . "\n"
     . 'As a ' . COUNTY . ' taxpayer, I am writing to state my strong opposition '
-    . "to your agency's deployment of warrantless mass surveillance infrastructure.\n"
+    . "to your agency's deployment of warrantless mass surveillance "
+    . "infrastructure in violation of the 4th Amendment.\n"
     . "\n"
     . 'Public data from HaveIBeenFlocked.com shows that our local vehicle '
     . "tracking data has been fully shared nationwide.\n"

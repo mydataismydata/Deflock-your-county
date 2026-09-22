@@ -17,10 +17,10 @@ require __DIR__ . '/includes/header.php';
     <h1 class="display-1" data-reveal>We are <span class="accent">normal people</span> who do not want mass surveillance.</h1>
     <p class="lede lede--lg">
       We are residents of <?= e(COUNTY) ?>. No staff, no budget, no party
-      affiliation and no connection to any vendor. What we have is the view that
-      a camera network recording every driver in the county is an unreasonable
-      search, and that the county should switch it off. Driving to the Publix is
-      not probable cause.
+      affiliation, and no connection to any vendor. What we have is the view
+      that a camera network recording every driver in the county is an
+      unreasonable and unlawful search, and that the county should switch it
+      off. Driving to the Publix is not probable cause.
     </p>
   </div>
 </section>
@@ -104,10 +104,10 @@ require __DIR__ . '/includes/header.php';
         leave room for the county to run one.
       </p>
       <p>
-        We mean the county taking the cameras down, by a vote, on the record. We
-        do not touch the hardware and we will not help anyone who wants to.
-        Damaging a camera hands the other side its argument and puts the person
-        who did it in front of a judge.
+        We call on the county to take the cameras down, by a vote, on the
+        record. We do not touch the hardware and we will not help anyone who
+        wants to. Damaging a camera hands the other side its argument and puts
+        the person who did it in front of a judge.
       </p>
       <p>
         Deputies investigated crimes before these cameras went up and can
@@ -135,7 +135,7 @@ require __DIR__ . '/includes/header.php';
         <h3>Nothing illegal, nothing clever</h3>
         <p>
           Public records, public meetings, public streets. We do not touch
-          hardware and we do not encourage anyone else to. It is also the
+          hardware, and we do not encourage anyone else to. It is also the
           fastest way to lose the argument.
         </p>
       </div>
