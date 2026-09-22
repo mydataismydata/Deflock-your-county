@@ -21,9 +21,19 @@ require __DIR__ . '/includes/header.php';
        and the slice keep it there at every window size. -->
   <svg class="lensring" viewBox="0 0 1264 848" preserveAspectRatio="xMidYMid slice"
        aria-hidden="true" focusable="false">
-    <!-- r is in the photograph's own pixels. One unit is a little under one
-         screen pixel at a typical window, so nudge it in ones. -->
-    <circle class="lensring__arc" cx="834" cy="324" r="47" pathLength="100"/>
+    <!-- Radius 47 about (834, 324), in the photograph's own pixels. One unit
+         is a little under one screen pixel at a typical window, so nudge it in
+         ones. The quadrant from three o'clock to six o'clock is a curve rather
+         than an arc: it leaves and rejoins the circle on the hour, and at its
+         midpoint it runs 2 units inside it. The other three quadrants are
+         circular. -->
+    <path class="lensring__arc" pathLength="100"
+          d="M 881 324
+             C 881 346.186 856.186 371 834 371
+             A 47 47 0 0 1 787 324
+             A 47 47 0 0 1 834 277
+             A 47 47 0 0 1 881 324
+             Z"/>
   </svg>
 
   <div class="scene__scrim" aria-hidden="true"></div>

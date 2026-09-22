@@ -972,15 +972,17 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
   stroke: var(--accent);
   stroke-width: 3;
   stroke-linecap: round;
-  /* The circle carries pathLength="100", so this is a percentage of the way
-     round whatever radius it has: about a fifth, which reads as a sweep rather
+  /* The path carries pathLength="100", so this is a percentage of the way
+     round whatever size it is: about a fifth, which reads as a sweep rather
      than a ring. Changing the radius needs no change here. */
   stroke-dasharray: 22 78;
-  transform-box: fill-box;
-  transform-origin: center;
+  stroke-dashoffset: 0;
+  /* The sweep travels along the path rather than riding a rotation of it. The
+     path is not a circle, so rotating the element would carry the flattened
+     quadrant round with it instead of leaving it on the lens. */
   animation: lensring-spin 3.4s linear infinite;
 }
-@keyframes lensring-spin { to { transform: rotate(360deg); } }
+@keyframes lensring-spin { to { stroke-dashoffset: -100; } }
 
 /* Four seconds on, nine off. It should look like something the camera does
    now and then, not like a loading spinner. */
