@@ -29,12 +29,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     $values['topic']   = (string) ($_POST['topic'] ?? '');
     $values['message'] = trim((string) ($_POST['message'] ?? ''));
 
-    $trap  = trim((string) ($_POST['website'] ?? ''));
+    $trap  = trim((string) ($_POST[form_trap_name()] ?? ''));
     $token = (string) ($_POST['t'] ?? '');
     $age   = form_token_age($token);
 
     if (form_secret_unset()) {
         $errors['form'] = 'This form is not finished being set up. Please email us directly instead.';
+    }
+
+    if (FORM_REQUIRE_BROWSER_HEADERS && !request_from_own_form()) {
+        // No browser submitted this. Fail with the same wording as the trap,
+        // so a script cannot tell which check turned it away.
+        $errors['form'] = $errors['form'] ?? 'Your message could not be sent. Please try again.';
     }
 
     if ($trap !== '') {
@@ -58,6 +64,8 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $errors['name'] = 'Tell us what to call you.';
     } elseif ($length($values['name']) > 120) {
         $errors['name'] = 'That is longer than 120 characters.';
+    } elseif (link_count($values['name']) > 0) {
+        $errors['name'] = 'A name here, not a web address.';
     }
 
     if ($values['email'] === '') {
@@ -76,6 +84,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $errors['message'] = 'Give us a little more than that, at least 20 characters.';
     } elseif ($length($values['message']) > 5000) {
         $errors['message'] = 'That is over the 5,000 character limit. Send the short version and we will ask for the rest.';
+    } elseif (preg_match('~\[/?url|\[/?link|<a\s+href~i', $values['message']) === 1) {
+        $errors['message'] = 'Take the link markup out. A plain address on its own line is fine.';
+    } elseif (link_count($values['message']) > 2) {
+        $errors['message'] = 'That is more than two links. Send the one that matters and describe the rest.';
     }
 
     if ($errors === []) {
@@ -156,10 +168,12 @@ require __DIR__ . '/includes/header.php';
       <div class="panel panel--form mt-l">
         <form method="post" action="/contact" novalidate>
 
-          <!-- Spam trap. A person never sees this; a bot fills it in. -->
+          <!-- Spam trap. A person never sees this; a bot fills it in. The name
+               comes from the form secret, so it differs per installation and a
+               canned payload cannot know to leave it alone. -->
           <div class="trap" aria-hidden="true">
-            <label for="f-website">Leave this field empty</label>
-            <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off" value="">
+            <label for="f-trap">Leave this field empty</label>
+            <input id="f-trap" name="<?= e(form_trap_name()) ?>" type="text" tabindex="-1" autocomplete="off" value="">
           </div>
 
           <div class="field-pair">

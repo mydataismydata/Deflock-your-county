@@ -38,7 +38,11 @@ RedirectMatch 404 /\.(git|hg|svn|env)
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "DENY"
-  Header always set Referrer-Policy "no-referrer"
+  # same-origin, not no-referrer. Outside sites still receive nothing, which
+  # is the point of the setting. no-referrer additionally makes the browser
+  # send "Origin: null" on the contact form's own POST, and the form uses
+  # Origin to recognise itself on browsers too old for Sec-Fetch-Site.
+  Header always set Referrer-Policy "same-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
 
   # The site loads nothing from anywhere else and uses no inline styles or

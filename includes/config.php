@@ -51,11 +51,22 @@ const CONTACT_PHONE_TEL = '+19049600104';
 // shared hosting cannot, so edit the string here for that deployment.
 define('FORM_SECRET', getenv('DEFLOCK_FORM_SECRET') ?: 'CHANGE-ME-BEFORE-GOING-LIVE');
 
-// A submission faster than this many seconds is treated as a bot.
-const FORM_MIN_SECONDS = 4;
+// A submission faster than this many seconds is treated as a bot. Nobody
+// types a name, an address and twenty characters in less.
+const FORM_MIN_SECONDS = 8;
 
-// A form token older than this many seconds is expired.
-const FORM_MAX_SECONDS = 7200;
+// A form token older than this many seconds is expired. The same window is how
+// long a token lifted off the page stays worth replaying, so keep it short.
+const FORM_MAX_SECONDS = 3600;
+
+// Require the POST to carry the headers a browser puts on a form it submits
+// from this site's own pages. A scripted POST carries none of them, and most
+// contact-form spam is a scripted POST.
+//
+// Set this to false if the host strips both Sec-Fetch-Site and Origin, which
+// would otherwise turn every real submission away. Send yourself a test
+// message through the live form after changing it.
+const FORM_REQUIRE_BROWSER_HEADERS = true;
 
 // --------------------------------------------------------------- channels --
 

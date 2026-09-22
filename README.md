@@ -65,6 +65,29 @@ php -r "echo bin2hex(random_bytes(32)), PHP_EOL;"
 The contact form refuses to send while `FORM_SECRET` is left at its shipped
 value, so a half-finished install fails loudly rather than quietly.
 
+## What stops form spam
+
+Five checks, in the order the handler runs them. None of them stores anything,
+calls out to a third party, or asks a visitor to identify a bus.
+
+| Check | What it catches |
+| --- | --- |
+| `Sec-Fetch-Site` must be `same-origin` | A scripted POST. Browsers set this header themselves and a page cannot write it, so a script has to forge it on purpose. Browsers older than Safari 16.4 send no `Sec-Fetch` header, and fall back to `Origin` |
+| A hidden field must come back empty | A bot that fills every input. The field's name is an HMAC of `FORM_SECRET`, so it differs per install and a canned payload cannot know to skip it |
+| The signed timestamp must be `FORM_MIN_SECONDS` to `FORM_MAX_SECONDS` old | A submission faster than a person can type, and a token lifted off the page and replayed later |
+| The name must hold no web address | The `Name: Jane http://buy.example` pattern |
+| The message must hold no link markup and at most two links | Link-farm payloads |
+
+`FORM_REQUIRE_BROWSER_HEADERS` turns the first check off. Set it to `false`
+only if a host strips both `Sec-Fetch-Site` and `Origin`, which would turn
+every real submission away. Send yourself a message through the live form
+after changing it either way.
+
+Keep `Referrer-Policy` at `same-origin` rather than `no-referrer`. Outside
+sites receive nothing under either one. `no-referrer` additionally makes the
+browser send `Origin: null` on the form's own POST, which breaks the fallback
+for old browsers.
+
 ## Moving it to another county
 
 Rewrite `includes/place.php`. Nothing else names a place, and that is checked:

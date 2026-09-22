@@ -52,6 +52,54 @@ function header_address(string $name, string $email): string
     return $display . ' <' . $email . '>';
 }
 
+/**
+ * The name of the hidden field that has to come back empty.
+ *
+ * It is derived from the form secret rather than written into the markup, so
+ * it differs from one installation to the next. Spam tooling carries a list of
+ * the usual trap names, "website" and "url" among them, and leaves those
+ * fields alone. It cannot carry this one.
+ */
+function form_trap_name(): string
+{
+    return 'f' . substr(hash_hmac('sha256', 'trap-field', FORM_SECRET), 0, 12);
+}
+
+/**
+ * True when the POST carries the marks of a form a browser submitted from a
+ * page on this site.
+ *
+ * Sec-Fetch-Site is set by the browser itself. A page cannot write it, a form
+ * cannot carry it, and a script has to be built on purpose to forge it. A
+ * plain scripted POST sends no Sec-Fetch header at all, even when it forges
+ * Origin, Referer and User-Agent.
+ *
+ * Browsers older than Safari 16.4 send no Sec-Fetch header either. They do
+ * send Origin on a POST, so that is the fallback rather than a refusal.
+ */
+function request_from_own_form(): bool
+{
+    $fetchSite = $_SERVER['HTTP_SEC_FETCH_SITE'] ?? '';
+
+    if ($fetchSite !== '') {
+        return $fetchSite === 'same-origin';
+    }
+
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+    if ($origin === '' || $origin === 'null') {
+        return false;
+    }
+
+    return rtrim($origin, '/') === rtrim(SITE_URL, '/');
+}
+
+/** How many things in a string look like a web address. */
+function link_count(string $text): int
+{
+    return (int) preg_match_all('~https?://|www\.~i', $text);
+}
+
 /** True while config.php still carries the shipped placeholder secret. */
 function form_secret_unset(): bool
 {
