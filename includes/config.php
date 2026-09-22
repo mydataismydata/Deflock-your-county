@@ -123,3 +123,53 @@ if (!function_exists('e')) {
         return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 }
+
+// -------------------------------------------------------- response headers --
+
+// Sent from PHP because .htaccess cannot be relied on to send them. The block
+// in .htaccess sits inside <IfModule mod_headers.c>, and a host without that
+// module skips the whole block without saying so. Ionos shared hosting is such
+// a host, which left the live site with no policy at all.
+//
+// These are the only copy. .htaccess keeps one header, nosniff, and scopes it
+// to the static files, which Apache serves without PHP ever running. It cannot
+// keep the rest: "Header always set" appends to the response PHP has already
+// built rather than replacing it, so every header would arrive twice.
+//
+// The site loads nothing from any other domain and uses no inline style or
+// script, so the policy can stay this tight. Relax it only if you add an
+// embed, a font service or an analytics tag.
+//
+// Referrer-Policy is same-origin rather than no-referrer on purpose. Outside
+// sites receive nothing under either one. no-referrer additionally makes the
+// browser send "Origin: null" on the contact form's own POST, and the form
+// reads Origin to recognise itself on browsers too old for Sec-Fetch-Site.
+const SECURITY_HEADERS = [
+    'X-Content-Type-Options'  => 'nosniff',
+    'X-Frame-Options'         => 'DENY',
+    'Referrer-Policy'         => 'same-origin',
+    'Permissions-Policy'      => 'geolocation=(), microphone=(), camera=(), payment=()',
+    'Content-Security-Policy' => "default-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'self'",
+];
+
+if (!function_exists('send_security_headers')) {
+    /**
+     * Put the security headers on this response.
+     *
+     * Every page requires this file before it prints anything, so one call
+     * here covers the pages, the 404 and the contact form's redirect alike.
+     */
+    function send_security_headers(): void
+    {
+        if (PHP_SAPI === 'cli' || headers_sent()) {
+            return;
+        }
+
+        foreach (SECURITY_HEADERS as $name => $value) {
+            header($name . ': ' . $value, true);
+        }
+    }
+}
+
+send_security_headers();
+

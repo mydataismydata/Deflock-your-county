@@ -35,20 +35,20 @@ RedirectMatch 404 /\.(git|hg|svn|env)
   RewriteRule ^([^.]+)$ $1.php [L]
 </IfModule>
 
+# The headers for the pages are sent by includes/config.php, not from here.
+# This block only runs where mod_headers exists, and a host without it skips
+# the block without saying so. Ionos shared hosting is such a host, which is
+# how the live site ended up with no policy at all.
+#
+# What stays here is the one header PHP cannot send. Apache serves the
+# stylesheet, the script, the fonts and the images without PHP ever running.
+# Setting the other four here as well would send every header twice on every
+# page: "Header always set" writes to err_headers_out, which Apache appends to
+# the response PHP already built rather than replacing it.
 <IfModule mod_headers.c>
-  Header always set X-Content-Type-Options "nosniff"
-  Header always set X-Frame-Options "DENY"
-  # same-origin, not no-referrer. Outside sites still receive nothing, which
-  # is the point of the setting. no-referrer additionally makes the browser
-  # send "Origin: null" on the contact form's own POST, and the form uses
-  # Origin to recognise itself on browsers too old for Sec-Fetch-Site.
-  Header always set Referrer-Policy "same-origin"
-  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
-
-  # The site loads nothing from anywhere else and uses no inline styles or
-  # scripts, so the policy can stay this tight. Relax it only if you add an
-  # embed, a font service or an analytics tag.
-  Header always set Content-Security-Policy "default-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self'; script-src 'self'; font-src 'self'; connect-src 'self'"
+  <FilesMatch "\.(css|js|woff2|png|webp|svg|ico|txt|json|xml)$">
+    Header always set X-Content-Type-Options "nosniff"
+  </FilesMatch>
 </IfModule>
 
 <IfModule mod_deflate.c>

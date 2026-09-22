@@ -88,6 +88,30 @@ sites receive nothing under either one. `no-referrer` additionally makes the
 browser send `Origin: null` on the form's own POST, which breaks the fallback
 for old browsers.
 
+## Security headers
+
+`includes/config.php` sends the content security policy and the four headers
+beside it. It is the only place that sets them for a page.
+
+They are not in `.htaccess`, for two reasons. A host without `mod_headers`
+skips that block without saying so, and Ionos shared hosting is such a host,
+which is how the live site ran with no policy at all. On a host that does have
+the module, `Header always set` writes to `err_headers_out`, which Apache
+appends to the response PHP has already built rather than replacing it, so
+every header would arrive twice.
+
+`.htaccess` keeps one header, `X-Content-Type-Options`, scoped to the static
+file extensions. Apache serves the stylesheet, the script, the fonts and the
+images without PHP ever running, so nothing else would reach them.
+
+Check what a host actually sends, and check for doubles:
+
+```bash
+curl -sI https://your-site.example/ | grep -ic "content-security-policy"
+```
+
+That should print `1`.
+
 ## Moving it to another county
 
 Rewrite `includes/place.php`. Nothing else names a place, and that is checked:
