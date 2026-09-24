@@ -98,7 +98,10 @@ require __DIR__ . '/includes/header.php';
       something you can finish in an evening.
     </p>
     <div class="pill-row">
-      <a class="pill" href="#officials">Write to an official</a>
+      <a class="pill" href="/assets/docs/st_johns_county_surveillance_ordinance.pdf"
+         target="_blank" rel="noopener"
+         aria-label="Read the Petition (PDF, opens in a new tab)">Read the Petition</a>
+      <a class="pill pill--ghost" href="#officials">Write to an official</a>
       <a class="pill pill--ghost" href="#meetings">See the meetings</a>
     </div>
   </div>
