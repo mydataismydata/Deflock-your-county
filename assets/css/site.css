@@ -556,6 +556,10 @@ a:hover { color: var(--accent); }
 .plain-link { color: var(--accent-soft); text-decoration: underline; text-underline-offset: 4px; }
 .plain-link:hover { color: var(--accent); }
 
+/* The same link on a line of its own, outside a sentence. It takes the 44px
+   box the other standalone links have, so a thumb can find it. */
+.plain-link--alone { display: inline-flex; align-items: center; min-height: 44px; }
+
 /* Small, spaced, cyan. For a link to a directory or a document rather than to
    another page of this site. */
 .accent-link {

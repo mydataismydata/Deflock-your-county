@@ -104,6 +104,9 @@ require __DIR__ . '/includes/header.php';
       <a class="pill pill--ghost" href="#officials">Write to an official</a>
       <a class="pill pill--ghost" href="#meetings">See the meetings</a>
     </div>
+    <p class="mt-s">
+      <a class="plain-link plain-link--alone" href="https://www.change.org/p/demand-st-johns-county-halt-warrantless-public-mass-surveillance-technology" rel="noopener">Sign the petition</a>
+    </p>
   </div>
 </section>
 
