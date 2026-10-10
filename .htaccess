@@ -2,6 +2,10 @@
 # Apache configuration for Ionos shared hosting.
 
 Options -Indexes
+
+# Leave MultiViews alone. Ionos switches it on, and on Ionos it is what
+# serves /about from about.php. Turning it off with Options -MultiViews
+# took every page but the home page to a 404 on 10 October 2026.
 DirectoryIndex index.php
 ErrorDocument 404 /404.php
 

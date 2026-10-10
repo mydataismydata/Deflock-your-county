@@ -8,11 +8,17 @@ header('Cache-Control: no-cache');
 
 /*
  * Two views. /candidate-surveys is the tiles, one per candidate who answered.
- * /candidate-surveys/jane-doe is one candidate's answers in full; .htaccess
- * and router.php turn that address into ?c=jane-doe.
+ * /candidate-surveys/jane-doe is one candidate's answers in full.
+ *
+ * The name is read from the address the browser asked for. On Ionos,
+ * MultiViews hands /candidate-surveys/jane-doe straight to this file and the
+ * rewrite rule in .htaccess never runs, so ?c= never arrives. Under Docker
+ * and router.php the rewrite does run. The requested address is the same in
+ * every case, and ?c=jane-doe still works on its own.
  */
 
-$slug     = survey_input($_GET, 'c');
+$path     = (string) parse_url(survey_input($_SERVER, 'REQUEST_URI'), PHP_URL_PATH);
+$slug     = preg_match('~^/candidate-surveys(?:\.php)?/([^/]+)/?$~', $path, $m) === 1 ? $m[1] : survey_input($_GET, 'c');
 $response = null;
 
 if ($slug !== '') {
