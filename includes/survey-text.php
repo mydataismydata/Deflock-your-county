@@ -114,12 +114,28 @@ const SURVEY_SIGNATURE_TEXT = 'By typing my full name below, I certify that I am
 
 // ------------------------------------------------------------- the invite --
 
-// What the subject and message fields on /survey-admin start out holding. An
-// admin can rewrite both there, and the page keeps their version until they
-// put this one back. The candidate's link is added on its own line after the
-// last line of the message, so the message should not try to include it.
-const SURVEY_INVITE_SUBJECT = 'PLACEHOLDER: email subject';
+// Two placeholders the invite email fills in for each candidate. The name
+// works in the subject and the message, the link in the message only. A
+// message with no link placeholder gets the link on its own line at the end.
+const SURVEY_FILL_NAME = '{{candidate-name}}';
+const SURVEY_FILL_LINK = '{{survey-link}}';
 
-const SURVEY_INVITE_BODY = "PLACEHOLDER: the default message goes here.\n"
+// What the subject and message fields on /survey-admin start out holding,
+// when includes/survey-invite.php does not exist.
+//
+// The group's real wording lives in that file instead. Git ignores it, because
+// it signs off with a member's name and the group's inbox, and this repository
+// is public. It returns ['subject' => ..., 'body' => ...]. The deploy bundle
+// carries it with the rest of includes/.
+//
+// An admin can rewrite both on /survey-admin, and the page keeps their version
+// until they put the default back.
+const SURVEY_INVITE_SUBJECT = 'Candidate questionnaire on mass surveillance';
+
+const SURVEY_INVITE_BODY = "TO: " . SURVEY_FILL_NAME . "\n"
     . "\n"
-    . "The candidate's survey link is added on its own line below this text.";
+    . "Dear Candidate,\n"
+    . "\n"
+    . "Please complete our 10-question survey on mass surveillance:\n"
+    . "\n"
+    . SURVEY_FILL_LINK;

@@ -288,11 +288,12 @@ function survey_issue_link(array &$invite): string
  *
  * @return array{0: array, 1: string}
  */
-function survey_invite_create(string $email, array $admin): array
+function survey_invite_create(string $email, string $name, array $admin): array
 {
     $invite = [
         'id'           => survey_new_id(),
         'email'        => $email,
+        'name'         => $name,
         'invited_at'   => gmdate('c'),
         'invited_by'   => $admin['login'],
         'withdrawn_at' => null,
@@ -455,14 +456,31 @@ function survey_response_set_hidden(string $id, bool $hidden): void
 
 /* ----------------------------------------------------------------- draft -- */
 
+/**
+ * The invite email's default subject and message: the group's own wording
+ * from includes/survey-invite.php when that file exists, and the stand-ins in
+ * survey-text.php when it does not.
+ */
+function survey_invite_defaults(): array
+{
+    $file  = __DIR__ . '/survey-invite.php';
+    $local = is_file($file) ? include $file : null;
+
+    return [
+        'subject' => is_string($local['subject'] ?? null) ? $local['subject'] : SURVEY_INVITE_SUBJECT,
+        'body'    => is_string($local['body'] ?? null) ? $local['body'] : SURVEY_INVITE_BODY,
+    ];
+}
+
 /** The invite email's subject and message as the admin last saved them, or the defaults. */
 function survey_draft(): array
 {
-    $saved = survey_read(survey_path('draft.php'));
+    $saved    = survey_read(survey_path('draft.php'));
+    $defaults = survey_invite_defaults();
 
     return [
-        'subject' => is_string($saved['subject'] ?? null) ? $saved['subject'] : SURVEY_INVITE_SUBJECT,
-        'body'    => is_string($saved['body'] ?? null) ? $saved['body'] : SURVEY_INVITE_BODY,
+        'subject' => is_string($saved['subject'] ?? null) ? $saved['subject'] : $defaults['subject'],
+        'body'    => is_string($saved['body'] ?? null) ? $saved['body'] : $defaults['body'],
         'saved'   => $saved !== null,
     ];
 }
@@ -763,10 +781,53 @@ function survey_admin_address(string $login): string
     return survey_is_email($login) ? $login : CONTACT_TO;
 }
 
-/** Email a candidate their link: the admin's message, then the link on its own line. */
+/**
+ * Any {{...}} in a subject or message that the invite does not fill in. A
+ * misspelled placeholder would otherwise reach the candidate as written.
+ */
+function survey_unknown_fills(string $text, array $allowed): array
+{
+    preg_match_all('/\{\{[^{}]*\}\}/', $text, $found);
+
+    return array_values(array_unique(array_diff($found[0], $allowed)));
+}
+
+/** True when a subject or message asks for the candidate's name. */
+function survey_wants_name(string ...$texts): bool
+{
+    foreach ($texts as $text) {
+        if (str_contains($text, SURVEY_FILL_NAME)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * One candidate's invite email: their name and link put where the subject
+ * and message ask for them. A message without the link placeholder gets the
+ * link on its own line at the end, so no invite goes out without one.
+ *
+ * @return array{0: string, 1: string} subject and body
+ */
+function survey_invite_text(string $subject, string $body, array $invite, string $token): array
+{
+    $name = (string) ($invite['name'] ?? '');
+    $link = survey_link($token);
+    $body = str_replace(SURVEY_FILL_NAME, $name, rtrim($body));
+
+    $body = str_contains($body, SURVEY_FILL_LINK)
+        ? str_replace(SURVEY_FILL_LINK, $link, $body)
+        : $body . "\n\n" . $link;
+
+    return [str_replace(SURVEY_FILL_NAME, $name, $subject), $body . "\n"];
+}
+
+/** Email a candidate their invite. */
 function survey_send_invite(array $invite, string $token, string $subject, string $body, array $admin): bool
 {
-    $text = rtrim($body) . "\n\n" . survey_link($token) . "\n";
+    [$subject, $text] = survey_invite_text($subject, $body, $invite, $token);
 
     return send_site_mail($invite['email'], $subject, $text, '', survey_admin_address($admin['login']));
 }

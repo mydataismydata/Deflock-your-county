@@ -52,10 +52,11 @@ attached or need cutting.
 
 **`includes/survey-text.php`**
 
-- `SURVEY_INVITE_SUBJECT` and `SURVEY_INVITE_BODY` are placeholders, added 10 October 2026. They
-  are what the subject and message fields on `/survey-admin` start out holding. If an admin has
-  saved their own wording on that page, it masks a new default until somebody presses "Put back
-  the default subject and message".
+- The invite email's real wording is in `includes/survey-invite.php`, outside git, since 10
+  October 2026. Its `DATE:` line is fixed text, "Saturday, October 10, 2026", so change it before
+  a later round of invites. `SURVEY_INVITE_SUBJECT` and `SURVEY_INVITE_BODY` in this file are only
+  the stand-in for an install without that file. If an admin has saved their own wording on the
+  page, it masks the default until somebody presses "Put back the default subject and message".
 - `SURVEY_MEMO` carries the date and the deadline exactly as the Google Form had them:
   October 10th, 2026, and October 23rd, 2026 at 5:00 PM. They are printed text. Nothing stops a
   candidate submitting after the deadline.

@@ -10,7 +10,7 @@ header('X-Robots-Tag: noindex, nofollow');
 
 $errors  = [];
 $created = null;   // the link just made, shown once: ['email', 'link', 'mailed']
-$values  = ['login' => '', 'email' => '', 'subject' => '', 'body' => ''];
+$values  = ['login' => '', 'name' => '', 'email' => '', 'subject' => '', 'body' => ''];
 
 $post   = ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST';
 $action = $post ? survey_input($_POST, 'action') : '';
@@ -82,9 +82,20 @@ if ($admin !== null && $action !== '') {
 
             case 'save':
             case 'send':
+                $values['name']    = survey_line(survey_input($_POST, 'name'));
                 $values['email']   = trim(survey_input($_POST, 'email'));
                 $values['subject'] = survey_line(survey_input($_POST, 'subject'));
                 $values['body']    = survey_block(survey_input($_POST, 'body'));
+
+                // A misspelled placeholder would reach the candidate as typed.
+                $fills = 'This page fills in ' . SURVEY_FILL_NAME . ' and ' . SURVEY_FILL_LINK . '.';
+                foreach (['subject' => [SURVEY_FILL_NAME], 'body' => [SURVEY_FILL_NAME, SURVEY_FILL_LINK]] as $field => $allowed) {
+                    $unknown = survey_unknown_fills($values[$field], $allowed);
+                    if ($unknown !== []) {
+                        $errors[$field] = 'Nothing fills in ' . implode(' or ', $unknown) . '. '
+                            . ($field === 'subject' ? 'The subject can use ' . SURVEY_FILL_NAME . ' only.' : $fills);
+                    }
+                }
 
                 if ($values['subject'] === '') {
                     $errors['subject'] = 'The email needs a subject.';
@@ -106,6 +117,12 @@ if ($admin !== null && $action !== '') {
                     break;
                 }
 
+                if (survey_length($values['name']) > 200) {
+                    $errors['name'] = 'That is longer than 200 characters.';
+                } elseif ($values['name'] === '' && survey_wants_name($values['subject'], $values['body'])) {
+                    $errors['name'] = 'The email uses ' . SURVEY_FILL_NAME . ', so it needs the candidate\'s name.';
+                }
+
                 if ($values['email'] === '') {
                     $errors['email'] = 'Enter the candidate\'s email address.';
                 } elseif (!survey_is_email($values['email'])) {
@@ -120,12 +137,13 @@ if ($admin !== null && $action !== '') {
                         survey_draft_save($values['subject'], $values['body'], $admin);
                     }
 
-                    [$invite, $token] = survey_invite_create($values['email'], $admin);
+                    [$invite, $token] = survey_invite_create($values['email'], $values['name'], $admin);
                     $created = [
                         'email'  => $invite['email'],
                         'link'   => survey_link($token),
                         'mailed' => survey_send_invite($invite, $token, $values['subject'], $values['body'], $admin),
                     ];
+                    $values['name']  = '';
                     $values['email'] = '';
                 }
                 break;
@@ -136,8 +154,15 @@ if ($admin !== null && $action !== '') {
                 break;
 
             case 'new-link':
+                $draft = survey_draft();
+
+                if ($invite !== null && ($invite['name'] ?? '') === '' && survey_wants_name($draft['subject'], $draft['body'])) {
+                    $errors['form'] = 'This invite has no name on record, and the saved email uses '
+                                    . SURVEY_FILL_NAME . '. Invite the candidate again from the form above, with their name.';
+                    break;
+                }
+
                 if ($invite !== null && survey_invite_status($invite) !== 'answered') {
-                    $draft = survey_draft();
                     $token = survey_issue_link($invite);
                     $invite['withdrawn_at'] = null;
                     survey_invite_save($invite);
@@ -187,7 +212,7 @@ foreach ($notices as $flag => $text) {
 
 $rows   = [];
 $counts = ['answered' => 0, 'waiting' => 0, 'withdrawn' => 0];
-$draft  = ['subject' => SURVEY_INVITE_SUBJECT, 'body' => SURVEY_INVITE_BODY, 'saved' => false];
+$draft  = survey_invite_defaults() + ['saved' => false];
 
 if ($admin !== null) {
     $draft = survey_draft();
@@ -360,14 +385,30 @@ require __DIR__ . '/includes/header.php';
     <form class="panel panel--form mt-m" method="post" action="/survey-admin#invite" novalidate>
       <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
 
+      <div class="field-pair">
+      <div class="field<?= isset($errors['name']) ? ' field--bad' : '' ?>">
+        <label for="a-name">Candidate's name
+          <span class="hint">Fills in <?= e(SURVEY_FILL_NAME) ?>.</span>
+        </label>
+        <input id="a-name" name="name" type="text" maxlength="200"
+               autocomplete="off" value="<?= e($values['name']) ?>"
+               <?= isset($errors['name']) ? 'aria-describedby="e-name" aria-invalid="true"' : '' ?>>
+<?php if (isset($errors['name'])): ?>
+        <span class="field__error" id="e-name"><?= e($errors['name']) ?></span>
+<?php endif; ?>
+      </div>
+
       <div class="field<?= isset($errors['email']) ? ' field--bad' : '' ?>">
-        <label for="a-email">Candidate's email</label>
+        <label for="a-email">Candidate's email
+          <span class="hint">The invite goes here.</span>
+        </label>
         <input id="a-email" name="email" type="email" maxlength="254"
                autocomplete="off" value="<?= e($values['email']) ?>"
                <?= isset($errors['email']) ? 'aria-describedby="e-email" aria-invalid="true"' : '' ?>>
 <?php if (isset($errors['email'])): ?>
         <span class="field__error" id="e-email"><?= e($errors['email']) ?></span>
 <?php endif; ?>
+      </div>
       </div>
 
       <div class="field<?= isset($errors['subject']) ? ' field--bad' : '' ?>">
@@ -382,9 +423,13 @@ require __DIR__ . '/includes/header.php';
 
       <div class="field<?= isset($errors['body']) ? ' field--bad' : '' ?>">
         <label for="a-body">Message
-          <span class="hint">The candidate's survey link is added on its own line after the last line.</span>
+          <span class="hint">
+            <?= e(SURVEY_FILL_LINK) ?> becomes the candidate's survey link, and
+            <?= e(SURVEY_FILL_NAME) ?> their name. Without <?= e(SURVEY_FILL_LINK) ?>,
+            the link goes on its own line at the end.
+          </span>
         </label>
-        <textarea id="a-body" name="body" rows="12" required maxlength="10000"
+        <textarea id="a-body" name="body" rows="24" required maxlength="10000"
                   <?= isset($errors['body']) ? 'aria-describedby="e-body" aria-invalid="true"' : '' ?>><?= e($values['body']) ?></textarea>
 <?php if (isset($errors['body'])): ?>
         <span class="field__error" id="e-body"><?= e($errors['body']) ?></span>
@@ -426,6 +471,8 @@ require __DIR__ . '/includes/header.php';
           <p class="ledger__email"><?= e($invite['email']) ?></p>
 <?php if ($response !== null): ?>
           <p class="ledger__who"><?= e($response['name']) ?>, <?= e($response['office']) ?></p>
+<?php elseif (($invite['name'] ?? '') !== ''): ?>
+          <p class="ledger__who"><?= e($invite['name']) ?></p>
 <?php endif; ?>
           <p class="label-mono">
             invited <?= e($date($invite['invited_at'] ?? '')) ?> by <?= e((string) ($invite['invited_by'] ?? '')) ?>

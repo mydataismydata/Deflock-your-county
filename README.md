@@ -45,6 +45,7 @@ includes/
   survey.php       The survey's storage, one-use links, admin sign-in and mail
   survey-text.php  The questionnaire's wording and the invite email's defaults
   survey-admins.php  The admin accounts. Written by tools/survey-admin.php, not in git
+  survey-invite.php  The invite email's default subject and message. Not in git
   .htaccess        Denies web access to this directory
 
 assets/css/site.css   One stylesheet. Design tokens are in :root at the top.
@@ -128,9 +129,13 @@ That should print `1`.
 Candidates answer the group's questionnaire on this site rather than in a
 Google Form. The wording lives in `includes/survey-text.php`.
 
-1. An admin signs in at `/survey-admin`, enters a candidate's email address,
-   and sends the invite. The email is the subject and message on that page,
-   with the candidate's link added on its own line at the end.
+1. An admin signs in at `/survey-admin`, enters a candidate's name and email
+   address, and sends the invite. The email is the subject and message on
+   that page. `{{candidate-name}}` in either becomes the name, and
+   `{{survey-link}}` in the message becomes the candidate's link. A message
+   without `{{survey-link}}` gets the link on its own line at the end. Any
+   other `{{...}}` is refused before anything is sent, because a misspelled
+   placeholder would reach the candidate as typed.
 2. The link opens `/survey?t=…`. It takes one set of answers. A second
    submission on the same link is refused, and so is a link that was
    withdrawn or replaced.
@@ -208,8 +213,15 @@ Edit `includes/survey-text.php`. Each response keeps a copy of the questions
 it answered, so an edit changes what the next candidate sees and leaves every
 published answer under the wording that candidate was actually asked.
 
-The invite email's default subject and message are the last two constants in
-that file. Wording an admin saves on `/survey-admin` takes precedence until
+### The invite email
+
+The group's default subject and message live in `includes/survey-invite.php`,
+which returns `['subject' => ..., 'body' => ...]`. Git ignores it, because it
+signs off with a member's name and the group's inbox. The deploy bundle
+carries it with the rest of `includes/`. Without it, the page falls back to the
+short stand-in at the end of `includes/survey-text.php`.
+
+Wording an admin saves on `/survey-admin` takes precedence over either until
 somebody presses "Put back the default subject and message".
 
 ## Moving it to another county

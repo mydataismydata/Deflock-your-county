@@ -11,9 +11,11 @@
 includes/config.local.php
 *.local
 
-# The candidate survey's accounts and its stored invites and answers. The
+# The candidate survey's accounts, the invite email's wording (it names a
+# member and the group's inbox) and the stored invites and answers. The
 # repository is public; these belong to one install.
 includes/survey-admins.php
+includes/survey-invite.php
 /data/
 
 # Anything dropped here while testing
