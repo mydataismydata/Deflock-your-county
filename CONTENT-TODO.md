@@ -50,6 +50,18 @@ attached or need cutting.
   probably closes it: no separate system, nothing to ask for.
 - `RECORDS_FEE_CAP` is set to $25. Check what St. Johns County actually charges before leaving that figure in the sample letter.
 
+**`includes/survey-text.php`**
+
+- `SURVEY_INVITE_SUBJECT` and `SURVEY_INVITE_BODY` are placeholders, added 10 October 2026. They
+  are what the subject and message fields on `/survey-admin` start out holding. If an admin has
+  saved their own wording on that page, it masks a new default until somebody presses "Put back
+  the default subject and message".
+- `SURVEY_MEMO` carries the date and the deadline exactly as the Google Form had them:
+  October 10th, 2026, and October 23rd, 2026 at 5:00 PM. They are printed text. Nothing stops a
+  candidate submitting after the deadline.
+- No admin account exists until somebody runs `php tools/survey-admin.php add` and uploads
+  `includes/survey-admins.php`. The README's "Admin accounts" section has the steps.
+
 **`robots.txt`**
 
 - Update the commented sitemap host, or delete the line.
@@ -161,3 +173,4 @@ reorganise without redirects, which is how the Sunshine Manual link broke.
 - The About page says the group is unaffiliated and has no budget. Change it if either becomes untrue.
 - The About page commits to not helping anyone interfere with equipment. Keep that line. It is the answer to the first bad-faith question you will get.
 - The footer says the site sets no cookies and runs no analytics. That is true of what is here now. It stops being true the moment anyone adds an embed.
+  The one exception is the sign-in cookie for `/survey-admin`, which only an admin who signs in ever receives. No reader gets it.

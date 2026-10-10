@@ -34,6 +34,10 @@ const BRAND_TAIL = 'Flock';
 const SITE_NAME    = BRAND_HEAD . BRAND_TAIL . ' ' . COUNTY_SHORT;
 const SITE_TAGLINE = COUNTY . ', ' . STATE;
 
+// The county's clock. The candidate survey prints the time each answer arrived
+// in it, rather than in whatever zone the web host happens to run.
+const TIMEZONE = 'America/New_York';
+
 // ------------------------------------------------------------ county site --
 
 // The county's own website. Both the label and the address get printed.

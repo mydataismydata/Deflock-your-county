@@ -6,18 +6,21 @@ require_once __DIR__ . '/config.php';
 /** @var string $page  Slug of the current page, used to mark the nav item. */
 /** @var string $title Text for <title>, without the site name. */
 /** @var string $blurb One-line description for search results and link previews. */
+/** @var bool   $hidden True for a page search engines should leave out. */
 
-$page  = $page  ?? '';
-$title = $title ?? '';
-$blurb = $blurb ?? 'A ' . COUNTY . ' group organizing against automated license plate
+$page   = $page  ?? '';
+$title  = $title ?? '';
+$blurb  = $blurb ?? 'A ' . COUNTY . ' group organizing against automated license plate
     readers and other mass surveillance.';
+$hidden = $hidden ?? false;
 
 // Home is reachable through the wordmark; the menu lists the rest.
 $menu = [
-    'about'     => ['/about',        'About'],
-    'resources' => ['/resources',    'Resources'],
-    'involved'  => ['/get-involved', 'Get Involved'],
-    'contact'   => ['/contact',      'Contact'],
+    'about'     => ['/about',             'About'],
+    'resources' => ['/resources',         'Resources'],
+    'surveys'   => ['/candidate-surveys', 'Candidate Surveys'],
+    'involved'  => ['/get-involved',      'Get Involved'],
+    'contact'   => ['/contact',           'Contact'],
 ];
 
 $fullTitle = $title === '' ? SITE_NAME : $title . ' | ' . SITE_NAME;
@@ -29,6 +32,9 @@ $fullTitle = $title === '' ? SITE_NAME : $title . ' | ' . SITE_NAME;
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($fullTitle) ?></title>
 <meta name="description" content="<?= e($blurb) ?>">
+<?php if ($hidden): ?>
+<meta name="robots" content="noindex, nofollow">
+<?php endif; ?>
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#000000">
 <meta property="og:title" content="<?= e($fullTitle) ?>">

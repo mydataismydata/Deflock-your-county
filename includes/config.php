@@ -13,6 +13,14 @@ declare(strict_types=1);
 // place.php. Fork the site to another county by rewriting that file alone.
 require_once __DIR__ . '/place.php';
 
+if (!function_exists('site_path')) {
+    /** An absolute path, with a relative one taken from the site root. */
+    function site_path(string $path): string
+    {
+        return str_starts_with($path, '/') ? $path : dirname(__DIR__) . '/' . $path;
+    }
+}
+
 // ---------------------------------------------------------------- identity --
 
 // Absolute URL of the live site, no trailing slash. Used for canonical tags.
@@ -67,6 +75,31 @@ const FORM_MAX_SECONDS = 3600;
 // would otherwise turn every real submission away. Send yourself a test
 // message through the live form after changing it.
 const FORM_REQUIRE_BROWSER_HEADERS = true;
+
+// -------------------------------------------------------- candidate survey --
+
+// Where the candidate survey keeps its invites, its answers and the key that
+// signs an admin's sign-in. It is the one directory the site writes to.
+//
+// The survey creates it on first use, with an .htaccess that refuses web
+// access, and every file it writes there begins with a line of PHP that
+// answers 404 and stops. So it is safe inside the web root. A folder beside
+// the web root is safer still, if the host lets PHP reach one.
+//
+// A deploy must never replace or delete this directory. The bundle does not
+// contain it, and the rsync line in the README skips it.
+//
+// A relative path is taken from the site root. The environment variable wins,
+// so a development machine can keep its test data somewhere else.
+define('SURVEY_DATA_DIR', site_path(getenv('DEFLOCK_SURVEY_DATA_DIR') ?: 'data'));
+
+// The accounts that can sign in to /survey-admin. tools/survey-admin.php
+// writes this file and git ignores it, because the repository is public.
+// Upload it with the rest of includes/.
+define('SURVEY_ADMINS_FILE', site_path(getenv('DEFLOCK_SURVEY_ADMINS_FILE') ?: 'includes/survey-admins.php'));
+
+// How long a sign-in to /survey-admin lasts before it asks again.
+const SURVEY_SESSION_HOURS = 12;
 
 // --------------------------------------------------------------- channels --
 

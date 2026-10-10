@@ -8,6 +8,12 @@ ErrorDocument 404 /404.php
 # Never serve version control or environment files, even if one gets uploaded.
 RedirectMatch 404 /\.(git|hg|svn|env)
 
+# The survey's stored answers and the command-line tools are not web pages.
+# data/ also carries its own .htaccess, and every file in it exits before
+# printing anything, so this line is the third lock on that door rather than
+# the only one.
+RedirectMatch 404 ^/(data|tools)(/|$)
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
@@ -28,6 +34,14 @@ RedirectMatch 404 /\.(git|hg|svn|env)
   # Anyone who asks for /about.php gets sent to /about.
   RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
   RewriteRule ^ /%1 [R=301,L]
+
+  # A page asked for with a slash on the end, like /survey-admin/, gets sent
+  # to the address without one. Real directories keep theirs.
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+  # One candidate's answers: /candidate-surveys/jane-doe.
+  RewriteRule ^candidate-surveys/([a-z0-9-]+)$ candidate-surveys.php?c=$1 [L,QSA]
 
   # Serve /about from about.php without changing the address bar.
   RewriteCond %{REQUEST_FILENAME} !-f

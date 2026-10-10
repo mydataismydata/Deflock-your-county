@@ -23,6 +23,7 @@ require_once __DIR__ . '/config.php';
         <li><a href="/about">About</a></li>
         <li><a href="/resources">Resources</a></li>
         <li><a href="/anonymized">Anonymized tracking</a></li>
+        <li><a href="/candidate-surveys">Candidate Surveys</a></li>
         <li><a href="/get-involved">Get Involved</a></li>
         <li><a href="/contact">Contact</a></li>
       </ul>

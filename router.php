@@ -27,6 +27,20 @@ if (str_starts_with($path, '/includes/')) {
     exit('Forbidden');
 }
 
+// Matches the RedirectMatch on data/ and tools/ in .htaccess.
+if (preg_match('~^/(data|tools)(/|$)~', $path) === 1) {
+    http_response_code(404);
+    require __DIR__ . '/404.php';
+    return true;
+}
+
+// One candidate's answers, as the rewrite in .htaccess serves them.
+if (preg_match('~^/candidate-surveys/([a-z0-9-]+)$~', $path, $m) === 1) {
+    $_GET['c'] = $m[1];
+    require __DIR__ . '/candidate-surveys.php';
+    return true;
+}
+
 // Hand real files (stylesheet, script, favicon) to the server unchanged.
 if ($path !== '/' && is_file(__DIR__ . $path)) {
     return false;

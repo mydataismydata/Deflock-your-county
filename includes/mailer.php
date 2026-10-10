@@ -1,9 +1,11 @@
 <?php
 /**
- * Contact form plumbing: stateless anti-spam tokens and one mail() call.
+ * Contact form plumbing: stateless anti-spam tokens, and the one mail() call
+ * that the contact form and the candidate survey both send through.
  *
- * Nothing is written to disk and no session is started, so the site runs on
- * shared hosting with no database and no writable directory.
+ * Nothing in this file writes to disk or starts a session. The contact form
+ * keeps nothing on the server. The candidate survey does keep its answers,
+ * and survey.php is the only file that writes them.
  */
 
 declare(strict_types=1);
@@ -139,18 +141,53 @@ function form_token_age(string $token): ?int
 }
 
 /**
- * Deliver one contact message. Returns false if the host refused to queue it.
+ * Hand one plain-text message to the host's mail system. Returns false if the
+ * host refused to queue it.
  *
- * The submitter's address goes in Reply-To, never in From. Ionos checks that
- * the sending domain matches the account and drops mail that does not.
+ * From is always the site's own mailbox. Ionos checks that the sending domain
+ * matches the account and drops mail that does not, so anybody else's address
+ * goes in Reply-To.
  */
-function send_contact_message(string $name, string $email, string $topic, string $message): bool
+function send_site_mail(string $to, string $subject, string $body, string $replyName = '', string $replyEmail = ''): bool
 {
     if (!function_exists('mail')) {
         return false;
     }
 
-    $subject = header_encode(CONTACT_SUBJECT_PREFIX . ' ' . $topic . ' from ' . $name);
+    $headers = ['From: ' . header_address(CONTACT_FROM_NAME, CONTACT_FROM)];
+
+    if ($replyEmail !== '') {
+        $headers[] = 'Reply-To: ' . header_address($replyName, $replyEmail);
+    }
+
+    $headers = implode("\r\n", array_merge($headers, [
+        'MIME-Version: 1.0',
+        'Content-Type: text/plain; charset=UTF-8',
+        'Content-Transfer-Encoding: 8bit',
+        'Auto-Submitted: auto-generated',
+    ]));
+
+    $to      = header_safe($to);
+    $subject = header_encode($subject);
+    $body    = wordwrap(str_replace("\r\n", "\n", $body), 78, "\n", false);
+
+    // The envelope sender helps deliverability where the host allows it. Some
+    // shared configurations block the fifth argument, so fall back without it.
+    $sent = @mail($to, $subject, $body, $headers, '-f' . CONTACT_FROM);
+
+    if (!$sent) {
+        $sent = @mail($to, $subject, $body, $headers);
+    }
+
+    return $sent;
+}
+
+/**
+ * Deliver one contact message. Returns false if the host refused to queue it.
+ */
+function send_contact_message(string $name, string $email, string $topic, string $message): bool
+{
+    $subject = CONTACT_SUBJECT_PREFIX . ' ' . $topic . ' from ' . $name;
 
     // The labelled fields are collapsed onto single lines. A name carrying a
     // newline cannot forge a header, because PHP keeps headers and body apart,
@@ -167,24 +204,5 @@ function send_contact_message(string $name, string $email, string $topic, string
           . "Reply directly to this message to answer the sender.\n"
           . "No IP address or browser details were recorded.\n";
 
-    $headers = implode("\r\n", [
-        'From: ' . header_address(CONTACT_FROM_NAME, CONTACT_FROM),
-        'Reply-To: ' . header_address($name, $email),
-        'MIME-Version: 1.0',
-        'Content-Type: text/plain; charset=UTF-8',
-        'Content-Transfer-Encoding: 8bit',
-        'Auto-Submitted: auto-generated',
-    ]);
-
-    $body = wordwrap(str_replace("\r\n", "\n", $body), 78, "\n", false);
-
-    // The envelope sender helps deliverability where the host allows it. Some
-    // shared configurations block the fifth argument, so fall back without it.
-    $sent = @mail(CONTACT_TO, $subject, $body, $headers, '-f' . CONTACT_FROM);
-
-    if (!$sent) {
-        $sent = @mail(CONTACT_TO, $subject, $body, $headers);
-    }
-
-    return $sent;
+    return send_site_mail(CONTACT_TO, $subject, $body, $name, $email);
 }

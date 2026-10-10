@@ -1,13 +1,15 @@
 # Deflock your county
 
-Five-page site for a local group organizing against automated license plate
-readers. Built to run on shared hosting with no database, no build step and no
-writable directory. It ships configured for St. Johns County, Florida, and
-every string that names a place sits in one file.
+Site for a local group organizing against automated license plate readers.
+Built to run on shared hosting with no database and no build step. One
+directory is writable, and only the candidate survey writes to it. It ships
+configured for St. Johns County, Florida, and every string that names a place
+sits in one file.
 
 ## What it needs
 
-PHP 8.0 or newer with `mail()` enabled, and Apache with `mod_rewrite`. That is
+PHP 8.0 or newer with `mail()` enabled, Apache with `mod_rewrite`, and
+permission for PHP to create one directory for the candidate survey. That is
 the default Ionos shared hosting configuration. There is nothing to install and
 nothing to compile.
 
@@ -23,17 +25,26 @@ about.php          Who the group is and what it does
 resources.php      External links, grouped, defined in one array at the top
 get-involved.php   Meetings, officials, phone/email/comment scripts, records
 contact.php        Form and its handler, posts to itself
+candidate-surveys.php  Tiles of every candidate who answered, and one candidate's answers
+survey.php         The questionnaire a candidate's one-use link opens. Unlisted
+survey-admin.php   Sign-in, invites and moderation for the survey. Unlisted
 404.php            Error page, wired up in .htaccess
 router.php         Development only. Reproduces the live URLs under php -S
 docker-compose.yml Development only. Runs the site under real Apache
 docker/            The image for that container, and the captured-mail drop
+tools/
+  survey-admin.php Command line only. Adds, changes and removes survey admins
+data/              Created on the host by the survey. Never in git, never deployed
 
 includes/
   place.php        Every string that names a county, state, statute or official
   config.php       Your install: mail addresses, form secret, meetings, socials
   header.php       Document head, fixed header, grain overlay, primary nav
   footer.php       Footer and closing markup
-  mailer.php       Form tokens and the single mail() call
+  mailer.php       Form tokens and the mail() call every form sends through
+  survey.php       The survey's storage, one-use links, admin sign-in and mail
+  survey-text.php  The questionnaire's wording and the invite email's defaults
+  survey-admins.php  The admin accounts. Written by tools/survey-admin.php, not in git
   .htaccess        Denies web access to this directory
 
 assets/css/site.css   One stylesheet. Design tokens are in :root at the top.
@@ -112,6 +123,95 @@ curl -sI https://your-site.example/ | grep -ic "content-security-policy"
 
 That should print `1`.
 
+## The candidate survey
+
+Candidates answer the group's questionnaire on this site rather than in a
+Google Form. The wording lives in `includes/survey-text.php`.
+
+1. An admin signs in at `/survey-admin`, enters a candidate's email address,
+   and sends the invite. The email is the subject and message on that page,
+   with the candidate's link added on its own line at the end.
+2. The link opens `/survey?t=…`. It takes one set of answers. A second
+   submission on the same link is refused, and so is a link that was
+   withdrawn or replaced.
+3. On submission the answers are published at `/candidate-surveys` at once.
+   A plain-text copy goes to the candidate and another to the admin who sent
+   the invite, and each copy's Reply-To points at the other person.
+
+Each response is stored against its invite, so it stays tied to the address
+the link was sent to as well as to the name typed in the signature. The email
+address is never published.
+
+### Admin accounts
+
+The username is an email address, because the admin copy of each answer goes
+there. Any characters are accepted apart from control characters. Spaces at
+the ends are dropped and capitals do not matter when signing in. A password
+needs 8 characters or more and nothing else.
+
+Accounts are made on your own computer, not on the site:
+
+```bash
+php tools/survey-admin.php add you@example.org
+```
+
+It asks for the password twice without echoing it, and writes
+`includes/survey-admins.php`. Git ignores that file, because this repository
+is public. Upload it to `includes/` on the host. The deploy bundle picks it up
+with the rest of `includes/`. The same tool has `password`, `remove` and
+`list`. Changing a password signs that account out everywhere.
+
+A sign-in lasts `SURVEY_SESSION_HOURS`. It is the one cookie the site sets,
+and only somebody who signs in to `/survey-admin` receives it. Five wrong
+passwords for one username from one address, or twenty from one address,
+lock that address out for 15 minutes. The throttle files are named by a keyed
+hash, so no IP address is written down.
+
+### Where the answers live
+
+`SURVEY_DATA_DIR` in `includes/config.php`, which is `data/` at the site root
+unless you change it. The survey creates it on first use:
+
+```
+data/
+  .htaccess            refuses all web access
+  key.php              the random key that signs admin cookies
+  draft.php            the invite subject and message as last saved
+  invites/<id>.php     who was invited, when, by whom, and a hash of their link
+  responses/<id>.php   what they answered, with the questions as they were asked
+  throttle/<hash>.php  recent failed sign-ins
+```
+
+Every file begins with a line of PHP that answers 404 and exits, followed by
+JSON. A host that ignored the `.htaccess` would still serve nothing. A folder
+outside the web root is safer again, if the host lets PHP reach one: set
+`SURVEY_DATA_DIR` to its absolute path.
+
+Back it up by downloading the folder. **A deploy must never replace or delete
+it.** The bundle never contains it, and the rsync line below skips it.
+
+Nothing in the survey is signed with `FORM_SECRET`. The deploy script mints a
+new form secret for every bundle, and anything signed with it would stop
+working on each upload. Links are random, and only their hashes are stored, so
+an admin sees a link once, when it is made. "Send a new link" replaces it and
+emails the new one.
+
+### Taking an answer down
+
+"Hide from the site" on `/survey-admin` takes a response off the public page
+and leaves the file in place. "Put back on the site" reverses it. Nothing on
+the page deletes an answer. Delete the file in `data/responses/` for that.
+
+### Changing the questions
+
+Edit `includes/survey-text.php`. Each response keeps a copy of the questions
+it answered, so an edit changes what the next candidate sees and leaves every
+published answer under the wording that candidate was actually asked.
+
+The invite email's default subject and message are the last two constants in
+that file. Wording an admin saves on `/survey-admin` takes precedence until
+somebody presses "Put back the default subject and message".
+
 ## Moving it to another county
 
 Rewrite `includes/place.php`. Nothing else names a place, and that is checked:
@@ -145,15 +245,22 @@ webspace. Include the dotfiles: `.htaccess` at the root and
 ```bash
 rsync -av --delete \
   --exclude '.git' --exclude '.gitignore' --exclude 'CONTENT-TODO.md' \
-  --exclude 'router.php' \
+  --exclude 'router.php' --exclude 'tools/' --exclude '/data/' \
   ./ user@home123456789.1and1-data.host:/homepages/NN/dNNNNNN/htdocs/
 ```
 
-Then check three things in a browser:
+The `/data/` exclude is what keeps `--delete` away from the survey's answers on
+the host. Excluded paths are protected from deletion as well as from upload.
+Never add `--delete-excluded` to that line.
+
+Then check five things in a browser:
 
 1. `/about` loads and the address bar keeps the clean URL.
 2. `/includes/config.php` returns 403, not your settings.
 3. The contact form sends and the mail arrives.
+4. `/survey-admin` signs you in. Send yourself an invite, answer it, and
+   check that both copies arrive.
+5. `/data/key.php` returns 403 or 404. The folder only exists after step 4.
 
 If the form reports that the server could not send it, the host refused the
 handoff. Confirm that the mailbox in `CONTACT_FROM` exists on the domain, then
@@ -180,7 +287,18 @@ The project is mounted live. Edit a file and reload the page. Stop it with
 `mail()` has no transport in a container, so the image points `sendmail_path` at
 a script that appends the message to `docker/maildrop/sent.eml`. Submit the
 contact form and read that file to see exactly what would have been delivered,
-headers included. The compose file also sets `DEFLOCK_FORM_SECRET`, which
+headers included. The survey's invites and copies land there too.
+
+To try the survey locally, make a test account somewhere the deploy bundle
+will not pick it up, and point the container at it:
+
+```bash
+DEFLOCK_SURVEY_ADMINS_FILE=data/dev-admins.php php tools/survey-admin.php add you@example.org
+```
+
+Then add `DEFLOCK_SURVEY_ADMINS_FILE: data/dev-admins.php` under
+`environment` in `docker-compose.yml` for the session. Links in the emails use
+`SITE_URL`, so swap its host for `127.0.0.1:8731` when you open one. The compose file also sets `DEFLOCK_FORM_SECRET`, which
 overrides `FORM_SECRET` so the form works locally without a real secret going
 anywhere near the repository.
 
