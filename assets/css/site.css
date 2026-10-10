@@ -61,6 +61,7 @@
      hairlines and from the photograph underneath. */
   --bg:            #000000;
   --bg-blank:      #05070a;   /* a scene still waiting for its photograph */
+  --bg-cell:       #060606;   /* a cell in a ruled grid, just off black so the rules show where they cross */
   --bg-raised:     rgba(255, 255, 255, 0.03);
   --bg-header:     rgba(0, 0, 0, 0.75);
 
@@ -128,6 +129,7 @@
 
   --track-eyebrow: 0.14em;
   --track-mono:    0.08em;
+  --track-badge:   0.12em;
   --track-accent:  0.20em;
   --track-script:  0.02em;
 
