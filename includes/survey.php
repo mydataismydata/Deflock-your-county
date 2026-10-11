@@ -367,8 +367,33 @@ function survey_response(string $id): ?array
 }
 
 /**
- * Every response, grouped by office and then by name, so candidates for the
- * same seat sit side by side. Hidden ones only when asked for.
+ * What the site lists a candidate under: the office as an admin wrote it, the
+ * party, and whether they hold the seat now.
+ *
+ * An admin sets these on the invite, after the fact. The response is left as
+ * the candidate sent it, and their own wording of the office still prints on
+ * their page. Until an admin sets an office, the candidate's wording stands in.
+ *
+ * @return array{office: string, party: string, incumbent: bool}
+ */
+function survey_listing(array $response): array
+{
+    $invite = survey_invite((string) $response['id']) ?? [];
+    $office = (string) ($invite['office'] ?? '');
+
+    return [
+        'office'    => $office !== '' ? $office : (string) $response['office'],
+        'party'     => (string) ($invite['party'] ?? ''),
+        'incumbent' => !empty($invite['incumbent']),
+    ];
+}
+
+/**
+ * Every response, grouped by listed office and then by name, so candidates for
+ * the same seat sit side by side. Hidden ones only when asked for.
+ *
+ * Each carries its listing under 'listing'. That is read from the invite each
+ * time and never written into the response.
  */
 function survey_responses(bool $withHidden = false): array
 {
@@ -376,8 +401,13 @@ function survey_responses(bool $withHidden = false): array
         return $withHidden || empty($r['hidden']);
     }));
 
+    foreach ($responses as &$r) {
+        $r['listing'] = survey_listing($r);
+    }
+    unset($r);
+
     usort($responses, static function (array $a, array $b): int {
-        return strnatcasecmp((string) $a['office'], (string) $b['office'])
+        return strnatcasecmp($a['listing']['office'], $b['listing']['office'])
             ?: strnatcasecmp((string) $a['name'], (string) $b['name']);
     });
 

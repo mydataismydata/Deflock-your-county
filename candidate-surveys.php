@@ -45,6 +45,7 @@ if ($questions) {
     $title = 'Candidate surveys';
     $blurb = 'What candidates told ' . SITE_NAME . ' about mass surveillance, published as they wrote it.';
 } else {
+    $seat  = $response['listing'];
     $title = $response['name'] . ', candidate survey';
     $blurb = 'The answers ' . $response['name'] . ', ' . $response['office']
            . ', gave to the ' . SITE_NAME . ' questionnaire on mass surveillance.';
@@ -126,11 +127,17 @@ require __DIR__ . '/includes/header.php';
     <ul class="tilegrid">
 <?php foreach ($responses as $r):
         $yes   = survey_yes_count($r);
-        $asked = count($r['positions']); ?>
+        $asked = count($r['positions']);
+        $seat  = $r['listing']; ?>
       <li>
         <a class="tile" href="/candidate-surveys/<?= e($r['slug']) ?>">
-          <span class="tile__office"><?= e($r['office']) ?></span>
+          <span class="tile__office"><?= e($seat['office']) ?></span>
           <span class="tile__name"><?= e($r['name']) ?></span>
+<?php if ($seat['party'] !== '' || $seat['incumbent']): ?>
+          <span class="tile__seat label-mono">
+            <?= e(strtolower($seat['party'])) ?><?= $seat['party'] !== '' && $seat['incumbent'] ? ' &middot; ' : '' ?><?php if ($seat['incumbent']): ?><span class="incumbent">incumbent</span><?php endif; ?>
+          </span>
+<?php endif; ?>
           <span class="badge tile__count">
             <span aria-hidden="true"><?= $yes ?>/<?= $asked ?> <?= e(SURVEY_CHOICES[0]) ?></span>
             <span class="visually-hidden"><?= e(SURVEY_CHOICES[0]) ?> to <?= $yes ?> of <?= $asked ?> questions</span>
@@ -151,7 +158,18 @@ require __DIR__ . '/includes/header.php';
 <!-- ===================================================== one answer ==== -->
 <section class="hero">
   <div class="hero__inner shell">
-    <p class="eyebrow"><span class="dot" aria-hidden="true"></span> Candidate survey</p>
+    <p class="eyebrow">
+      <span class="dot" aria-hidden="true"></span>
+      <span>
+        Candidate survey &middot; <?= e($seat['office']) ?>
+<?php if ($seat['party'] !== ''): ?>
+        &middot; <?= e($seat['party']) ?>
+<?php endif; ?>
+<?php if ($seat['incumbent']): ?>
+        &middot; <span class="incumbent">Incumbent</span>
+<?php endif; ?>
+      </span>
+    </p>
     <h1 class="display-3" data-reveal><?= e($response['name']) ?></h1>
     <p class="lede lede--lg"><?= e($response['office']) ?></p>
     <p class="label-mono mt-s">answered <?= e(strtolower(survey_time($response['submitted_at'], 'F j, Y'))) ?></p>

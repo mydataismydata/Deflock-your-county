@@ -522,6 +522,7 @@ a:hover { color: var(--accent); }
 }
 .eyebrow .dot {
   display: block;
+  flex: none;
   width: 0.375rem;
   height: 0.375rem;
   border-radius: 50%;
@@ -1179,6 +1180,10 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
 }
 .tile__office { color: var(--ink-70); line-height: var(--lh-body); text-wrap: pretty; }
 .tile__count { align-self: flex-start; }
+.tile__seat { color: var(--ink-70); }
+
+/* Marks a candidate who holds the seat now, on the tile and the answer page. */
+.incumbent { color: var(--accent-bright); }
 .tile__foot {
   display: flex;
   align-items: center;
@@ -1306,6 +1311,23 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
 .ledger .label-mono { margin-top: 0.5rem; }
 .ledger__actions { display: flex; flex-wrap: wrap; gap: 0 1.5rem; }
 @media (min-width: 48rem) { .ledger__actions { justify-content: flex-end; } }
+
+/* What the public pages list a candidate under, folded away until needed. */
+.ledger__listing { grid-column: 1 / -1; }
+.ledger__listing summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 1rem;
+  width: fit-content;
+  cursor: pointer;
+}
+.ledger__listing summary .label-mono { margin-top: 0; color: var(--ink-70); }
+.ledger__listing .ledger__saved { color: var(--state-ok); }
+.ledger__listing-form { display: grid; gap: 1rem; margin-top: 1rem; align-items: end; }
+.ledger__listing-form .field { margin-bottom: 0; }
+.ledger__listing-form > :is(.choice, .pill) { justify-self: start; }
+@media (min-width: 48rem) { .ledger__listing-form { grid-template-columns: 2fr 1fr auto auto; } }
 
 /* A button that reads as a link, for the small actions in a list. Paired with
    .accent-link, which supplies the look; this takes the button's own chrome

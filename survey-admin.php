@@ -187,6 +187,28 @@ if ($admin !== null && $action !== '') {
                 survey_response_set_hidden($id, $action === 'hide');
                 $back($action === 'hide' ? 'hidden=1' : 'shown=1');
                 break;
+
+            // What the public pages list the candidate under. The candidate's
+            // own answers are not touched.
+            case 'listing':
+                if ($invite === null) {
+                    $back();
+                }
+
+                $office = survey_line(survey_input($_POST, 'office'));
+                $party  = survey_line(survey_input($_POST, 'party'));
+
+                if (survey_length($office) > 200 || survey_length($party) > 100) {
+                    $errors['form'] = 'The office can be up to 200 characters, and the party up to 100.';
+                    break;
+                }
+
+                $invite['office']    = $office;
+                $invite['party']     = $party;
+                $invite['incumbent'] = survey_input($_POST, 'incumbent') === '1';
+                survey_invite_save($invite);
+                $back('listed=' . $invite['id']);
+                break;
         }
     } catch (RuntimeException $e) {
         $errors['form'] = $writeFailed;
@@ -210,7 +232,9 @@ foreach ($notices as $flag => $text) {
     }
 }
 
-$rows   = [];
+$rows    = [];
+$offices = [];
+$parties = [];
 $counts = ['answered' => 0, 'waiting' => 0, 'withdrawn' => 0];
 $draft  = survey_invite_defaults() + ['saved' => false];
 
@@ -232,7 +256,24 @@ if ($admin !== null) {
             'response' => $status === 'answered' ? survey_response($invite['id']) : null,
         ];
     }
+
+    // Offices and parties typed so far, offered back as suggestions so the
+    // same seat is spelled the same way on every tile.
+    $suggest = static function (string $key) use ($rows): array {
+        $seen = array_unique(array_filter(array_map(
+            static fn (array $row): string => (string) ($row['invite'][$key] ?? ''),
+            $rows
+        )));
+        natcasesort($seen);
+
+        return $seen;
+    };
+    $offices = $suggest('office');
+    $parties = $suggest('party');
 }
+
+// The row whose listing was just saved.
+$listed = survey_input($_GET, 'listed');
 
 $date = static function (?string $iso): string {
     return $iso === null || $iso === '' ? '' : strtolower(survey_time($iso, 'M j, Y'));
@@ -240,7 +281,7 @@ $date = static function (?string $iso): string {
 
 // What the last action did. The list's own buttons return the reader to the
 // list, so what they did prints there rather than above the invite form.
-$feedbackAt = in_array($requested, ['new-link', 'withdraw', 'hide', 'show'], true) ? 'invites' : 'invite';
+$feedbackAt = in_array($requested, ['new-link', 'withdraw', 'hide', 'show', 'listing'], true) ? 'invites' : 'invite';
 foreach (['withdrawn', 'hidden', 'shown'] as $flag) {
     if (($_GET[$flag] ?? '') === '1') {
         $feedbackAt = 'invites';
@@ -464,9 +505,26 @@ require __DIR__ . '/includes/header.php';
 <?php if ($rows === []): ?>
     <p class="note mt-m">Nobody has been invited yet.</p>
 <?php else: ?>
+    <datalist id="l-offices">
+<?php foreach ($offices as $office): ?>
+      <option value="<?= e($office) ?>"></option>
+<?php endforeach; ?>
+    </datalist>
+    <datalist id="l-parties">
+<?php foreach ($parties as $party): ?>
+      <option value="<?= e($party) ?>"></option>
+<?php endforeach; ?>
+    </datalist>
+
     <ul class="ledger mt-m">
-<?php foreach ($rows as ['invite' => $invite, 'status' => $status, 'response' => $response]): ?>
-      <li>
+<?php foreach ($rows as ['invite' => $invite, 'status' => $status, 'response' => $response]):
+        $i    = $invite['id'];
+        $seat = array_filter([
+            (string) ($invite['office'] ?? ''),
+            (string) ($invite['party'] ?? ''),
+            empty($invite['incumbent']) ? '' : 'Incumbent',
+        ]); ?>
+      <li id="i-<?= e($i) ?>">
         <div>
           <p class="ledger__email"><?= e($invite['email']) ?></p>
 <?php if ($response !== null): ?>
@@ -506,6 +564,48 @@ require __DIR__ . '/includes/header.php';
 <?php endif; ?>
 <?php endif; ?>
         </form>
+
+        <details class="ledger__listing">
+          <summary>
+<?php if ($seat === []): ?>
+            <span class="accent-link">Set office, party and incumbent</span>
+<?php else: ?>
+            <span class="label-mono">listed as <?= e(strtolower(implode(' · ', $seat))) ?></span>
+            <span class="accent-link">Edit</span>
+<?php endif; ?>
+<?php if ($listed === $i): ?>
+            <span class="label-mono ledger__saved" role="status">saved</span>
+<?php endif; ?>
+          </summary>
+
+          <form class="ledger__listing-form" method="post" action="/survey-admin#i-<?= e($i) ?>">
+            <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
+            <input type="hidden" name="id" value="<?= e($i) ?>">
+
+            <div class="field">
+              <label for="l-office-<?= e($i) ?>">Office
+                <span class="hint">Shown on the tile. Blank shows what the candidate typed.</span>
+              </label>
+              <input id="l-office-<?= e($i) ?>" name="office" type="text" maxlength="200"
+                     list="l-offices" autocomplete="off" value="<?= e((string) ($invite['office'] ?? '')) ?>">
+            </div>
+
+            <div class="field">
+              <label for="l-party-<?= e($i) ?>">Party
+                <span class="hint">Blank shows no party.</span>
+              </label>
+              <input id="l-party-<?= e($i) ?>" name="party" type="text" maxlength="100"
+                     list="l-parties" autocomplete="off" value="<?= e((string) ($invite['party'] ?? '')) ?>">
+            </div>
+
+            <label class="choice">
+              <input type="checkbox" name="incumbent" value="1"<?= empty($invite['incumbent']) ? '' : ' checked' ?>>
+              <span>Incumbent</span>
+            </label>
+
+            <button class="pill pill--ghost" type="submit" name="action" value="listing">Save</button>
+          </form>
+        </details>
       </li>
 <?php endforeach; ?>
     </ul>

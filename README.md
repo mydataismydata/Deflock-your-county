@@ -208,6 +208,19 @@ emails the new one.
 and leaves the file in place. "Put back on the site" reverses it. Nothing on
 the page deletes an answer. Delete the file in `data/responses/` for that.
 
+### Office, party and incumbent
+
+Candidates type their own office, and no two type it the same way. Each row on
+`/survey-admin` has "Set office, party and incumbent", which an admin fills in
+after the fact. The office box suggests offices already entered, so one seat
+keeps one spelling.
+
+These are stored on the invite, not on the response. The tile on
+`/candidate-surveys` shows the admin's office, the party, and an incumbent
+mark, and the tiles sort by that office. A candidate's own page carries the
+same three in its header and still prints the office as the candidate typed
+it under their name. With no office set, the candidate's wording is used.
+
 ### Changing the questions
 
 Edit `includes/survey-text.php`. Each response keeps a copy of the questions
