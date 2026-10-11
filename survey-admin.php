@@ -468,7 +468,7 @@ $feedback = static function () use ($notice, $errors, $created, $imported): void
 $page    = '';
 $title   = 'Survey admin';
 $hidden  = true;
-$scripts = $admin !== null ? ['/assets/js/survey-queue.js'] : [];
+$scripts = $admin !== null ? ['/assets/js/survey-admin.js'] : [];
 
 require __DIR__ . '/includes/header.php';
 ?>
@@ -631,8 +631,23 @@ require __DIR__ . '/includes/header.php';
   <div class="shell shell--wide">
 <?php if ($feedbackAt === 'invites') { $feedback(); } ?>
 
-    <h2 class="h-section" data-reveal>Invites.</h2>
-    <p class="label-mono mt-s">
+    <div class="invites-head">
+      <h2 class="h-section" data-reveal>Invites.</h2>
+      <div class="invites-head__tools">
+<?php if ($rows !== []): ?>
+        <a class="pill pill--ghost pill--small" href="/survey-admin?export=csv">Export CSV</a>
+<?php endif; ?>
+        <form class="import" method="post" action="/survey-admin#invites" enctype="multipart/form-data">
+          <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
+          <input type="hidden" name="action" value="import">
+          <input id="a-csv" class="visually-hidden" name="csv" type="file" accept=".csv,text/csv" data-import>
+          <label class="pill pill--ghost pill--small" for="a-csv"
+                 title="A CSV file with an Email column. Known addresses are updated; new ones join the send queue.">Import CSV</label>
+          <button class="pill pill--ghost pill--small" type="submit" data-import-submit>Import</button>
+        </form>
+      </div>
+    </div>
+    <p class="label-mono">
 <?php foreach ($counts as $status => $count): ?>
       <?= (int) $count ?> <?= e($status) ?><?= $status === 'withdrawn' ? '' : ' &middot;' ?>
 <?php endforeach; ?>
@@ -748,55 +763,31 @@ require __DIR__ . '/includes/header.php';
     </div>
 <?php endif; ?>
 
-<?php if ($queue !== null && ($queue['queued'] > 0 || $queue['running'] || $queue['last'] !== null)):
+<?php if ($queue !== null && ($queue['queued'] > 0 || $queue['running'])):
         $view = $queueView($queue); ?>
-    <div class="queue mt-m" id="queue" data-queue data-csrf="<?= e(survey_csrf()) ?>" data-running="<?= $queue['running'] ? '1' : '0' ?>">
-      <h3 class="h-block">Send queue</h3>
-      <p class="queue__summary mt-s" data-queue-summary><?= e($view['summary']) ?></p>
-      <p class="label-mono mt-s" data-queue-last><?= e($view['last']) ?></p>
-      <form class="pill-row mt-m" method="post" action="/survey-admin#queue">
-        <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
+    <div class="queue mt-s" id="queue" data-queue data-csrf="<?= e(survey_csrf()) ?>" data-running="<?= $queue['running'] ? '1' : '0' ?>">
+      <div class="queue__line">
+        <p class="queue__summary" data-queue-summary><?= e($view['summary']) ?></p>
+        <form method="post" action="/survey-admin#queue">
+          <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
 <?php if ($queue['running']): ?>
-        <button class="pill pill--ghost" type="submit" name="action" value="queue-pause">Pause sending</button>
-<?php elseif ($queue['queued'] > 0): ?>
-        <button class="pill" type="submit" name="action" value="queue-start">Start sending &rarr;</button>
+          <button class="pill pill--ghost pill--small" type="submit" name="action" value="queue-pause">Pause sending</button>
+<?php else: ?>
+          <button class="pill pill--small" type="submit" name="action" value="queue-start">Start sending</button>
 <?php endif; ?>
-      </form>
-      <p class="note mt-s">
-        Queued invites go out one every <?= SURVEY_QUEUE_INTERVAL ?> seconds, with the saved message:
-        &ldquo;<?= e($draft['subject']) ?>&rdquo;. They go out only while this
-        page is open in a browser somewhere. Close it and they wait; open it
-        again and they carry on.
-      </p>
+        </form>
+      </div>
+      <p class="label-mono queue__last" data-queue-last><?= e($view['last']) ?></p>
+      <p class="queue__note">Sends the saved message. Keep this page open while it runs.</p>
     </div>
 <?php endif; ?>
 
 <?php if ($rows === []): ?>
-    <p class="note mt-m">Nobody has been invited yet.</p>
-<?php else: ?>
-    <div class="pill-row mt-m">
-      <a class="pill pill--ghost" href="/survey-admin?export=csv">Export the list (CSV)</a>
-    </div>
+    <p class="note mt-s">Nobody has been invited yet.</p>
 <?php endif; ?>
 
-    <form class="import mt-m" method="post" action="/survey-admin#invites" enctype="multipart/form-data">
-      <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
-      <div class="field">
-        <label for="a-csv">Import a CSV file
-          <span class="hint">
-            Needs an Email column, like the export. A row for an address already
-            invited sets its Name, Office, Party and Incumbent. A row for a new
-            address joins the send queue, and needs a Name. A blank cell leaves
-            that field as it is. Other columns are ignored.
-          </span>
-        </label>
-        <input id="a-csv" name="csv" type="file" accept=".csv,text/csv">
-      </div>
-      <button class="pill pill--ghost" type="submit" name="action" value="import">Import</button>
-    </form>
-
 <?php if ($rows !== []): ?>
-    <div class="table-wrap mt-l">
+    <div class="table-wrap mt-s">
       <table class="invites">
         <caption class="visually-hidden">Every invite, newest first. Select an email address to edit that invite.</caption>
         <thead>

@@ -1,10 +1,13 @@
 /* ===========================================================================
-   Deflock — the survey's send queue
+   Deflock — the survey admin page
    ---------------------------------------------------------------------------
-   Only /survey-admin loads this. While the queue is running, it asks the
-   server every ten seconds whether it is time to send the next invite. The
-   server decides, and sends at most one per interval however many pages ask, so
-   this file only keeps the page's words up to date.
+   Only /survey-admin loads this. Two behaviours:
+
+     1. Import is one button: picking a file sends the form.
+     2. While the send queue is running, ask the server every ten seconds
+        whether it is time to send the next invite. The server decides, and
+        sends at most one per interval however many pages ask, so this only
+        keeps the page's words up to date.
 
    Browsers slow timers down in a tab nobody is looking at. The queue then
    sends a little less often than the interval allows, never more.
@@ -12,6 +15,19 @@
 
 (function () {
   'use strict';
+
+  /* --- 1. import ---------------------------------------------------------- */
+
+  var file = document.querySelector('[data-import]');
+
+  if (file) {
+    file.form.classList.add('is-auto');
+    file.addEventListener('change', function () {
+      if (file.files.length > 0) { file.form.submit(); }
+    });
+  }
+
+  /* --- 2. send queue ------------------------------------------------------ */
 
   var box = document.querySelector('[data-queue]');
 

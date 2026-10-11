@@ -1353,22 +1353,27 @@ a.status:hover { color: var(--accent-bright); }
 .edit-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.5rem; }
 
 /* The send queue: how many are left, and the button that starts or stops it. */
-.queue { max-width: var(--measure); border-left: 2px solid var(--line-accent); padding-left: 1.25rem; }
-.queue__summary { color: var(--ink-85); line-height: var(--lh-prose); }
+.queue { border-left: 2px solid var(--line-accent); padding-left: 1rem; }
+.queue__line { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; }
+.queue__summary { color: var(--ink-85); font-size: var(--t-small); }
+.queue__last { margin-top: 0.375rem; color: var(--ink-60); }
+.queue__last:empty { display: none; }
+.queue__note { margin-top: 0.25rem; font-size: var(--t-fine); color: var(--ink-50); }
 
-/* The CSV import under the invites, and what it reports back. */
-.import { max-width: var(--measure); }
-.import .field { margin-bottom: 1rem; }
-.import input::file-selector-button {
-  margin-right: 0.75rem;
-  padding: 0.25rem 0.75rem;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-field);
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
-  cursor: pointer;
-}
+/* The invites heading, with export and import on the same line. */
+.invites-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; margin-bottom: 0.75rem; }
+.invites-head__tools { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }
+.pill--small { padding: 0.5rem 1rem; font-size: var(--t-fine); }
+
+/* Import is one button. The file field is hidden behind its label, and the
+   page's script sends the form as soon as a file is picked. Without the
+   script, the Import button beside it does that. */
+.import { display: flex; align-items: center; gap: 0.75rem; }
+.import label { cursor: pointer; }
+.import input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 2px; }
+.import.is-auto [data-import-submit] { display: none; }
+
+/* What an import reports back. */
 .import-list { margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc; color: var(--ink-70); }
 .import-list li { overflow-wrap: anywhere; }
 

@@ -180,7 +180,7 @@ the file, with the saved subject and message.
 - **It needs the page open.** Ionos shared hosting gives a PHP site no
   scheduler it can count on. While the queue runs, `/survey-admin` asks the
   server every ten seconds whether 90 seconds have passed, using
-  `assets/js/survey-queue.js`. Close every copy of the page and the queue
+  `assets/js/survey-admin.js`. Close every copy of the page and the queue
   waits. Open it again and it carries on. A tab in the background may send a
   little slower than that, never faster.
 - **One sender.** A lock file in `data/` makes sure two open pages, or two
