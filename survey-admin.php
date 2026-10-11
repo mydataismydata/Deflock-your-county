@@ -215,6 +215,54 @@ if ($admin !== null && $action !== '') {
     }
 }
 
+/* -------------------------------------------------------------- export -- */
+
+// Every invite as a CSV file a spreadsheet opens. A plain GET link, since it
+// only reads. It still needs the sign-in cookie.
+if ($admin !== null && !$post && survey_input($_GET, 'export') === 'csv') {
+    $cell = static function (string $s): string {
+        // A spreadsheet runs a cell that starts with one of these as a
+        // formula. Candidates type their own names, so none is trusted.
+        if ($s !== '' && strpbrk($s[0], "=+-@\t\r") !== false) {
+            $s = "'" . $s;
+        }
+
+        return '"' . str_replace('"', '""', $s) . '"';
+    };
+    $when = static fn (string $iso): string => $iso === '' ? '' : survey_time($iso, 'Y-m-d H:i T');
+
+    try {
+        $lines = [['Name', 'Email', 'Invited', 'Status', 'Answered']];
+
+        foreach (survey_invites() as $invite) {
+            $status   = survey_invite_status($invite);
+            $response = $status === 'answered' ? survey_response($invite['id']) : null;
+
+            $lines[] = [
+                (string) ($invite['name'] ?? '') ?: (string) ($response['name'] ?? ''),
+                (string) $invite['email'],
+                $when((string) ($invite['invited_at'] ?? '')),
+                $status . ($response !== null && !empty($response['hidden']) ? ', hidden' : ''),
+                $when((string) ($response['submitted_at'] ?? '')),
+            ];
+        }
+
+        // The byte order mark tells Excel the file is UTF-8.
+        $csv = "\xEF\xBB\xBF";
+        foreach ($lines as $line) {
+            $csv .= implode(',', array_map($cell, $line)) . "\r\n";
+        }
+
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="candidate-invites-' . survey_time(gmdate('c'), 'Y-m-d') . '.csv"');
+        echo $csv;
+        exit;
+    } catch (RuntimeException $e) {
+        $errors['form'] = 'The server could not read the survey\'s data folder, so there is nothing to export.';
+        $requested = 'export';
+    }
+}
+
 /* ---------------------------------------------------------------- view -- */
 
 $notices = [
@@ -281,7 +329,7 @@ $date = static function (?string $iso): string {
 
 // What the last action did. The list's own buttons return the reader to the
 // list, so what they did prints there rather than above the invite form.
-$feedbackAt = in_array($requested, ['new-link', 'withdraw', 'hide', 'show', 'listing'], true) ? 'invites' : 'invite';
+$feedbackAt = in_array($requested, ['new-link', 'withdraw', 'hide', 'show', 'listing', 'export'], true) ? 'invites' : 'invite';
 foreach (['withdrawn', 'hidden', 'shown'] as $flag) {
     if (($_GET[$flag] ?? '') === '1') {
         $feedbackAt = 'invites';
@@ -501,6 +549,12 @@ require __DIR__ . '/includes/header.php';
       <?= (int) $counts['waiting'] ?> waiting &middot;
       <?= (int) $counts['withdrawn'] ?> withdrawn
     </p>
+
+<?php if ($rows !== []): ?>
+    <div class="pill-row mt-m">
+      <a class="pill pill--ghost" href="/survey-admin?export=csv">Export the list (CSV)</a>
+    </div>
+<?php endif; ?>
 
 <?php if ($rows === []): ?>
     <p class="note mt-m">Nobody has been invited yet.</p>

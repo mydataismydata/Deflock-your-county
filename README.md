@@ -208,6 +208,14 @@ emails the new one.
 and leaves the file in place. "Put back on the site" reverses it. Nothing on
 the page deletes an answer. Delete the file in `data/responses/` for that.
 
+### Exporting the invites
+
+"Export the list (CSV)" under Invites on `/survey-admin` downloads every invite
+as a spreadsheet file: name, email, when it was invited, its status, and when
+it was answered. Times are in the county's time zone. A cell that would start
+with `=`, `+`, `-` or `@` gets a leading apostrophe, so a name typed by a
+candidate cannot run as a formula.
+
 ### Office, party and incumbent
 
 Candidates type their own office, and no two type it the same way. Each row on
