@@ -25,7 +25,8 @@ about.php          Who the group is and what it does
 resources.php      External links, grouped, defined in one array at the top
 get-involved.php   Meetings, officials, phone/email/comment scripts, records
 contact.php        Form and its handler, posts to itself
-candidate-surveys.php  Tiles of every candidate who answered, and one candidate's answers
+candidate-surveys.php  Tiles of every candidate who answered, one candidate's answers,
+                   and the questions alone at /candidate-surveys/questions
 survey.php         The questionnaire a candidate's one-use link opens. Unlisted
 survey-admin.php   Sign-in, invites and moderation for the survey. Unlisted
 404.php            Error page, wired up in .htaccess

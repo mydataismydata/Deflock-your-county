@@ -395,9 +395,17 @@ function survey_response_by_slug(string $slug): ?array
     return null;
 }
 
+/**
+ * /candidate-surveys/questions shows the questions on their own. No candidate
+ * gets this name. A candidate called Questions would become questions-2.
+ */
+const SURVEY_QUESTIONS_SLUG = 'questions';
+
 /** The address of a response's public page, from a name: "Jane Doe" becomes jane-doe. */
 function survey_slug(string $name, array $taken): string
 {
+    $taken[] = SURVEY_QUESTIONS_SLUG;
+
     if (function_exists('transliterator_transliterate')) {
         $name = (string) transliterator_transliterate('Any-Latin; Latin-ASCII', $name);
     }

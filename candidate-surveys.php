@@ -7,8 +7,10 @@ require_once __DIR__ . '/includes/survey.php';
 header('Cache-Control: no-cache');
 
 /*
- * Two views. /candidate-surveys is the tiles, one per candidate who answered.
- * /candidate-surveys/jane-doe is one candidate's answers in full.
+ * Three views. /candidate-surveys is the tiles, one per candidate who
+ * answered. /candidate-surveys/jane-doe is one candidate's answers in full.
+ * /candidate-surveys/questions is the questions alone, to read rather than
+ * answer. survey_slug() never hands a candidate that name.
  *
  * The name is read from the address the browser asked for. On Ionos,
  * MultiViews hands /candidate-surveys/jane-doe straight to this file and the
@@ -19,9 +21,10 @@ header('Cache-Control: no-cache');
 
 $path     = (string) parse_url(survey_input($_SERVER, 'REQUEST_URI'), PHP_URL_PATH);
 $slug     = preg_match('~^/candidate-surveys(?:\.php)?/([^/]+)/?$~', $path, $m) === 1 ? $m[1] : survey_input($_GET, 'c');
-$response = null;
+$response  = null;
+$questions = $slug === SURVEY_QUESTIONS_SLUG;
 
-if ($slug !== '') {
+if ($slug !== '' && !$questions) {
     $response = preg_match('/^[a-z0-9-]{1,80}$/', $slug) === 1 ? survey_response_by_slug($slug) : null;
 
     if ($response === null) {
@@ -31,11 +34,14 @@ if ($slug !== '') {
     }
 }
 
-$responses = $response === null ? survey_responses() : [];
+$responses = $response === null && !$questions ? survey_responses() : [];
 
 $page = 'surveys';
 
-if ($response === null) {
+if ($questions) {
+    $title = 'Candidate survey questions';
+    $blurb = 'The ten questions ' . SITE_NAME . ' asks every candidate about mass surveillance.';
+} elseif ($response === null) {
     $title = 'Candidate surveys';
     $blurb = 'What candidates told ' . SITE_NAME . ' about mass surveillance, published as they wrote it.';
 } else {
@@ -49,7 +55,44 @@ $arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-widt
 require __DIR__ . '/includes/header.php';
 ?>
 
-<?php if ($response === null): ?>
+<?php if ($questions): ?>
+<!-- ===================================================== questions ==== -->
+<section class="hero">
+  <div class="hero__inner shell">
+    <p class="eyebrow"><span class="dot" aria-hidden="true"></span> Candidate surveys</p>
+    <h1 class="display-3" data-reveal>The questions.</h1>
+    <p class="lede lede--lg">
+      Every candidate gets the same ten. Questions 1 to 9 take a yes or a no.
+      Question 10 takes the candidate's own words.
+    </p>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="shell">
+    <h2 class="eyebrow"><?= e(SURVEY_PART1) ?></h2>
+    <ol class="answers">
+<?php foreach (SURVEY_POSITIONS as $question): ?>
+      <li><p><?= e($question) ?></p></li>
+<?php endforeach; ?>
+    </ol>
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="shell">
+    <h2 class="eyebrow"><?= e(SURVEY_PART2) ?></h2>
+    <ol class="answers">
+      <li><p><?= e(SURVEY_STANCE) ?></p></li>
+    </ol>
+
+    <div class="pill-row">
+      <a class="pill pill--ghost" href="/candidate-surveys">Every candidate's answers</a>
+    </div>
+  </div>
+</section>
+
+<?php elseif ($response === null): ?>
 <!-- ========================================================= tiles ==== -->
 <section class="hero">
   <div class="hero__inner shell">
@@ -62,6 +105,11 @@ require __DIR__ . '/includes/header.php';
       edits and no commentary.
     </p>
     <p class="label-mono mt-s">answers due <?= e(strtolower(SURVEY_MEMO['DEADLINE'])) ?></p>
+    <p class="mt-m">
+      <a class="arrow-link" href="/candidate-surveys/<?= SURVEY_QUESTIONS_SLUG ?>">Read the survey questions
+        <?= $arrow ?>
+      </a>
+    </p>
   </div>
 </section>
 
