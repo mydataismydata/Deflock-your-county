@@ -501,6 +501,196 @@ function survey_response_set_hidden(string $id, bool $hidden): void
     }
 }
 
+/* ----------------------------------------------------------- spreadsheet -- */
+
+// The export's columns, in order. The import reads Email, Office, Party and
+// Incumbent by these names and ignores the rest.
+const SURVEY_CSV_COLUMNS = [
+    'Name', 'Email', 'Office', 'Party', 'Incumbent',
+    'Invited', 'Status', 'Answered', 'Office as typed',
+];
+
+/**
+ * One CSV cell, quoted. A spreadsheet runs a cell that starts with = + - or @
+ * as a formula, and candidates type their own names and offices, so any such
+ * cell gets a leading apostrophe. The import takes it off again.
+ */
+function survey_csv_cell(string $s): string
+{
+    if ($s !== '' && strpbrk($s[0], "=+-@\t\r") !== false) {
+        $s = "'" . $s;
+    }
+
+    return '"' . str_replace('"', '""', $s) . '"';
+}
+
+/** Every invite as a CSV file, newest first, with a byte order mark so Excel reads it as UTF-8. */
+function survey_invites_csv(): string
+{
+    $when = static fn (string $iso): string => $iso === '' ? '' : survey_time($iso, 'Y-m-d H:i T');
+    $line = static fn (array $cells): string => implode(',', array_map('survey_csv_cell', $cells)) . "\r\n";
+
+    $csv = "\xEF\xBB\xBF" . $line(SURVEY_CSV_COLUMNS);
+
+    foreach (survey_invites() as $invite) {
+        $status   = survey_invite_status($invite);
+        $response = $status === 'answered' ? survey_response($invite['id']) : null;
+
+        $csv .= $line([
+            (string) ($invite['name'] ?? '') ?: (string) ($response['name'] ?? ''),
+            (string) $invite['email'],
+            (string) ($invite['office'] ?? ''),
+            (string) ($invite['party'] ?? ''),
+            empty($invite['incumbent']) ? 'No' : 'Yes',
+            $when((string) ($invite['invited_at'] ?? '')),
+            $status . ($response !== null && !empty($response['hidden']) ? ', hidden' : ''),
+            $when((string) ($response['submitted_at'] ?? '')),
+            (string) ($response['office'] ?? ''),
+        ]);
+    }
+
+    return $csv;
+}
+
+/** True for yes, false for no, null for anything else. Spreadsheet checkboxes export TRUE and FALSE. */
+function survey_yes_no(string $s): ?bool
+{
+    $s = strtolower(trim($s));
+
+    if (in_array($s, ['yes', 'y', 'true', '1', 'x'], true)) {
+        return true;
+    }
+
+    return in_array($s, ['no', 'n', 'false', '0'], true) ? false : null;
+}
+
+/**
+ * Set office, party and incumbent from a CSV file, matching each row to every
+ * invite sent to the email address in its Email column.
+ *
+ * A missing column leaves that field alone on every invite. So does a blank
+ * cell, so a sheet with only the party filled in cannot wipe the offices.
+ * Clearing a field is done on the invite's own row on /survey-admin.
+ *
+ * @return array{rows: int, updated: int, unmatched: list<string>, problems: list<string>}
+ * @throws InvalidArgumentException when the file is not a table with an Email column
+ */
+function survey_import_listings(string $text): array
+{
+    if (str_starts_with($text, "\xEF\xBB\xBF")) {
+        $text = substr($text, 3);
+    }
+
+    // Excel's plain "CSV" format is Windows-1252, not UTF-8.
+    if (preg_match('//u', $text) !== 1) {
+        if (!function_exists('mb_convert_encoding')) {
+            throw new InvalidArgumentException('Save the file as "CSV UTF-8" and import it again.');
+        }
+        $text = mb_convert_encoding($text, 'UTF-8', 'Windows-1252');
+    }
+
+    // Excel in some countries separates with semicolons. The header row says which.
+    $first = explode("\n", $text, 2)[0];
+    $delim = ',';
+    foreach ([';', "\t"] as $other) {
+        if (substr_count($first, $other) > substr_count($first, $delim)) {
+            $delim = $other;
+        }
+    }
+
+    $h = fopen('php://temp', 'r+');
+    fwrite($h, $text);
+    rewind($h);
+
+    $columns = [];
+    foreach (fgetcsv($h, 0, $delim, '"', '') ?: [] as $i => $heading) {
+        $columns[strtolower(trim((string) $heading))] ??= $i;
+    }
+
+    if (!isset($columns['email'])) {
+        throw new InvalidArgumentException('The first row needs a column headed Email.');
+    }
+    if (!isset($columns['office']) && !isset($columns['party']) && !isset($columns['incumbent'])) {
+        throw new InvalidArgumentException('The file has no Office, Party or Incumbent column, so there is nothing to set.');
+    }
+
+    $invites = [];
+    foreach (survey_invites() as $invite) {
+        $invites[survey_login_key((string) $invite['email'])][] = $invite;
+    }
+
+    $rows      = 0;
+    $updated   = [];
+    $unmatched = [];
+    $problems  = [];
+    $line      = 1;
+
+    while (($row = fgetcsv($h, 0, $delim, '"', '')) !== false) {
+        $line++;
+
+        $cell = static function (string $name) use ($row, $columns): string {
+            $s = survey_line((string) ($row[$columns[$name] ?? -1] ?? ''));
+
+            return preg_match('/^\'[=+\-@]/', $s) === 1 ? substr($s, 1) : $s;
+        };
+
+        $email = $cell('email');
+        if ($email === '') {
+            continue;
+        }
+        $rows++;
+
+        $set = [];
+
+        if (($office = $cell('office')) !== '') {
+            if (survey_length($office) > 200) {
+                $problems[] = 'Row ' . $line . ': the office is over 200 characters.';
+                continue;
+            }
+            $set['office'] = $office;
+        }
+
+        if (($party = $cell('party')) !== '') {
+            if (survey_length($party) > 100) {
+                $problems[] = 'Row ' . $line . ': the party is over 100 characters.';
+                continue;
+            }
+            $set['party'] = $party;
+        }
+
+        if (($incumbent = $cell('incumbent')) !== '') {
+            $flag = survey_yes_no($incumbent);
+            if ($flag === null) {
+                $problems[] = 'Row ' . $line . ': Incumbent says "' . $incumbent . '". Use Yes or No.';
+                continue;
+            }
+            $set['incumbent'] = $flag;
+        }
+
+        $key = survey_login_key($email);
+        if (!isset($invites[$key])) {
+            $unmatched[] = $email;
+            continue;
+        }
+
+        foreach ($invites[$key] as $n => $invite) {
+            $listing = static fn (array $i): array => [(string) ($i['office'] ?? ''), (string) ($i['party'] ?? ''), !empty($i['incumbent'])];
+            $before  = $listing($invite);
+            $invite  = array_merge($invite, $set);
+
+            if ($listing($invite) !== $before) {
+                survey_invite_save($invite);
+                $invites[$key][$n]      = $invite;
+                $updated[$invite['id']] = true;
+            }
+        }
+    }
+
+    fclose($h);
+
+    return ['rows' => $rows, 'updated' => count($updated), 'unmatched' => $unmatched, 'problems' => $problems];
+}
+
 /* ----------------------------------------------------------------- draft -- */
 
 /**

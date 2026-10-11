@@ -10,6 +10,7 @@ header('X-Robots-Tag: noindex, nofollow');
 
 $errors  = [];
 $created = null;   // the link just made, shown once: ['email', 'link', 'mailed']
+$imported = null;  // what an import did: ['rows', 'updated', 'unmatched', 'problems']
 $values  = ['login' => '', 'name' => '', 'email' => '', 'subject' => '', 'body' => ''];
 
 $post   = ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST';
@@ -188,6 +189,29 @@ if ($admin !== null && $action !== '') {
                 $back($action === 'hide' ? 'hidden=1' : 'shown=1');
                 break;
 
+            // Office, party and incumbent for many invites at once, from a
+            // CSV file. Shown straight back rather than redirected, so the
+            // list of rows it could not use survives. Running it twice
+            // changes nothing the second time.
+            case 'import':
+                $file  = $_FILES['csv'] ?? null;
+                $error = is_array($file) && is_int($file['error'] ?? null) ? $file['error'] : UPLOAD_ERR_NO_FILE;
+
+                if ($error === UPLOAD_ERR_NO_FILE) {
+                    $errors['form'] = 'Choose a CSV file first.';
+                } elseif ($error === UPLOAD_ERR_INI_SIZE || $error === UPLOAD_ERR_FORM_SIZE || ($file['size'] ?? 0) > 1000000) {
+                    $errors['form'] = 'That file is over 1 MB. An export of every invite is a small fraction of that.';
+                } elseif ($error !== UPLOAD_ERR_OK || !is_uploaded_file((string) ($file['tmp_name'] ?? ''))) {
+                    $errors['form'] = 'The file did not arrive. Try again.';
+                } else {
+                    try {
+                        $imported = survey_import_listings((string) file_get_contents($file['tmp_name']));
+                    } catch (InvalidArgumentException $e) {
+                        $errors['form'] = $e->getMessage();
+                    }
+                }
+                break;
+
             // What the public pages list the candidate under. The candidate's
             // own answers are not touched.
             case 'listing':
@@ -220,38 +244,8 @@ if ($admin !== null && $action !== '') {
 // Every invite as a CSV file a spreadsheet opens. A plain GET link, since it
 // only reads. It still needs the sign-in cookie.
 if ($admin !== null && !$post && survey_input($_GET, 'export') === 'csv') {
-    $cell = static function (string $s): string {
-        // A spreadsheet runs a cell that starts with one of these as a
-        // formula. Candidates type their own names, so none is trusted.
-        if ($s !== '' && strpbrk($s[0], "=+-@\t\r") !== false) {
-            $s = "'" . $s;
-        }
-
-        return '"' . str_replace('"', '""', $s) . '"';
-    };
-    $when = static fn (string $iso): string => $iso === '' ? '' : survey_time($iso, 'Y-m-d H:i T');
-
     try {
-        $lines = [['Name', 'Email', 'Invited', 'Status', 'Answered']];
-
-        foreach (survey_invites() as $invite) {
-            $status   = survey_invite_status($invite);
-            $response = $status === 'answered' ? survey_response($invite['id']) : null;
-
-            $lines[] = [
-                (string) ($invite['name'] ?? '') ?: (string) ($response['name'] ?? ''),
-                (string) $invite['email'],
-                $when((string) ($invite['invited_at'] ?? '')),
-                $status . ($response !== null && !empty($response['hidden']) ? ', hidden' : ''),
-                $when((string) ($response['submitted_at'] ?? '')),
-            ];
-        }
-
-        // The byte order mark tells Excel the file is UTF-8.
-        $csv = "\xEF\xBB\xBF";
-        foreach ($lines as $line) {
-            $csv .= implode(',', array_map($cell, $line)) . "\r\n";
-        }
+        $csv = survey_invites_csv();
 
         header('Content-Type: text/csv; charset=UTF-8');
         header('Content-Disposition: attachment; filename="candidate-invites-' . survey_time(gmdate('c'), 'Y-m-d') . '.csv"');
@@ -329,14 +323,14 @@ $date = static function (?string $iso): string {
 
 // What the last action did. The list's own buttons return the reader to the
 // list, so what they did prints there rather than above the invite form.
-$feedbackAt = in_array($requested, ['new-link', 'withdraw', 'hide', 'show', 'listing', 'export'], true) ? 'invites' : 'invite';
+$feedbackAt = in_array($requested, ['new-link', 'withdraw', 'hide', 'show', 'listing', 'export', 'import'], true) ? 'invites' : 'invite';
 foreach (['withdrawn', 'hidden', 'shown'] as $flag) {
     if (($_GET[$flag] ?? '') === '1') {
         $feedbackAt = 'invites';
     }
 }
 
-$feedback = static function () use ($notice, $errors, $created): void { ?>
+$feedback = static function () use ($notice, $errors, $created, $imported): void { ?>
 <?php if ($notice !== null): ?>
     <div class="notice notice--good" role="status"><p><?= e($notice) ?></p></div>
 <?php endif; ?>
@@ -350,6 +344,32 @@ $feedback = static function () use ($notice, $errors, $created): void { ?>
     <div class="notice notice--bad" role="alert">
       <h2>Check the fields below</h2>
       <p>Nothing was sent or saved. Everything you typed is still here.</p>
+    </div>
+<?php endif; ?>
+
+<?php if ($imported !== null): ?>
+    <div class="notice <?= $imported['unmatched'] === [] && $imported['problems'] === [] ? 'notice--good' : '' ?>" role="status">
+      <h2><?= $imported['updated'] === 0 ? 'Nothing needed changing' : 'Updated ' . $imported['updated'] . ($imported['updated'] === 1 ? ' invite' : ' invites') ?></h2>
+      <p>
+        Read <?= $imported['rows'] ?> <?= $imported['rows'] === 1 ? 'row' : 'rows' ?> with an email address.
+        Rows that matched what was already stored changed nothing.
+      </p>
+<?php if ($imported['unmatched'] !== []): ?>
+      <p class="mt-s">No invite went to these addresses, so their rows did nothing:</p>
+      <ul class="import-list">
+<?php foreach ($imported['unmatched'] as $email): ?>
+        <li><?= e($email) ?></li>
+<?php endforeach; ?>
+      </ul>
+<?php endif; ?>
+<?php if ($imported['problems'] !== []): ?>
+      <p class="mt-s">These rows were skipped:</p>
+      <ul class="import-list">
+<?php foreach ($imported['problems'] as $problem): ?>
+        <li><?= e($problem) ?></li>
+<?php endforeach; ?>
+      </ul>
+<?php endif; ?>
     </div>
 <?php endif; ?>
 
@@ -554,6 +574,21 @@ require __DIR__ . '/includes/header.php';
     <div class="pill-row mt-m">
       <a class="pill pill--ghost" href="/survey-admin?export=csv">Export the list (CSV)</a>
     </div>
+
+    <form class="import mt-m" method="post" action="/survey-admin#invites" enctype="multipart/form-data">
+      <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
+      <div class="field">
+        <label for="a-csv">Import office, party and incumbent
+          <span class="hint">
+            A CSV file with an Email column, like the export. Each row sets
+            Office, Party and Incumbent on every invite sent to that address.
+            A blank cell leaves that field as it is. Other columns are ignored.
+          </span>
+        </label>
+        <input id="a-csv" name="csv" type="file" accept=".csv,text/csv">
+      </div>
+      <button class="pill pill--ghost" type="submit" name="action" value="import">Import</button>
+    </form>
 <?php endif; ?>
 
 <?php if ($rows === []): ?>

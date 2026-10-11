@@ -1312,6 +1312,22 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
 .ledger__actions { display: flex; flex-wrap: wrap; gap: 0 1.5rem; }
 @media (min-width: 48rem) { .ledger__actions { justify-content: flex-end; } }
 
+/* The CSV import under the invites, and what it reports back. */
+.import { max-width: var(--measure); }
+.import .field { margin-bottom: 1rem; }
+.import input::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-field);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.import-list { margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc; color: var(--ink-70); }
+.import-list li { overflow-wrap: anywhere; }
+
 /* What the public pages list a candidate under, folded away until needed. */
 .ledger__listing { grid-column: 1 / -1; }
 .ledger__listing summary {

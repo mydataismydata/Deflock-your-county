@@ -208,13 +208,27 @@ emails the new one.
 and leaves the file in place. "Put back on the site" reverses it. Nothing on
 the page deletes an answer. Delete the file in `data/responses/` for that.
 
-### Exporting the invites
+### Exporting and importing the invites
 
 "Export the list (CSV)" under Invites on `/survey-admin` downloads every invite
-as a spreadsheet file: name, email, when it was invited, its status, and when
-it was answered. Times are in the county's time zone. A cell that would start
-with `=`, `+`, `-` or `@` gets a leading apostrophe, so a name typed by a
-candidate cannot run as a formula.
+as a spreadsheet file. Its columns are Name, Email, Office, Party, Incumbent,
+Invited, Status, Answered and Office as typed. Times are in the county's time
+zone. A cell that would start with `=`, `+`, `-` or `@` gets a leading
+apostrophe, so a name typed by a candidate cannot run as a formula.
+
+"Import" takes a CSV file back and sets Office, Party and Incumbent on every
+invite sent to each row's email address. Capitals and spaces around the
+address do not matter. Only the Email column is required, and other columns
+are ignored, so an edited export works as it is.
+
+- A blank cell leaves that field as it was. Clear a field on the invite's own
+  row instead.
+- Incumbent takes Yes or No. TRUE and FALSE from a checkbox column also work.
+- A row with a bad cell is skipped whole, and the page lists it by row number,
+  with any address that matched no invite.
+- Excel's plain "CSV" format, with Windows-1252 text and semicolons in some
+  countries, is read as well as "CSV UTF-8".
+- Importing the same file twice changes nothing the second time.
 
 ### Office, party and incumbent
 
