@@ -384,6 +384,15 @@ function survey_responses(bool $withHidden = false): array
     return $responses;
 }
 
+/** How many of a response's yes-or-no questions it answered Yes. */
+function survey_yes_count(array $response): int
+{
+    return count(array_filter(
+        $response['positions'],
+        fn (array $row): bool => $row['answer'] === SURVEY_CHOICES[0]
+    ));
+}
+
 function survey_response_by_slug(string $slug): ?array
 {
     foreach (survey_responses() as $response) {

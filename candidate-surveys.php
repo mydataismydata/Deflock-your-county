@@ -124,11 +124,17 @@ require __DIR__ . '/includes/header.php';
     </div>
 <?php else: ?>
     <ul class="tilegrid">
-<?php foreach ($responses as $r): ?>
+<?php foreach ($responses as $r):
+        $yes   = survey_yes_count($r);
+        $asked = count($r['positions']); ?>
       <li>
         <a class="tile" href="/candidate-surveys/<?= e($r['slug']) ?>">
-          <span class="tile__name"><?= e($r['name']) ?></span>
           <span class="tile__office"><?= e($r['office']) ?></span>
+          <span class="tile__name"><?= e($r['name']) ?></span>
+          <span class="badge tile__count">
+            <span aria-hidden="true"><?= $yes ?>/<?= $asked ?> <?= e(SURVEY_CHOICES[0]) ?></span>
+            <span class="visually-hidden"><?= e(SURVEY_CHOICES[0]) ?> to <?= $yes ?> of <?= $asked ?> questions</span>
+          </span>
           <span class="tile__foot">
             <span class="label-mono">answered <?= e(strtolower(survey_time($r['submitted_at'], 'M j, Y'))) ?></span>
             <?= $arrow ?>

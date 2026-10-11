@@ -1178,6 +1178,7 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
   text-wrap: balance;
 }
 .tile__office { color: var(--ink-70); line-height: var(--lh-body); text-wrap: pretty; }
+.tile__count { align-self: flex-start; }
 .tile__foot {
   display: flex;
   align-items: center;
