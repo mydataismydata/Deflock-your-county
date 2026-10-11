@@ -288,8 +288,9 @@ or by opening the invite from the table. The office box suggests offices
 already entered, so one seat keeps one spelling.
 
 These are stored on the invite, not on the response. The tile on
-`/candidate-surveys` shows the admin's office, the party, and an incumbent
-mark, and the tiles sort by that office. A candidate's own page carries the
+`/candidate-surveys` shows the admin's office with the party after it in
+capitals, as in "State Representative District #18 (D)", and an incumbent
+mark. The tiles sort by that office. A candidate's own page carries the
 same three in its header and still prints the office as the candidate typed
 it under their name. With no office set, the candidate's wording is used.
 

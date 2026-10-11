@@ -413,6 +413,17 @@ function survey_listing(array $response): array
 }
 
 /**
+ * The office with the party after it in capitals, as the public pages print
+ * it: "State Representative District #18 (D)".
+ */
+function survey_seat(array $listing): string
+{
+    $party = strtoupper(trim($listing['party']));
+
+    return trim($listing['office'] . ($party !== '' ? ' (' . $party . ')' : ''));
+}
+
+/**
  * Every response, grouped by listed office and then by name, so candidates for
  * the same seat sit side by side. Hidden ones only when asked for.
  *

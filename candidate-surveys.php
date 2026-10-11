@@ -131,12 +131,10 @@ require __DIR__ . '/includes/header.php';
         $seat  = $r['listing']; ?>
       <li>
         <a class="tile" href="/candidate-surveys/<?= e($r['slug']) ?>">
-          <span class="tile__office"><?= e($seat['office']) ?></span>
+          <span class="tile__office"><?= e(survey_seat($seat)) ?></span>
           <span class="tile__name"><?= e($r['name']) ?></span>
-<?php if ($seat['party'] !== '' || $seat['incumbent']): ?>
-          <span class="tile__seat label-mono">
-            <?= e(strtolower($seat['party'])) ?><?= $seat['party'] !== '' && $seat['incumbent'] ? ' &middot; ' : '' ?><?php if ($seat['incumbent']): ?><span class="incumbent">incumbent</span><?php endif; ?>
-          </span>
+<?php if ($seat['incumbent']): ?>
+          <span class="tile__seat label-mono"><span class="incumbent">incumbent</span></span>
 <?php endif; ?>
           <span class="badge tile__count">
             <span aria-hidden="true"><?= $yes ?>/<?= $asked ?> <?= e(SURVEY_CHOICES[0]) ?></span>
@@ -161,10 +159,7 @@ require __DIR__ . '/includes/header.php';
     <p class="eyebrow">
       <span class="dot" aria-hidden="true"></span>
       <span>
-        Candidate survey &middot; <?= e($seat['office']) ?>
-<?php if ($seat['party'] !== ''): ?>
-        &middot; <?= e($seat['party']) ?>
-<?php endif; ?>
+        Candidate survey &middot; <?= e(survey_seat($seat)) ?>
 <?php if ($seat['incumbent']): ?>
         &middot; <span class="incumbent">Incumbent</span>
 <?php endif; ?>
