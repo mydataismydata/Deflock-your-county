@@ -1332,7 +1332,6 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
   text-underline-offset: 3px;
 }
 .invites__email a:hover { color: var(--accent-bright); text-decoration-color: currentColor; }
-.invites__typed { color: var(--ink-50); font-style: italic; }
 .invites__inc { text-align: center; color: var(--accent-bright); }
 .invites__date { font-family: var(--face-mono); color: var(--ink-70); }
 

@@ -820,13 +820,8 @@ require __DIR__ . '/includes/header.php';
 <?php   $name  = (string) ($invite['name'] ?? '') ?: (string) ($response['name'] ?? '');
         $party = (string) ($invite['party'] ?? ''); ?>
             <td><span class="invites__clip" title="<?= e($name) ?>"><?= e($name) ?></span></td>
-            <td>
-<?php if (($invite['office'] ?? '') !== ''): ?>
-              <span class="invites__clip" title="<?= e($invite['office']) ?>"><?= e($invite['office']) ?></span>
-<?php elseif ($response !== null): ?>
-              <span class="invites__clip invites__typed" title="As the candidate typed it: <?= e($response['office']) ?>"><?= e($response['office']) ?></span>
-<?php endif; ?>
-            </td>
+<?php   $office = (string) ($invite['office'] ?? ''); ?>
+            <td><span class="invites__clip" title="<?= e($office) ?>"><?= e($office) ?></span></td>
             <td><span class="invites__clip invites__clip--short" title="<?= e($party) ?>"><?= e($party) ?></span></td>
             <td class="invites__inc"><?php if (!empty($invite['incumbent'])): ?><span aria-hidden="true">&check;</span><span class="visually-hidden">Incumbent</span><?php endif; ?></td>
             <td class="invites__date" data-cell="sent"><?= e($date(survey_sent_at($invite))) ?></td>
