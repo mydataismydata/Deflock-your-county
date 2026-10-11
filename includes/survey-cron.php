@@ -3,9 +3,10 @@
  * Sends queued survey invites from the host's cron, so /survey-admin can be
  * closed while they go out.
  *
- * Add one cron job in the Ionos control panel that runs this every minute:
+ * Add one cron job in the Ionos control panel that runs this every minute.
+ * Plain `php` on Ionos is PHP 4, so name a PHP 8 binary:
  *
- *   php /path/to/the/site/includes/survey-cron.php
+ *   /usr/bin/php8.3-cli ~/site-folder/includes/survey-cron.php 2>> ~/survey-cron-errors.log
  *
  * It sends only while the queue is started on /survey-admin, and Pause there
  * stops it. Each run stays up for less than a minute and sends when the next

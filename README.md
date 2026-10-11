@@ -178,13 +178,19 @@ sending". The queue then sends one invite every 90 seconds, in the order of
 the file, with the saved subject and message.
 
 - **The host's cron sends it.** Add one cron job that runs
-  `includes/survey-cron.php` every minute. In the Ionos control panel, give
-  it the same PHP command and path style as any other cron job on the
-  account:
+  `includes/survey-cron.php` every minute. In the Ionos control panel that is
+  a UnixCron job with an Extended interval of `* * * * *`. Plain `php` on
+  Ionos is PHP 4, so the command names a PHP 8 binary. `~` is the webspace
+  root, as FileZilla shows it, and `site-folder` is the folder the domain
+  points to:
 
   ```
-  php /path/to/the/site/includes/survey-cron.php
+  /usr/bin/php8.3-cli ~/site-folder/includes/survey-cron.php 2>> ~/survey-cron-errors.log
   ```
+
+  The script prints nothing when it works. Errors go to
+  `~/survey-cron-errors.log`, which sits outside the site folder and so out of
+  reach of the web.
 
   Each run waits out the rest of the 90 seconds when the next invite falls due
   within its minute, then exits. It sends only while the queue is started, so
