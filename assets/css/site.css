@@ -1360,6 +1360,11 @@ a.status:hover { color: var(--accent-bright); }
 .queue__last:empty { display: none; }
 .queue__note { margin-top: 0.25rem; font-size: var(--t-fine); color: var(--ink-50); }
 
+/* Background sending: whether the host's cron job is running, and its address. */
+.cron summary { cursor: pointer; color: var(--ink-60); }
+.cron__text { margin-top: 0.5rem; font-size: var(--t-fine); color: var(--ink-60); }
+.cron__url { margin-top: 0.5rem; }
+
 /* The invites heading, with export and import on the same line. */
 .invites-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; margin-bottom: 0.75rem; }
 .invites-head__tools { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; }

@@ -836,6 +836,14 @@ require __DIR__ . '/includes/header.php';
       </table>
     </div>
 <?php endif; ?>
+
+<?php $cronLast = survey_cron_last(); ?>
+    <details class="cron mt-s">
+      <summary class="label-mono">background sending: <?= survey_cron_seen() ? 'on' : 'off' ?></summary>
+      <p class="cron__text">Add a WebCron job in the Ionos panel that fetches this address every minute. Queued invites then go out with this page closed.</p>
+      <p class="cron__url"><code><?= e(survey_cron_url()) ?></code></p>
+      <p class="cron__text">Last run: <?= $cronLast === null ? 'never' : e(survey_time($cronLast, 'M j g:i:s a')) ?>.</p>
+    </details>
   </div>
 </section>
 <?php endif; ?>

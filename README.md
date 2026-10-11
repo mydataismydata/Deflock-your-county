@@ -177,25 +177,26 @@ queue instead of emailing it. Nothing goes out until an admin presses "Start
 sending". The queue then sends one invite every 90 seconds, in the order of
 the file, with the saved subject and message.
 
-- **The host's cron sends it.** Add one cron job that runs
-  `includes/survey-cron.php` every minute. In the Ionos control panel that is
-  a UnixCron job with an Extended interval of `* * * * *`. Plain `php` on
-  Ionos is PHP 4, so the command names a PHP 8 binary. `~` is the webspace
-  root, as FileZilla shows it, and `site-folder` is the folder the domain
-  points to:
+- **The host's cron sends it.** Add one cron job that fetches
+  `/survey-cron?key=...` every minute. In the Ionos control panel that is a
+  WebCron job with an HTTP GET of that address. The signed-in admin page shows
+  the full address under "background sending" at the foot of the page. The key
+  comes from `data/key.php`, so it survives uploads. Without the right key the
+  address is a 404.
+
+  Each run lasts at most 35 seconds, inside Ionos's 60-second limit on a web
+  cron call. It sends when the next invite falls due within that time, so a
+  once-a-minute cron keeps the 90-second spacing. It sends only while the
+  queue is started, so "Start sending" and "Pause sending" still control it.
+  Once the cron job has run in the last three minutes, `/survey-admin` says
+  the page can be closed, and "background sending" reads "on".
+
+  A host with a command-line cron can run the file instead. Plain `php` on
+  Ionos is PHP 4, so name a PHP 8 binary:
 
   ```
-  /usr/bin/php8.3-cli ~/site-folder/includes/survey-cron.php 2>> ~/survey-cron-errors.log
+  /usr/bin/php8.3-cli ~/site-folder/survey-cron.php
   ```
-
-  The script prints nothing when it works. Errors go to
-  `~/survey-cron-errors.log`, which sits outside the site folder and so out of
-  reach of the web.
-
-  Each run waits out the rest of the 90 seconds when the next invite falls due
-  within its minute, then exits. It sends only while the queue is started, so
-  "Start sending" and "Pause sending" still control it. Once the cron job has
-  run in the last three minutes, `/survey-admin` says the page can be closed.
 - **Without the cron job, it needs the page open.** While the queue runs,
   `/survey-admin` asks the server every ten seconds whether 90 seconds have
   passed, using `assets/js/survey-admin.js`. Close every copy of the page and

@@ -1234,8 +1234,8 @@ function survey_send_copies(array $invite, array $response): array
 // Imported invites go out one at a time, at most one every
 // SURVEY_QUEUE_INTERVAL seconds, while the queue is running. Two things can
 // ask for the next one, and this file decides whether the interval has
-// passed. The host's cron runs includes/survey-cron.php every minute. Without
-// that cron job, /survey-admin asks every few seconds while it is open.
+// passed. The host's cron job fetches /survey-cron every minute. Without that
+// cron job, /survey-admin asks every few seconds while it is open.
 
 const SURVEY_QUEUE_INTERVAL = 90;   // seconds between queued emails
 const SURVEY_QUEUE_BACKOFF  = 900;  // seconds to wait after the host refuses one
@@ -1385,12 +1385,67 @@ function survey_cron_beat(): void
     survey_write(survey_path('cron.php'), ['at' => gmdate('c')]);
 }
 
-/** Whether the cron job has run in the last few minutes. */
-function survey_cron_seen(): bool
+/** When the cron job last ran, or null if it never has. */
+function survey_cron_last(): ?string
 {
     $at = (survey_read(survey_path('cron.php')) ?? [])['at'] ?? null;
 
-    return $at !== null && time() - (int) strtotime((string) $at) <= SURVEY_CRON_FRESH;
+    return is_string($at) ? $at : null;
+}
+
+/** Whether the cron job has run in the last few minutes. */
+function survey_cron_seen(): bool
+{
+    $at = survey_cron_last();
+
+    return $at !== null && time() - (int) strtotime($at) <= SURVEY_CRON_FRESH;
+}
+
+/**
+ * The key in the cron job's address. It comes from the sign-in key in
+ * data/key.php, so it stays the same from one upload to the next.
+ */
+function survey_cron_key(): string
+{
+    return substr(hash_hmac('sha256', 'cron', survey_key()), 0, 32);
+}
+
+/** The address the host's cron job fetches every minute. */
+function survey_cron_url(): string
+{
+    return rtrim(SITE_URL, '/') . '/survey-cron?key=' . survey_cron_key();
+}
+
+/**
+ * One cron run: send whatever falls due in the next $seconds, then return.
+ *
+ * Due times fall 90 seconds apart, so on a once-a-minute cron the longest
+ * wait inside a run is 30 seconds. Ionos stops a web cron call at 60.
+ *
+ * @param callable(int): void $pause sleeps for the given seconds
+ */
+function survey_cron_run(int $seconds, callable $pause): void
+{
+    $until = time() + $seconds;
+
+    survey_cron_beat();
+
+    while (true) {
+        $queue = survey_queue_tick();
+
+        if (!$queue['running'] || $queue['queued'] === 0) {
+            return;
+        }
+
+        // At least a second, so a send in progress elsewhere is not polled in a tight loop.
+        $wait = max(1, $queue['wait']);
+
+        if (time() + $wait > $until) {
+            return;
+        }
+
+        $pause($wait);
+    }
 }
 
 /** Start or stop the queue. Starting an empty queue does nothing. */
