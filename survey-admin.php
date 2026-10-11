@@ -38,7 +38,7 @@ $queueView = static function (array $q): array {
     } else {
         $minutes = $q['queued'] * SURVEY_QUEUE_INTERVAL / 60;
         $left    = $minutes < 60 ? round($minutes) . ' min' : floor($minutes / 60) . ' hr ' . round(fmod($minutes, 60)) . ' min';
-        $summary = $n . ' Sending one a minute. Next in ' . $q['wait'] . ' seconds. About ' . $left . ' to go.';
+        $summary = $n . ' Sending one every ' . SURVEY_QUEUE_INTERVAL . ' seconds. Next in ' . $q['wait'] . ' seconds. About ' . $left . ' to go.';
     }
 
     $last = '';
@@ -284,7 +284,7 @@ if ($admin !== null && $action !== '') {
                 break;
 
             // The open page asks this every ten seconds while the queue runs.
-            // It sends at most one invite, and only when a minute has passed.
+            // It sends at most one invite, and only once the interval has passed.
             case 'queue-tick':
                 header('Content-Type: application/json');
                 echo json_encode($queueView(survey_queue_tick()), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -763,7 +763,7 @@ require __DIR__ . '/includes/header.php';
 <?php endif; ?>
       </form>
       <p class="note mt-s">
-        Queued invites go out one a minute, with the saved message:
+        Queued invites go out one every <?= SURVEY_QUEUE_INTERVAL ?> seconds, with the saved message:
         &ldquo;<?= e($draft['subject']) ?>&rdquo;. They go out only while this
         page is open in a browser somewhere. Close it and they wait; open it
         again and they carry on.

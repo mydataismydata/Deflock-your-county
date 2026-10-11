@@ -174,17 +174,17 @@ sent.
 
 An import that names an address nobody has invited yet adds it to a send
 queue instead of emailing it. Nothing goes out until an admin presses "Start
-sending". The queue then sends one invite a minute, in the order of the file,
-with the saved subject and message.
+sending". The queue then sends one invite every 90 seconds, in the order of
+the file, with the saved subject and message.
 
 - **It needs the page open.** Ionos shared hosting gives a PHP site no
   scheduler it can count on. While the queue runs, `/survey-admin` asks the
-  server every ten seconds whether a minute has passed, using
+  server every ten seconds whether 90 seconds have passed, using
   `assets/js/survey-queue.js`. Close every copy of the page and the queue
   waits. Open it again and it carries on. A tab in the background may send a
-  little slower than one a minute, never faster.
+  little slower than that, never faster.
 - **One sender.** A lock file in `data/` makes sure two open pages, or two
-  admins, still send one a minute between them.
+  admins, still send one every 90 seconds between them.
 - **Refusals.** When the server refuses an email, the queue waits 15 minutes
   before it sends anything else, then tries the same invite again. After three
   refusals the invite leaves the queue as unsent, and the queue moves on.

@@ -3,11 +3,11 @@
    ---------------------------------------------------------------------------
    Only /survey-admin loads this. While the queue is running, it asks the
    server every ten seconds whether it is time to send the next invite. The
-   server decides, and sends at most one a minute however many pages ask, so
+   server decides, and sends at most one per interval however many pages ask, so
    this file only keeps the page's words up to date.
 
    Browsers slow timers down in a tab nobody is looking at. The queue then
-   sends a little less often than once a minute, never more.
+   sends a little less often than the interval allows, never more.
    =========================================================================== */
 
 (function () {

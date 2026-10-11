@@ -1220,13 +1220,14 @@ function survey_send_copies(array $invite, array $response): array
 
 /* ----------------------------------------------------------------- queue -- */
 
-// Imported invites go out one at a time, at most one a minute, while an admin
-// has /survey-admin open with the queue running. The page asks every few
-// seconds and this file decides whether a minute has passed. Ionos shared
+// Imported invites go out one at a time, at most one every
+// SURVEY_QUEUE_INTERVAL seconds, while an admin has /survey-admin open with
+// the queue running. The page asks every few seconds and this file decides
+// whether the interval has passed. Ionos shared
 // hosting has no scheduler a PHP site can count on, so the open page is the
 // clock.
 
-const SURVEY_QUEUE_INTERVAL = 60;   // seconds between queued emails
+const SURVEY_QUEUE_INTERVAL = 90;   // seconds between queued emails
 const SURVEY_QUEUE_BACKOFF  = 900;  // seconds to wait after the host refuses one
 const SURVEY_QUEUE_TRIES    = 3;    // refusals before an invite leaves the queue
 
@@ -1281,7 +1282,7 @@ function survey_queue_wait(array $state): int
  * Returns the queue's state after that, for the page.
  *
  * A lock file makes this one sender. Two admins with the page open, or one
- * with two tabs, still send one email a minute between them.
+ * with two tabs, still send one email per interval between them.
  */
 function survey_queue_tick(): array
 {
@@ -1316,7 +1317,7 @@ function survey_queue_tick(): array
                 // The saved message changed after this one was queued. Without
                 // a name it would go out with a blank where the name belongs.
                 // It waits for an admin, and the next one goes out without
-                // waiting a minute.
+                // waiting out the interval.
                 $invite['mail']       = 'refused';
                 $invite['mail_error'] = 'no name';
                 survey_invite_save($invite);
