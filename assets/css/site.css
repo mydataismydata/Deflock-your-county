@@ -1296,21 +1296,66 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
 .choice input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
 .yesno--bad .choice span { border-color: var(--state-risk); }
 
-/* The admin page's invites: who, where it stands, and what can be done. */
-.ledger > li {
-  display: grid;
-  gap: 0.75rem 2rem;
-  align-items: start;
-  padding-block: 1.5rem;
-  border-top: 1px solid var(--line);
+/* The admin page's invites: one row each, in a table that scrolls sideways on
+   a phone rather than pushing the page wider. */
+/* Positioned so the screen-reader labels inside, which are absolutely placed,
+   scroll with the table instead of widening the page. */
+.table-wrap { position: relative; overflow-x: auto; border: 1px solid var(--line); }
+.invites { width: 100%; border-collapse: collapse; font-size: var(--t-fine); line-height: 1.4; }
+.invites th,
+.invites td { padding: 0.4375rem 0.625rem; text-align: left; vertical-align: top; white-space: nowrap; border-bottom: 1px solid var(--line); }
+.invites tbody tr:last-child td { border-bottom: 0; }
+.invites th {
+  font-family: var(--face-mono);
+  font-size: var(--t-mono);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-60);
+  white-space: nowrap;
 }
-.ledger > li:last-child { border-bottom: 1px solid var(--line); }
-@media (min-width: 48rem) { .ledger > li { grid-template-columns: 1fr auto 16rem; } }
-.ledger__email { font-family: var(--face-mono); font-size: var(--t-small); color: var(--ink-90); overflow-wrap: anywhere; }
-.ledger__who { margin-top: 0.25rem; color: var(--ink-75); }
-.ledger .label-mono { margin-top: 0.5rem; }
-.ledger__actions { display: flex; flex-wrap: wrap; gap: 0 1.5rem; }
-@media (min-width: 48rem) { .ledger__actions { justify-content: flex-end; } }
+.invites abbr { text-decoration: none; }
+.invites td { color: var(--ink-85); }
+.invites tbody tr:hover { background: var(--bg-raised); }
+.invites tr:target,
+.invites tr.is-editing { background: var(--bg-raised); box-shadow: inset 2px 0 0 var(--accent); }
+/* Every row stays one line. A long name, office or party is cut short, and
+   the cell's title holds all of it. */
+.invites__clip { display: block; max-width: 12rem; overflow: hidden; text-overflow: ellipsis; }
+.invites__clip--short { max-width: 8rem; }
+.invites__email .invites__clip { max-width: 15rem; }
+.invites__email a {
+  font-family: var(--face-mono);
+  color: var(--ink-90);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+}
+.invites__email a:hover { color: var(--accent-bright); text-decoration-color: currentColor; }
+.invites__typed { color: var(--ink-50); font-style: italic; }
+.invites__inc { text-align: center; color: var(--accent-bright); }
+.invites__date { font-family: var(--face-mono); color: var(--ink-70); }
+
+/* One word for where an invite stands. Colour only marks the two that need
+   an admin: queued is about to go out, unsent did not. */
+.status { font-family: var(--face-mono); font-size: var(--t-mono); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; color: var(--ink-70); }
+.status--queued { color: var(--accent-bright); }
+.status--unsent { color: var(--state-risk); }
+.status--withdrawn { color: var(--ink-50); }
+a.status { text-decoration: underline; text-underline-offset: 3px; }
+a.status:hover { color: var(--accent-bright); }
+
+/* One invite opened from the table: its fields, then what can be done to it. */
+.edit-title { overflow-wrap: anywhere; }
+.edit-form { display: grid; gap: 1rem; align-items: end; }
+.edit-form .field { margin-bottom: 0; }
+.edit-form > :is(.choice, .pill) { justify-self: start; }
+@media (min-width: 64rem) { .edit-form { grid-template-columns: 1fr 1.5fr 1fr auto auto; } }
+.edit-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0 1.5rem; }
+
+/* The send queue: how many are left, and the button that starts or stops it. */
+.queue { max-width: var(--measure); border-left: 2px solid var(--line-accent); padding-left: 1.25rem; }
+.queue__summary { color: var(--ink-85); line-height: var(--lh-prose); }
 
 /* The CSV import under the invites, and what it reports back. */
 .import { max-width: var(--measure); }
@@ -1327,23 +1372,6 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
 }
 .import-list { margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc; color: var(--ink-70); }
 .import-list li { overflow-wrap: anywhere; }
-
-/* What the public pages list a candidate under, folded away until needed. */
-.ledger__listing { grid-column: 1 / -1; }
-.ledger__listing summary {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0 1rem;
-  width: fit-content;
-  cursor: pointer;
-}
-.ledger__listing summary .label-mono { margin-top: 0; color: var(--ink-70); }
-.ledger__listing .ledger__saved { color: var(--state-ok); }
-.ledger__listing-form { display: grid; gap: 1rem; margin-top: 1rem; align-items: end; }
-.ledger__listing-form .field { margin-bottom: 0; }
-.ledger__listing-form > :is(.choice, .pill) { justify-self: start; }
-@media (min-width: 48rem) { .ledger__listing-form { grid-template-columns: 2fr 1fr auto auto; } }
 
 /* A button that reads as a link, for the small actions in a list. Paired with
    .accent-link, which supplies the look; this takes the button's own chrome

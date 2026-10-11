@@ -55,5 +55,8 @@ require_once __DIR__ . '/config.php';
 </footer>
 
 <script src="<?= e(asset('/assets/js/scene-motion.js')) ?>" defer></script>
+<?php foreach ($scripts ?? [] as $script): ?>
+<script src="<?= e(asset($script)) ?>" defer></script>
+<?php endforeach; ?>
 </body>
 </html>

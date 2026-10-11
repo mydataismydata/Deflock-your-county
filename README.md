@@ -148,6 +148,56 @@ Each response is stored against its invite, so it stays tied to the address
 the link was sent to as well as to the name typed in the signature. The email
 address is never published.
 
+### The invites table
+
+Every invite is one row in a table under Invites on `/survey-admin`, newest
+first: email, name, office, party, incumbent, when it was sent, when it was
+answered, and its status. A long name or office is cut short in the row, and
+hovering over it shows the whole of it. Selecting an email address opens that
+invite above the table, to edit its name, office, party and incumbent, or to
+send a new link, withdraw it, read its answers, or hide them.
+
+The status is one of:
+
+- **answered**: a response exists. It links to the public page.
+- **waiting**: emailed, and not answered yet.
+- **queued**: in the send queue, with no link made yet.
+- **unsent**: the server refused its email. "Send a new link" tries again.
+- **withdrawn**: its link no longer opens the survey.
+- **hidden**: answered, and taken off the public page.
+
+Invites from before 11 October 2026 kept no record of whether their email
+went out. They show as waiting, with the time the link was made as the time
+sent.
+
+### The send queue
+
+An import that names an address nobody has invited yet adds it to a send
+queue instead of emailing it. Nothing goes out until an admin presses "Start
+sending". The queue then sends one invite a minute, in the order of the file,
+with the saved subject and message.
+
+- **It needs the page open.** Ionos shared hosting gives a PHP site no
+  scheduler it can count on. While the queue runs, `/survey-admin` asks the
+  server every ten seconds whether a minute has passed, using
+  `assets/js/survey-queue.js`. Close every copy of the page and the queue
+  waits. Open it again and it carries on. A tab in the background may send a
+  little slower than one a minute, never faster.
+- **One sender.** A lock file in `data/` makes sure two open pages, or two
+  admins, still send one a minute between them.
+- **Refusals.** When the server refuses an email, the queue waits 15 minutes
+  before it sends anything else, then tries the same invite again. After three
+  refusals the invite leaves the queue as unsent, and the queue moves on.
+- **Names.** A new address needs a Name when the saved message uses
+  `{{candidate-name}}`. The import refuses the row without one.
+- "Take out of the queue" withdraws one queued invite. "Send it now" sends it
+  at once, outside the queue. "Pause sending" stops the queue and keeps its
+  place.
+
+The interval, the wait after a refusal and the number of tries are
+`SURVEY_QUEUE_INTERVAL`, `SURVEY_QUEUE_BACKOFF` and `SURVEY_QUEUE_TRIES` in
+`includes/survey.php`.
+
 ### Admin accounts
 
 The username is an email address, because the admin copy of each answer goes
@@ -212,30 +262,30 @@ the page deletes an answer. Delete the file in `data/responses/` for that.
 
 "Export the list (CSV)" under Invites on `/survey-admin` downloads every invite
 as a spreadsheet file. Its columns are Name, Email, Office, Party, Incumbent,
-Invited, Status, Answered and Office as typed. Times are in the county's time
+Sent, Responded, Status and Office as typed. Times are in the county's time
 zone. A cell that would start with `=`, `+`, `-` or `@` gets a leading
 apostrophe, so a name typed by a candidate cannot run as a formula.
 
-"Import" takes a CSV file back and sets Office, Party and Incumbent on every
-invite sent to each row's email address. Capitals and spaces around the
-address do not matter. Only the Email column is required, and other columns
+"Import" takes a CSV file back and sets Name, Office, Party and Incumbent on
+every invite sent to each row's email address. Capitals and spaces around the
+address do not matter. A row whose address has no invite yet joins the send
+queue, described above. Only the Email column is required, and other columns
 are ignored, so an edited export works as it is.
 
 - A blank cell leaves that field as it was. Clear a field on the invite's own
   row instead.
 - Incumbent takes Yes or No. TRUE and FALSE from a checkbox column also work.
-- A row with a bad cell is skipped whole, and the page lists it by row number,
-  with any address that matched no invite.
+- A row with a bad cell is skipped whole, and the page lists it by row number.
 - Excel's plain "CSV" format, with Windows-1252 text and semicolons in some
   countries, is read as well as "CSV UTF-8".
 - Importing the same file twice changes nothing the second time.
 
 ### Office, party and incumbent
 
-Candidates type their own office, and no two type it the same way. Each row on
-`/survey-admin` has "Set office, party and incumbent", which an admin fills in
-after the fact. The office box suggests offices already entered, so one seat
-keeps one spelling.
+Candidates type their own office, and no two type it the same way. An admin
+sets the office, party and incumbent on each invite after the fact, by import
+or by opening the invite from the table. The office box suggests offices
+already entered, so one seat keeps one spelling.
 
 These are stored on the invite, not on the response. The tile on
 `/candidate-surveys` shows the admin's office, the party, and an incumbent

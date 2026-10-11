@@ -10,7 +10,7 @@ header('X-Robots-Tag: noindex, nofollow');
 
 $errors  = [];
 $created = null;   // the link just made, shown once: ['email', 'link', 'mailed']
-$imported = null;  // what an import did: ['rows', 'updated', 'unmatched', 'problems']
+$imported = null;  // what an import did: ['rows', 'updated', 'queued', 'problems']
 $values  = ['login' => '', 'name' => '', 'email' => '', 'subject' => '', 'body' => ''];
 
 $post   = ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST';
@@ -24,6 +24,43 @@ $requested = $action;
 $back = static function (string $query = ''): void {
     header('Location: /survey-admin' . ($query === '' ? '' : '?' . $query), true, 303);
     exit;
+};
+
+// The queue in words, for the page and for the script that keeps it moving.
+$queueView = static function (array $q): array {
+    $n = $q['queued'] . ($q['queued'] === 1 ? ' invite' : ' invites') . ' queued.';
+
+    if (!$q['running']) {
+        $summary = $q['queued'] === 0 ? 'Nothing is queued.' : $n . ' Not sending.';
+    } elseif ($q['paused']) {
+        $summary = $n . ' The server refused the last one, so sending waits until '
+                 . survey_time(gmdate('c', time() + $q['wait']), 'g:i a') . '.';
+    } else {
+        $minutes = $q['queued'] * SURVEY_QUEUE_INTERVAL / 60;
+        $left    = $minutes < 60 ? round($minutes) . ' min' : floor($minutes / 60) . ' hr ' . round(fmod($minutes, 60)) . ' min';
+        $summary = $n . ' Sending one a minute. Next in ' . $q['wait'] . ' seconds. About ' . $left . ' to go.';
+    }
+
+    $last = '';
+    $row  = null;
+
+    if ($q['last'] !== null) {
+        $last = ($q['last']['sent'] ? 'Last sent to ' : 'Last refused: ') . $q['last']['email']
+              . ' at ' . survey_time((string) $q['last']['at'], 'g:i a') . '.';
+
+        $invite = survey_invite((string) $q['last']['id']);
+        if ($invite !== null) {
+            $status = survey_invite_status($invite);
+            $sent   = survey_sent_at($invite);
+            $row    = [
+                'id'     => $invite['id'],
+                'status' => $status,
+                'sent'   => $sent === '' ? '' : survey_time($sent, 'M j g:ia'),
+            ];
+        }
+    }
+
+    return ['running' => $q['running'], 'summary' => $summary, 'last' => $last, 'row' => $row];
 };
 
 $writeFailed = 'The server could not write to the survey\'s data folder, so nothing '
@@ -138,11 +175,12 @@ if ($admin !== null && $action !== '') {
                         survey_draft_save($values['subject'], $values['body'], $admin);
                     }
 
-                    [$invite, $token] = survey_invite_create($values['email'], $values['name'], $admin);
+                    $invite  = survey_invite_create($values['email'], $values['name'], $admin);
+                    $token   = survey_deliver($invite, $values['subject'], $values['body'], $admin);
                     $created = [
                         'email'  => $invite['email'],
                         'link'   => survey_link($token),
-                        'mailed' => survey_send_invite($invite, $token, $values['subject'], $values['body'], $admin),
+                        'mailed' => $invite['mail'] === 'sent',
                     ];
                     $values['name']  = '';
                     $values['email'] = '';
@@ -164,19 +202,22 @@ if ($admin !== null && $action !== '') {
                 }
 
                 if ($invite !== null && survey_invite_status($invite) !== 'answered') {
-                    $token = survey_issue_link($invite);
+                    // Sent by hand, it leaves the queue whether or not the host
+                    // takes it. A refusal marks it unsent rather than queued, so
+                    // the queue cannot replace the link shown here.
                     $invite['withdrawn_at'] = null;
-                    survey_invite_save($invite);
+                    unset($invite['mail'], $invite['mail_attempts']);
+                    $token   = survey_deliver($invite, $draft['subject'], $draft['body'], $admin);
                     $created = [
                         'email'  => $invite['email'],
                         'link'   => survey_link($token),
-                        'mailed' => survey_send_invite($invite, $token, $draft['subject'], $draft['body'], $admin),
+                        'mailed' => $invite['mail'] === 'sent',
                     ];
                 }
                 break;
 
             case 'withdraw':
-                if ($invite !== null && survey_invite_status($invite) === 'waiting') {
+                if ($invite !== null && in_array(survey_invite_status($invite), ['waiting', 'queued', 'unsent'], true)) {
                     $invite['withdrawn_at'] = gmdate('c');
                     survey_invite_save($invite);
                 }
@@ -189,10 +230,10 @@ if ($admin !== null && $action !== '') {
                 $back($action === 'hide' ? 'hidden=1' : 'shown=1');
                 break;
 
-            // Office, party and incumbent for many invites at once, from a
-            // CSV file. Shown straight back rather than redirected, so the
-            // list of rows it could not use survives. Running it twice
-            // changes nothing the second time.
+            // Names, offices, parties and incumbents for many invites at once,
+            // from a CSV file, and new addresses into the queue. Shown straight
+            // back rather than redirected, so the list of rows it could not use
+            // survives. Running it twice changes nothing the second time.
             case 'import':
                 $file  = $_FILES['csv'] ?? null;
                 $error = is_array($file) && is_int($file['error'] ?? null) ? $file['error'] : UPLOAD_ERR_NO_FILE;
@@ -205,34 +246,49 @@ if ($admin !== null && $action !== '') {
                     $errors['form'] = 'The file did not arrive. Try again.';
                 } else {
                     try {
-                        $imported = survey_import_listings((string) file_get_contents($file['tmp_name']));
+                        $imported = survey_import((string) file_get_contents($file['tmp_name']), $admin);
                     } catch (InvalidArgumentException $e) {
                         $errors['form'] = $e->getMessage();
                     }
                 }
                 break;
 
-            // What the public pages list the candidate under. The candidate's
-            // own answers are not touched.
+            // The name the email greets, and what the public pages list the
+            // candidate under. The candidate's own answers are not touched.
             case 'listing':
                 if ($invite === null) {
                     $back();
                 }
 
+                $name   = survey_line(survey_input($_POST, 'name'));
                 $office = survey_line(survey_input($_POST, 'office'));
                 $party  = survey_line(survey_input($_POST, 'party'));
 
-                if (survey_length($office) > 200 || survey_length($party) > 100) {
-                    $errors['form'] = 'The office can be up to 200 characters, and the party up to 100.';
+                if (survey_length($name) > 200 || survey_length($office) > 200 || survey_length($party) > 100) {
+                    $errors['form'] = 'The name and office can be up to 200 characters, and the party up to 100.';
                     break;
                 }
 
+                $invite['name']      = $name;
                 $invite['office']    = $office;
                 $invite['party']     = $party;
                 $invite['incumbent'] = survey_input($_POST, 'incumbent') === '1';
                 survey_invite_save($invite);
                 $back('listed=' . $invite['id']);
                 break;
+
+            case 'queue-start':
+            case 'queue-pause':
+                survey_queue_run($action === 'queue-start');
+                $back($action === 'queue-start' ? 'started=1' : 'paused=1');
+                break;
+
+            // The open page asks this every ten seconds while the queue runs.
+            // It sends at most one invite, and only when a minute has passed.
+            case 'queue-tick':
+                header('Content-Type: application/json');
+                echo json_encode($queueView(survey_queue_tick()), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                exit;
         }
     } catch (RuntimeException $e) {
         $errors['form'] = $writeFailed;
@@ -266,6 +322,8 @@ $notices = [
     'withdrawn'  => 'The invite is withdrawn. Its link no longer opens the survey.',
     'hidden'     => 'Those answers are off the public page. Nothing was deleted.',
     'shown'      => 'Those answers are back on the public page.',
+    'started'    => 'Sending has started. Keep this page open: queued invites go out only while it is.',
+    'paused'     => 'Sending is paused. Nothing queued has been lost.',
 ];
 $notice = null;
 foreach ($notices as $flag => $text) {
@@ -277,8 +335,10 @@ foreach ($notices as $flag => $text) {
 $rows    = [];
 $offices = [];
 $parties = [];
-$counts = ['answered' => 0, 'waiting' => 0, 'withdrawn' => 0];
-$draft  = survey_invite_defaults() + ['saved' => false];
+$counts  = ['answered' => 0, 'waiting' => 0, 'queued' => 0, 'unsent' => 0, 'withdrawn' => 0];
+$draft   = survey_invite_defaults() + ['saved' => false];
+$queue   = null;
+$editing = null;
 
 if ($admin !== null) {
     $draft = survey_draft();
@@ -312,20 +372,31 @@ if ($admin !== null) {
     };
     $offices = $suggest('office');
     $parties = $suggest('party');
+
+    $queue = survey_queue_report();
+
+    // The invite opened for editing, from its email address in the table.
+    $edit = survey_input($_GET, 'edit');
+    foreach ($rows as $row) {
+        if ($row['invite']['id'] === $edit) {
+            $editing = $row;
+        }
+    }
 }
 
-// The row whose listing was just saved.
-$listed = survey_input($_GET, 'listed');
+if (survey_input($_GET, 'listed') !== '') {
+    $notice = 'Saved.';
+}
 
-$date = static function (?string $iso): string {
-    return $iso === null || $iso === '' ? '' : strtolower(survey_time($iso, 'M j, Y'));
+$date = static function (?string $iso, string $format = 'M j g:ia'): string {
+    return $iso === null || $iso === '' ? '' : strtolower(survey_time($iso, $format));
 };
 
 // What the last action did. The list's own buttons return the reader to the
 // list, so what they did prints there rather than above the invite form.
-$feedbackAt = in_array($requested, ['new-link', 'withdraw', 'hide', 'show', 'listing', 'export', 'import'], true) ? 'invites' : 'invite';
-foreach (['withdrawn', 'hidden', 'shown'] as $flag) {
-    if (($_GET[$flag] ?? '') === '1') {
+$feedbackAt = in_array($requested, ['new-link', 'withdraw', 'hide', 'show', 'listing', 'export', 'import', 'queue-start', 'queue-pause'], true) ? 'invites' : 'invite';
+foreach (['withdrawn', 'hidden', 'shown', 'listed', 'started', 'paused'] as $flag) {
+    if (survey_input($_GET, $flag) !== '') {
         $feedbackAt = 'invites';
     }
 }
@@ -348,20 +419,16 @@ $feedback = static function () use ($notice, $errors, $created, $imported): void
 <?php endif; ?>
 
 <?php if ($imported !== null): ?>
-    <div class="notice <?= $imported['unmatched'] === [] && $imported['problems'] === [] ? 'notice--good' : '' ?>" role="status">
-      <h2><?= $imported['updated'] === 0 ? 'Nothing needed changing' : 'Updated ' . $imported['updated'] . ($imported['updated'] === 1 ? ' invite' : ' invites') ?></h2>
+    <div class="notice <?= $imported['problems'] === [] ? 'notice--good' : '' ?>" role="status">
+      <h2>Imported</h2>
       <p>
         Read <?= $imported['rows'] ?> <?= $imported['rows'] === 1 ? 'row' : 'rows' ?> with an email address.
-        Rows that matched what was already stored changed nothing.
-      </p>
-<?php if ($imported['unmatched'] !== []): ?>
-      <p class="mt-s">No invite went to these addresses, so their rows did nothing:</p>
-      <ul class="import-list">
-<?php foreach ($imported['unmatched'] as $email): ?>
-        <li><?= e($email) ?></li>
-<?php endforeach; ?>
-      </ul>
+        Updated <?= $imported['updated'] ?> <?= $imported['updated'] === 1 ? 'invite' : 'invites' ?>.
+        Queued <?= $imported['queued'] ?> new <?= $imported['queued'] === 1 ? 'invite' : 'invites' ?>.
+<?php if ($imported['queued'] > 0): ?>
+        Nothing has been emailed yet. Check the queued rows below, then press Start sending.
 <?php endif; ?>
+      </p>
 <?php if ($imported['problems'] !== []): ?>
       <p class="mt-s">These rows were skipped:</p>
       <ul class="import-list">
@@ -398,9 +465,10 @@ $feedback = static function () use ($notice, $errors, $created, $imported): void
 <?php endif; ?>
 <?php };
 
-$page   = '';
-$title  = 'Survey admin';
-$hidden = true;
+$page    = '';
+$title   = 'Survey admin';
+$hidden  = true;
+$scripts = $admin !== null ? ['/assets/js/survey-queue.js'] : [];
 
 require __DIR__ . '/includes/header.php';
 ?>
@@ -560,148 +628,225 @@ require __DIR__ . '/includes/header.php';
 </section>
 
 <section class="section section--tight" id="invites">
-  <div class="shell">
+  <div class="shell shell--wide">
 <?php if ($feedbackAt === 'invites') { $feedback(); } ?>
 
     <h2 class="h-section" data-reveal>Invites.</h2>
     <p class="label-mono mt-s">
-      <?= (int) $counts['answered'] ?> answered &middot;
-      <?= (int) $counts['waiting'] ?> waiting &middot;
-      <?= (int) $counts['withdrawn'] ?> withdrawn
+<?php foreach ($counts as $status => $count): ?>
+      <?= (int) $count ?> <?= e($status) ?><?= $status === 'withdrawn' ? '' : ' &middot;' ?>
+<?php endforeach; ?>
     </p>
 
-<?php if ($rows !== []): ?>
+<?php if ($editing !== null):
+        ['invite' => $invite, 'status' => $status, 'response' => $response] = $editing;
+        $i = $invite['id']; ?>
+    <div class="panel panel--form mt-m" id="edit">
+      <h3 class="h-block edit-title"><?= e($invite['email']) ?></h3>
+      <p class="label-mono mt-s">
+        <?= e($status) ?><?= $response !== null && !empty($response['hidden']) ? ', hidden' : '' ?>
+        &middot; invited <?= e($date($invite['invited_at'] ?? '', 'M j, Y')) ?> by <?= e((string) ($invite['invited_by'] ?? '')) ?>
+<?php if ((int) ($invite['links_issued'] ?? 1) > 1): ?>
+        &middot; link sent <?= (int) $invite['links_issued'] ?> times
+<?php endif; ?>
+      </p>
+<?php if (($invite['mail_error'] ?? '') === 'no name'): ?>
+      <p class="note mt-s">
+        The queue held this one back: it has no name, and the saved message uses
+        <?= e(SURVEY_FILL_NAME) ?>. Add the name, save, then send a new link.
+      </p>
+<?php elseif ($status === 'unsent'): ?>
+      <p class="note mt-s">The server refused this invite's email. Send a new link to try again.</p>
+<?php endif; ?>
+<?php if ($response !== null): ?>
+      <p class="note mt-s">Typed by the candidate: <?= e($response['name']) ?>, <?= e($response['office']) ?></p>
+<?php endif; ?>
+
+      <form class="edit-form mt-m" method="post" action="/survey-admin#i-<?= e($i) ?>">
+        <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
+        <input type="hidden" name="id" value="<?= e($i) ?>">
+
+        <div class="field">
+          <label for="l-name">Name
+            <span class="hint">Fills in <?= e(SURVEY_FILL_NAME) ?>.</span>
+          </label>
+          <input id="l-name" name="name" type="text" maxlength="200" autocomplete="off"
+                 value="<?= e((string) ($invite['name'] ?? '')) ?>">
+        </div>
+
+        <div class="field">
+          <label for="l-office">Office
+            <span class="hint">Shown on the tile. Blank shows what the candidate typed.</span>
+          </label>
+          <input id="l-office" name="office" type="text" maxlength="200" list="l-offices"
+                 autocomplete="off" value="<?= e((string) ($invite['office'] ?? '')) ?>">
+        </div>
+
+        <div class="field">
+          <label for="l-party">Party
+            <span class="hint">Blank shows no party.</span>
+          </label>
+          <input id="l-party" name="party" type="text" maxlength="100" list="l-parties"
+                 autocomplete="off" value="<?= e((string) ($invite['party'] ?? '')) ?>">
+        </div>
+
+        <label class="choice">
+          <input type="checkbox" name="incumbent" value="1"<?= empty($invite['incumbent']) ? '' : ' checked' ?>>
+          <span>Incumbent</span>
+        </label>
+
+        <button class="pill pill--ghost" type="submit" name="action" value="listing">Save</button>
+      </form>
+
+      <datalist id="l-offices">
+<?php foreach ($offices as $office): ?>
+        <option value="<?= e($office) ?>"></option>
+<?php endforeach; ?>
+      </datalist>
+      <datalist id="l-parties">
+<?php foreach ($parties as $party): ?>
+        <option value="<?= e($party) ?>"></option>
+<?php endforeach; ?>
+      </datalist>
+
+      <div class="edit-actions mt-m">
+<?php if ($status === 'answered' && $response !== null): ?>
+<?php if (empty($response['hidden'])): ?>
+        <a class="accent-link" href="/candidate-surveys/<?= e($response['slug']) ?>">Read the answers</a>
+<?php endif; ?>
+        <form method="post" action="/survey-admin#i-<?= e($i) ?>">
+          <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
+          <input type="hidden" name="id" value="<?= e($i) ?>">
+<?php if (empty($response['hidden'])): ?>
+          <button class="accent-link textbutton" type="submit" name="action" value="hide">Hide from the site</button>
+<?php else: ?>
+          <button class="accent-link textbutton" type="submit" name="action" value="show">Put back on the site</button>
+<?php endif; ?>
+        </form>
+<?php else: ?>
+        <form method="post" action="/survey-admin#invites">
+          <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
+          <input type="hidden" name="id" value="<?= e($i) ?>">
+          <button class="accent-link textbutton" type="submit" name="action" value="new-link"><?= $status === 'queued' ? 'Send it now' : 'Send a new link' ?></button>
+        </form>
+<?php if ($status !== 'withdrawn'): ?>
+        <form method="post" action="/survey-admin#i-<?= e($i) ?>">
+          <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
+          <input type="hidden" name="id" value="<?= e($i) ?>">
+          <button class="accent-link textbutton" type="submit" name="action" value="withdraw"><?= $status === 'queued' ? 'Take out of the queue' : 'Withdraw' ?></button>
+        </form>
+<?php endif; ?>
+<?php endif; ?>
+        <a class="accent-link" href="/survey-admin#i-<?= e($i) ?>">Close</a>
+      </div>
+<?php if ($status !== 'answered'): ?>
+      <p class="note mt-s">
+        A new link replaces the old one, so the old one stops working. It goes
+        out with the saved message, not with anything unsaved in the form above.
+      </p>
+<?php endif; ?>
+    </div>
+<?php endif; ?>
+
+<?php if ($queue !== null && ($queue['queued'] > 0 || $queue['running'] || $queue['last'] !== null)):
+        $view = $queueView($queue); ?>
+    <div class="queue mt-m" id="queue" data-queue data-csrf="<?= e(survey_csrf()) ?>" data-running="<?= $queue['running'] ? '1' : '0' ?>">
+      <h3 class="h-block">Send queue</h3>
+      <p class="queue__summary mt-s" data-queue-summary><?= e($view['summary']) ?></p>
+      <p class="label-mono mt-s" data-queue-last><?= e($view['last']) ?></p>
+      <form class="pill-row mt-m" method="post" action="/survey-admin#queue">
+        <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
+<?php if ($queue['running']): ?>
+        <button class="pill pill--ghost" type="submit" name="action" value="queue-pause">Pause sending</button>
+<?php elseif ($queue['queued'] > 0): ?>
+        <button class="pill" type="submit" name="action" value="queue-start">Start sending &rarr;</button>
+<?php endif; ?>
+      </form>
+      <p class="note mt-s">
+        Queued invites go out one a minute, with the saved message:
+        &ldquo;<?= e($draft['subject']) ?>&rdquo;. They go out only while this
+        page is open in a browser somewhere. Close it and they wait; open it
+        again and they carry on.
+      </p>
+    </div>
+<?php endif; ?>
+
+<?php if ($rows === []): ?>
+    <p class="note mt-m">Nobody has been invited yet.</p>
+<?php else: ?>
     <div class="pill-row mt-m">
       <a class="pill pill--ghost" href="/survey-admin?export=csv">Export the list (CSV)</a>
     </div>
+<?php endif; ?>
 
     <form class="import mt-m" method="post" action="/survey-admin#invites" enctype="multipart/form-data">
       <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
       <div class="field">
-        <label for="a-csv">Import office, party and incumbent
+        <label for="a-csv">Import a CSV file
           <span class="hint">
-            A CSV file with an Email column, like the export. Each row sets
-            Office, Party and Incumbent on every invite sent to that address.
-            A blank cell leaves that field as it is. Other columns are ignored.
+            Needs an Email column, like the export. A row for an address already
+            invited sets its Name, Office, Party and Incumbent. A row for a new
+            address joins the send queue, and needs a Name. A blank cell leaves
+            that field as it is. Other columns are ignored.
           </span>
         </label>
         <input id="a-csv" name="csv" type="file" accept=".csv,text/csv">
       </div>
       <button class="pill pill--ghost" type="submit" name="action" value="import">Import</button>
     </form>
-<?php endif; ?>
 
-<?php if ($rows === []): ?>
-    <p class="note mt-m">Nobody has been invited yet.</p>
-<?php else: ?>
-    <datalist id="l-offices">
-<?php foreach ($offices as $office): ?>
-      <option value="<?= e($office) ?>"></option>
-<?php endforeach; ?>
-    </datalist>
-    <datalist id="l-parties">
-<?php foreach ($parties as $party): ?>
-      <option value="<?= e($party) ?>"></option>
-<?php endforeach; ?>
-    </datalist>
-
-    <ul class="ledger mt-m">
+<?php if ($rows !== []): ?>
+    <div class="table-wrap mt-l">
+      <table class="invites">
+        <caption class="visually-hidden">Every invite, newest first. Select an email address to edit that invite.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Email</th>
+            <th scope="col">Name</th>
+            <th scope="col">Office</th>
+            <th scope="col">Party</th>
+            <th scope="col"><abbr title="Incumbent">Inc.</abbr></th>
+            <th scope="col">Sent</th>
+            <th scope="col">Responded</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
 <?php foreach ($rows as ['invite' => $invite, 'status' => $status, 'response' => $response]):
-        $i    = $invite['id'];
-        $seat = array_filter([
-            (string) ($invite['office'] ?? ''),
-            (string) ($invite['party'] ?? ''),
-            empty($invite['incumbent']) ? '' : 'Incumbent',
-        ]); ?>
-      <li id="i-<?= e($i) ?>">
-        <div>
-          <p class="ledger__email"><?= e($invite['email']) ?></p>
-<?php if ($response !== null): ?>
-          <p class="ledger__who"><?= e($response['name']) ?>, <?= e($response['office']) ?></p>
-<?php elseif (($invite['name'] ?? '') !== ''): ?>
-          <p class="ledger__who"><?= e($invite['name']) ?></p>
+        $i        = $invite['id'];
+        $offSite  = $response !== null && !empty($response['hidden']); ?>
+          <tr id="i-<?= e($i) ?>"<?= $editing !== null && $editing['invite']['id'] === $i ? ' class="is-editing"' : '' ?>>
+            <td class="invites__email"><a class="invites__clip" href="/survey-admin?edit=<?= e($i) ?>#edit" title="<?= e($invite['email']) ?>"><?= e($invite['email']) ?></a></td>
+<?php   $name  = (string) ($invite['name'] ?? '') ?: (string) ($response['name'] ?? '');
+        $party = (string) ($invite['party'] ?? ''); ?>
+            <td><span class="invites__clip" title="<?= e($name) ?>"><?= e($name) ?></span></td>
+            <td>
+<?php if (($invite['office'] ?? '') !== ''): ?>
+              <span class="invites__clip" title="<?= e($invite['office']) ?>"><?= e($invite['office']) ?></span>
+<?php elseif ($response !== null): ?>
+              <span class="invites__clip invites__typed" title="As the candidate typed it: <?= e($response['office']) ?>"><?= e($response['office']) ?></span>
 <?php endif; ?>
-          <p class="label-mono">
-            invited <?= e($date($invite['invited_at'] ?? '')) ?> by <?= e((string) ($invite['invited_by'] ?? '')) ?>
-<?php if ((int) ($invite['links_issued'] ?? 1) > 1): ?>
-            &middot; link sent <?= (int) $invite['links_issued'] ?> times
-<?php endif; ?>
-<?php if ($status === 'answered' && $response !== null): ?>
-            &middot; answered <?= e($date($response['submitted_at'] ?? '')) ?>
-<?php elseif ($status === 'withdrawn'): ?>
-            &middot; withdrawn <?= e($date($invite['withdrawn_at'] ?? '')) ?>
-<?php endif; ?>
-          </p>
-        </div>
-
-        <span class="badge"><?= e($status) ?><?= $response !== null && !empty($response['hidden']) ? ', hidden' : '' ?></span>
-
-        <form class="ledger__actions" method="post" action="/survey-admin#invites">
-          <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
-          <input type="hidden" name="id" value="<?= e($invite['id']) ?>">
-<?php if ($status === 'answered' && $response !== null): ?>
-<?php if (empty($response['hidden'])): ?>
-          <a class="accent-link" href="/candidate-surveys/<?= e($response['slug']) ?>">Read</a>
-          <button class="accent-link textbutton" type="submit" name="action" value="hide">Hide from the site</button>
+            </td>
+            <td><span class="invites__clip invites__clip--short" title="<?= e($party) ?>"><?= e($party) ?></span></td>
+            <td class="invites__inc"><?php if (!empty($invite['incumbent'])): ?><span aria-hidden="true">&check;</span><span class="visually-hidden">Incumbent</span><?php endif; ?></td>
+            <td class="invites__date" data-cell="sent"><?= e($date(survey_sent_at($invite))) ?></td>
+            <td class="invites__date"><?= e($date($response['submitted_at'] ?? '')) ?></td>
+            <td data-cell="status">
+<?php if ($status === 'answered' && !$offSite): ?>
+              <a class="status status--answered" href="/candidate-surveys/<?= e($response['slug']) ?>">answered</a>
 <?php else: ?>
-          <button class="accent-link textbutton" type="submit" name="action" value="show">Put back on the site</button>
-<?php endif; ?>
+<?php if ($offSite): ?>
+              <span class="status status--withdrawn" title="Answered, and hidden from the site">hidden</span>
 <?php else: ?>
-          <button class="accent-link textbutton" type="submit" name="action" value="new-link">Send a new link</button>
-<?php if ($status === 'waiting'): ?>
-          <button class="accent-link textbutton" type="submit" name="action" value="withdraw">Withdraw</button>
+              <span class="status status--<?= e($status) ?>"><?= e($status) ?></span>
 <?php endif; ?>
 <?php endif; ?>
-        </form>
-
-        <details class="ledger__listing">
-          <summary>
-<?php if ($seat === []): ?>
-            <span class="accent-link">Set office, party and incumbent</span>
-<?php else: ?>
-            <span class="label-mono">listed as <?= e(strtolower(implode(' · ', $seat))) ?></span>
-            <span class="accent-link">Edit</span>
-<?php endif; ?>
-<?php if ($listed === $i): ?>
-            <span class="label-mono ledger__saved" role="status">saved</span>
-<?php endif; ?>
-          </summary>
-
-          <form class="ledger__listing-form" method="post" action="/survey-admin#i-<?= e($i) ?>">
-            <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
-            <input type="hidden" name="id" value="<?= e($i) ?>">
-
-            <div class="field">
-              <label for="l-office-<?= e($i) ?>">Office
-                <span class="hint">Shown on the tile. Blank shows what the candidate typed.</span>
-              </label>
-              <input id="l-office-<?= e($i) ?>" name="office" type="text" maxlength="200"
-                     list="l-offices" autocomplete="off" value="<?= e((string) ($invite['office'] ?? '')) ?>">
-            </div>
-
-            <div class="field">
-              <label for="l-party-<?= e($i) ?>">Party
-                <span class="hint">Blank shows no party.</span>
-              </label>
-              <input id="l-party-<?= e($i) ?>" name="party" type="text" maxlength="100"
-                     list="l-parties" autocomplete="off" value="<?= e((string) ($invite['party'] ?? '')) ?>">
-            </div>
-
-            <label class="choice">
-              <input type="checkbox" name="incumbent" value="1"<?= empty($invite['incumbent']) ? '' : ' checked' ?>>
-              <span>Incumbent</span>
-            </label>
-
-            <button class="pill pill--ghost" type="submit" name="action" value="listing">Save</button>
-          </form>
-        </details>
-      </li>
+            </td>
+          </tr>
 <?php endforeach; ?>
-    </ul>
-    <p class="note mt-m">
-      A new link replaces the old one, so the old one stops working. It goes out
-      with the saved message, not with anything unsaved in the form above.
-    </p>
+        </tbody>
+      </table>
+    </div>
 <?php endif; ?>
   </div>
 </section>

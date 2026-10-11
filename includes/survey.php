@@ -284,11 +284,13 @@ function survey_issue_link(array &$invite): string
 }
 
 /**
- * Record a new invite. Returns the invite and its link.
+ * Record a new invite, with no link yet. survey_deliver() makes the link and
+ * emails it, now or when the queue reaches it.
  *
- * @return array{0: array, 1: string}
+ * $extra carries office, party and incumbent from an import, and
+ * 'mail' => 'queued' for an invite the queue should send.
  */
-function survey_invite_create(string $email, string $name, array $admin): array
+function survey_invite_create(string $email, string $name, array $admin, array $extra = []): array
 {
     $invite = [
         'id'           => survey_new_id(),
@@ -297,12 +299,11 @@ function survey_invite_create(string $email, string $name, array $admin): array
         'invited_at'   => gmdate('c'),
         'invited_by'   => $admin['login'],
         'withdrawn_at' => null,
-    ];
+    ] + $extra;
 
-    $token = survey_issue_link($invite);
     survey_write(survey_invite_file($invite['id']), $invite);
 
-    return [$invite, $token];
+    return $invite;
 }
 
 function survey_invite_save(array $invite): void
@@ -329,9 +330,18 @@ function survey_invite_for_token(string $token): ?array
 }
 
 /**
- * 'answered', 'withdrawn' or 'waiting'. An invite is answered when a response
- * file exists under its id. Nothing else records it, so the two cannot
- * disagree.
+ * Where an invite stands:
+ *
+ *   answered   a response file exists under its id
+ *   withdrawn  an admin withdrew it
+ *   queued     waiting its turn in the send queue, with no link yet
+ *   unsent     the host refused its email, and nothing has gone out since
+ *   waiting    emailed, and not answered yet
+ *
+ * An invite is answered when a response file exists under its id. Nothing
+ * else records it, so the two cannot disagree. Invites made before the queue
+ * existed carry no 'mail' field. Each was emailed as it was made, so they
+ * count as waiting.
  */
 function survey_invite_status(array $invite): string
 {
@@ -339,7 +349,21 @@ function survey_invite_status(array $invite): string
         return 'answered';
     }
 
-    return empty($invite['withdrawn_at']) ? 'waiting' : 'withdrawn';
+    if (!empty($invite['withdrawn_at'])) {
+        return 'withdrawn';
+    }
+
+    return ['queued' => 'queued', 'refused' => 'unsent'][$invite['mail'] ?? ''] ?? 'waiting';
+}
+
+/** When the invite's current link was emailed, or '' if it has not been. */
+function survey_sent_at(array $invite): string
+{
+    if (isset($invite['mail'])) {
+        return $invite['mail'] === 'sent' ? (string) ($invite['mailed_at'] ?? '') : '';
+    }
+
+    return (string) ($invite['link_issued_at'] ?? $invite['invited_at'] ?? '');
 }
 
 /** Every invite, newest first. */
@@ -503,11 +527,11 @@ function survey_response_set_hidden(string $id, bool $hidden): void
 
 /* ----------------------------------------------------------- spreadsheet -- */
 
-// The export's columns, in order. The import reads Email, Office, Party and
-// Incumbent by these names and ignores the rest.
+// The export's columns, in order. The import reads Email, Name, Office, Party
+// and Incumbent by these names and ignores the rest.
 const SURVEY_CSV_COLUMNS = [
     'Name', 'Email', 'Office', 'Party', 'Incumbent',
-    'Invited', 'Status', 'Answered', 'Office as typed',
+    'Sent', 'Responded', 'Status', 'Office as typed',
 ];
 
 /**
@@ -542,9 +566,9 @@ function survey_invites_csv(): string
             (string) ($invite['office'] ?? ''),
             (string) ($invite['party'] ?? ''),
             empty($invite['incumbent']) ? 'No' : 'Yes',
-            $when((string) ($invite['invited_at'] ?? '')),
-            $status . ($response !== null && !empty($response['hidden']) ? ', hidden' : ''),
+            $when(survey_sent_at($invite)),
             $when((string) ($response['submitted_at'] ?? '')),
+            $status . ($response !== null && !empty($response['hidden']) ? ', hidden' : ''),
             (string) ($response['office'] ?? ''),
         ]);
     }
@@ -565,17 +589,20 @@ function survey_yes_no(string $s): ?bool
 }
 
 /**
- * Set office, party and incumbent from a CSV file, matching each row to every
- * invite sent to the email address in its Email column.
+ * Read a CSV file of candidates. Each row is matched by its Email column to
+ * every invite already sent to that address, and sets Name, Office, Party and
+ * Incumbent on them. A row whose address has no invite becomes a new invite in
+ * the send queue. Nothing is emailed here: the queue sends once an admin
+ * starts it.
  *
  * A missing column leaves that field alone on every invite. So does a blank
  * cell, so a sheet with only the party filled in cannot wipe the offices.
  * Clearing a field is done on the invite's own row on /survey-admin.
  *
- * @return array{rows: int, updated: int, unmatched: list<string>, problems: list<string>}
+ * @return array{rows: int, updated: int, queued: int, problems: list<string>}
  * @throws InvalidArgumentException when the file is not a table with an Email column
  */
-function survey_import_listings(string $text): array
+function survey_import(string $text, array $admin): array
 {
     if (str_starts_with($text, "\xEF\xBB\xBF")) {
         $text = substr($text, 3);
@@ -610,8 +637,8 @@ function survey_import_listings(string $text): array
     if (!isset($columns['email'])) {
         throw new InvalidArgumentException('The first row needs a column headed Email.');
     }
-    if (!isset($columns['office']) && !isset($columns['party']) && !isset($columns['incumbent'])) {
-        throw new InvalidArgumentException('The file has no Office, Party or Incumbent column, so there is nothing to set.');
+    if (array_intersect_key($columns, array_flip(['name', 'office', 'party', 'incumbent'])) === []) {
+        throw new InvalidArgumentException('The file has no Name, Office, Party or Incumbent column, so there is nothing to set.');
     }
 
     $invites = [];
@@ -619,11 +646,18 @@ function survey_import_listings(string $text): array
         $invites[survey_login_key((string) $invite['email'])][] = $invite;
     }
 
-    $rows      = 0;
-    $updated   = [];
-    $unmatched = [];
-    $problems  = [];
-    $line      = 1;
+    $draft     = survey_draft();
+    $wantsName = survey_wants_name($draft['subject'], $draft['body']);
+    $limits    = ['name' => 200, 'office' => 200, 'party' => 100];
+    $listing   = static fn (array $i): array => [
+        (string) ($i['name'] ?? ''), (string) ($i['office'] ?? ''), (string) ($i['party'] ?? ''), !empty($i['incumbent']),
+    ];
+
+    $rows     = 0;
+    $updated  = [];
+    $queued   = 0;
+    $problems = [];
+    $line     = 1;
 
     while (($row = fgetcsv($h, 0, $delim, '"', '')) !== false) {
         $line++;
@@ -641,21 +675,16 @@ function survey_import_listings(string $text): array
         $rows++;
 
         $set = [];
-
-        if (($office = $cell('office')) !== '') {
-            if (survey_length($office) > 200) {
-                $problems[] = 'Row ' . $line . ': the office is over 200 characters.';
+        foreach ($limits as $field => $limit) {
+            $value = $cell($field);
+            if ($value === '') {
                 continue;
             }
-            $set['office'] = $office;
-        }
-
-        if (($party = $cell('party')) !== '') {
-            if (survey_length($party) > 100) {
-                $problems[] = 'Row ' . $line . ': the party is over 100 characters.';
-                continue;
+            if (survey_length($value) > $limit) {
+                $problems[] = 'Row ' . $line . ': the ' . $field . ' is over ' . $limit . ' characters.';
+                continue 2;
             }
-            $set['party'] = $party;
+            $set[$field] = $value;
         }
 
         if (($incumbent = $cell('incumbent')) !== '') {
@@ -668,15 +697,27 @@ function survey_import_listings(string $text): array
         }
 
         $key = survey_login_key($email);
+
         if (!isset($invites[$key])) {
-            $unmatched[] = $email;
+            if (!survey_is_email($email)) {
+                $problems[] = 'Row ' . $line . ': "' . $email . '" is not an email address.';
+                continue;
+            }
+            if (($set['name'] ?? '') === '' && $wantsName) {
+                $problems[] = 'Row ' . $line . ': ' . $email . ' has no name, and the saved message uses ' . SURVEY_FILL_NAME . '.';
+                continue;
+            }
+
+            // queue_row keeps the file's order among rows queued in the same second.
+            $invite = survey_invite_create($email, $set['name'] ?? '', $admin, ['mail' => 'queued', 'queue_row' => $line] + array_diff_key($set, ['name' => 1]));
+            $invites[$key] = [$invite];
+            $queued++;
             continue;
         }
 
         foreach ($invites[$key] as $n => $invite) {
-            $listing = static fn (array $i): array => [(string) ($i['office'] ?? ''), (string) ($i['party'] ?? ''), !empty($i['incumbent'])];
-            $before  = $listing($invite);
-            $invite  = array_merge($invite, $set);
+            $before = $listing($invite);
+            $invite = array_merge($invite, $set);
 
             if ($listing($invite) !== $before) {
                 survey_invite_save($invite);
@@ -688,7 +729,7 @@ function survey_import_listings(string $text): array
 
     fclose($h);
 
-    return ['rows' => $rows, 'updated' => count($updated), 'unmatched' => $unmatched, 'problems' => $problems];
+    return ['rows' => $rows, 'updated' => count($updated), 'queued' => $queued, 'problems' => $problems];
 }
 
 /* ----------------------------------------------------------------- draft -- */
@@ -1069,6 +1110,42 @@ function survey_send_invite(array $invite, string $token, string $subject, strin
     return send_site_mail($invite['email'], $subject, $text, '', survey_admin_address($admin['login']));
 }
 
+/**
+ * Give an invite a fresh link, email it, and record how that went. Any
+ * earlier link stops working. Returns the link, shown to the admin once.
+ *
+ * The link's hash is saved before the email goes, so a candidate who opens it
+ * the moment it lands finds it valid. A refusal marks the invite unsent. A
+ * queued invite stays in the queue until it has been refused
+ * SURVEY_QUEUE_TRIES times.
+ */
+function survey_deliver(array &$invite, string $subject, string $body, array $admin): string
+{
+    $token = survey_issue_link($invite);
+    survey_invite_save($invite);
+
+    $sent = survey_send_invite($invite, $token, $subject, $body, $admin);
+
+    $invite['mail_tried_at'] = gmdate('c');
+
+    if ($sent) {
+        $invite['mail']          = 'sent';
+        $invite['mailed_at']     = $invite['mail_tried_at'];
+        $invite['mail_attempts'] = 0;
+        unset($invite['mail_error']);
+    } else {
+        $invite['mail_attempts'] = (int) ($invite['mail_attempts'] ?? 0) + 1;
+
+        if (($invite['mail'] ?? '') !== 'queued' || $invite['mail_attempts'] >= SURVEY_QUEUE_TRIES) {
+            $invite['mail'] = 'refused';
+        }
+    }
+
+    survey_invite_save($invite);
+
+    return $token;
+}
+
 /** A response as plain text, in the order the form asked it. */
 function survey_response_text(array $response): string
 {
@@ -1139,4 +1216,158 @@ function survey_send_copies(array $invite, array $response): array
             $invite['email']
         ),
     ];
+}
+
+/* ----------------------------------------------------------------- queue -- */
+
+// Imported invites go out one at a time, at most one a minute, while an admin
+// has /survey-admin open with the queue running. The page asks every few
+// seconds and this file decides whether a minute has passed. Ionos shared
+// hosting has no scheduler a PHP site can count on, so the open page is the
+// clock.
+
+const SURVEY_QUEUE_INTERVAL = 60;   // seconds between queued emails
+const SURVEY_QUEUE_BACKOFF  = 900;  // seconds to wait after the host refuses one
+const SURVEY_QUEUE_TRIES    = 3;    // refusals before an invite leaves the queue
+
+/** Whether the queue is running, and when it last sent. */
+function survey_queue_state(): array
+{
+    return (survey_read(survey_path('queue.php')) ?? []) + [
+        'running'   => false,
+        'last_at'   => null,
+        'resume_at' => null,
+        'last'      => null,
+    ];
+}
+
+function survey_queue_save(array $state): void
+{
+    survey_write(survey_path('queue.php'), $state);
+}
+
+/** Queued invites in the order they go out: first queued, first sent. */
+function survey_queued(): array
+{
+    $queued = array_values(array_filter(survey_invites(), static function (array $invite): bool {
+        return survey_invite_status($invite) === 'queued';
+    }));
+
+    usort($queued, static function (array $a, array $b): int {
+        return strcmp((string) $a['invited_at'], (string) $b['invited_at'])
+            ?: ((int) ($a['queue_row'] ?? 0) <=> (int) ($b['queue_row'] ?? 0));
+    });
+
+    return $queued;
+}
+
+/** Seconds until the queue may send again. Zero when it may send now. */
+function survey_queue_wait(array $state): int
+{
+    $at = 0;
+
+    if ($state['last_at'] !== null) {
+        $at = (int) strtotime((string) $state['last_at']) + SURVEY_QUEUE_INTERVAL;
+    }
+    if ($state['resume_at'] !== null) {
+        $at = max($at, (int) strtotime((string) $state['resume_at']));
+    }
+
+    return max(0, $at - time());
+}
+
+/**
+ * Send the next queued invite if the queue is running and its minute is up.
+ * Returns the queue's state after that, for the page.
+ *
+ * A lock file makes this one sender. Two admins with the page open, or one
+ * with two tabs, still send one email a minute between them.
+ */
+function survey_queue_tick(): array
+{
+    survey_prepare();
+
+    $lock = @fopen(survey_path('queue.lock'), 'c');
+
+    if ($lock === false) {
+        throw new RuntimeException('Cannot open the queue lock.');
+    }
+
+    // Another request is mid-send. It will report what it did.
+    if (!flock($lock, LOCK_EX | LOCK_NB)) {
+        fclose($lock);
+
+        return survey_queue_report();
+    }
+
+    try {
+        $state = survey_queue_state();
+
+        $queued = $state['running'] ? survey_queued() : [];
+
+        if ($state['running'] && $queued === []) {
+            $state['running'] = false;
+            survey_queue_save($state);
+        } elseif ($state['running'] && survey_queue_wait($state) === 0) {
+            $invite = $queued[0];
+            $draft  = survey_draft();
+
+            if (($invite['name'] ?? '') === '' && survey_wants_name($draft['subject'], $draft['body'])) {
+                // The saved message changed after this one was queued. Without
+                // a name it would go out with a blank where the name belongs.
+                // It waits for an admin, and the next one goes out without
+                // waiting a minute.
+                $invite['mail']       = 'refused';
+                $invite['mail_error'] = 'no name';
+                survey_invite_save($invite);
+            } else {
+                survey_deliver($invite, $draft['subject'], $draft['body'], ['login' => (string) $invite['invited_by']]);
+
+                $sent = $invite['mail'] === 'sent';
+
+                $state['last_at']   = gmdate('c');
+                $state['resume_at'] = $sent ? null : gmdate('c', time() + SURVEY_QUEUE_BACKOFF);
+                $state['last']      = ['id' => $invite['id'], 'email' => $invite['email'], 'sent' => $sent, 'at' => $state['last_at']];
+
+                // That was the last one, unless it is staying for a retry.
+                if (count($queued) === 1 && $invite['mail'] !== 'queued') {
+                    $state['running'] = false;
+                }
+            }
+
+            survey_queue_save($state);
+        }
+    } finally {
+        flock($lock, LOCK_UN);
+        fclose($lock);
+    }
+
+    return survey_queue_report();
+}
+
+/**
+ * The queue as the page shows it.
+ *
+ * @return array{running: bool, queued: int, wait: int, paused: bool, last: ?array}
+ */
+function survey_queue_report(): array
+{
+    $state = survey_queue_state();
+
+    return [
+        'running' => (bool) $state['running'],
+        'queued'  => count(survey_queued()),
+        'wait'    => survey_queue_wait($state),
+        // Waiting out a refusal, as opposed to the ordinary minute.
+        'paused'  => $state['resume_at'] !== null && strtotime((string) $state['resume_at']) > time(),
+        'last'    => is_array($state['last']) ? $state['last'] : null,
+    ];
+}
+
+/** Start or stop the queue. Starting an empty queue does nothing. */
+function survey_queue_run(bool $running): void
+{
+    $state            = survey_queue_state();
+    $state['running'] = $running && survey_queued() !== [];
+    survey_queue_save($state);
 }
