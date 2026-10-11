@@ -1232,15 +1232,15 @@ function survey_send_copies(array $invite, array $response): array
 /* ----------------------------------------------------------------- queue -- */
 
 // Imported invites go out one at a time, at most one every
-// SURVEY_QUEUE_INTERVAL seconds, while an admin has /survey-admin open with
-// the queue running. The page asks every few seconds and this file decides
-// whether the interval has passed. Ionos shared
-// hosting has no scheduler a PHP site can count on, so the open page is the
-// clock.
+// SURVEY_QUEUE_INTERVAL seconds, while the queue is running. Two things can
+// ask for the next one, and this file decides whether the interval has
+// passed. The host's cron runs includes/survey-cron.php every minute. Without
+// that cron job, /survey-admin asks every few seconds while it is open.
 
 const SURVEY_QUEUE_INTERVAL = 90;   // seconds between queued emails
 const SURVEY_QUEUE_BACKOFF  = 900;  // seconds to wait after the host refuses one
 const SURVEY_QUEUE_TRIES    = 3;    // refusals before an invite leaves the queue
+const SURVEY_CRON_FRESH     = 180;  // seconds since the last cron run that still count as "running"
 
 /** Whether the queue is running, and when it last sent. */
 function survey_queue_state(): array
@@ -1360,7 +1360,7 @@ function survey_queue_tick(): array
 /**
  * The queue as the page shows it.
  *
- * @return array{running: bool, queued: int, wait: int, paused: bool, last: ?array}
+ * @return array{running: bool, queued: int, wait: int, paused: bool, last: ?array, cron: bool}
  */
 function survey_queue_report(): array
 {
@@ -1373,7 +1373,24 @@ function survey_queue_report(): array
         // Waiting out a refusal, as opposed to the ordinary minute.
         'paused'  => $state['resume_at'] !== null && strtotime((string) $state['resume_at']) > time(),
         'last'    => is_array($state['last']) ? $state['last'] : null,
+        // The host's cron is sending, so the page can be closed.
+        'cron'    => survey_cron_seen(),
     ];
+}
+
+/** Note that the cron job ran. Its own file, so it never races a send. */
+function survey_cron_beat(): void
+{
+    survey_prepare();
+    survey_write(survey_path('cron.php'), ['at' => gmdate('c')]);
+}
+
+/** Whether the cron job has run in the last few minutes. */
+function survey_cron_seen(): bool
+{
+    $at = (survey_read(survey_path('cron.php')) ?? [])['at'] ?? null;
+
+    return $at !== null && time() - (int) strtotime((string) $at) <= SURVEY_CRON_FRESH;
 }
 
 /** Start or stop the queue. Starting an empty queue does nothing. */

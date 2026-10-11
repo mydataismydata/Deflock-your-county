@@ -91,7 +91,9 @@
         }
       })
       .catch(function () {
-        stop('This page lost its sign-in or its connection, so it has stopped sending. Reload it to carry on.');
+        stop(box.getAttribute('data-cron') === '1'
+          ? 'This page lost its sign-in or its connection. The server is still sending. Reload the page to see how far it has got.'
+          : 'This page lost its sign-in or its connection, so it has stopped sending. Reload it to carry on.');
       })
       .then(function () { busy = false; });
   }

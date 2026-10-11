@@ -322,7 +322,9 @@ $notices = [
     'withdrawn'  => 'The invite is withdrawn. Its link no longer opens the survey.',
     'hidden'     => 'Those answers are off the public page. Nothing was deleted.',
     'shown'      => 'Those answers are back on the public page.',
-    'started'    => 'Sending has started. Keep this page open: queued invites go out only while it is.',
+    'started'    => survey_cron_seen()
+        ? 'Sending has started. It carries on in the background, so this page can be closed.'
+        : 'Sending has started. Keep this page open: queued invites go out only while it is.',
     'paused'     => 'Sending is paused. Nothing queued has been lost.',
 ];
 $notice = null;
@@ -765,7 +767,7 @@ require __DIR__ . '/includes/header.php';
 
 <?php if ($queue !== null && ($queue['queued'] > 0 || $queue['running'])):
         $view = $queueView($queue); ?>
-    <div class="queue mt-s" id="queue" data-queue data-csrf="<?= e(survey_csrf()) ?>" data-running="<?= $queue['running'] ? '1' : '0' ?>">
+    <div class="queue mt-s" id="queue" data-queue data-csrf="<?= e(survey_csrf()) ?>" data-running="<?= $queue['running'] ? '1' : '0' ?>" data-cron="<?= $queue['cron'] ? '1' : '0' ?>">
       <div class="queue__line">
         <p class="queue__summary" data-queue-summary><?= e($view['summary']) ?></p>
         <form method="post" action="/survey-admin#queue">
@@ -778,7 +780,7 @@ require __DIR__ . '/includes/header.php';
         </form>
       </div>
       <p class="label-mono queue__last" data-queue-last><?= e($view['last']) ?></p>
-      <p class="queue__note">Sends the saved message. Keep this page open while it runs.</p>
+      <p class="queue__note"><?= $queue['cron'] ? 'Sends the saved message from the server, so this page can be closed.' : 'Sends the saved message. Keep this page open while it runs.' ?></p>
     </div>
 <?php endif; ?>
 
