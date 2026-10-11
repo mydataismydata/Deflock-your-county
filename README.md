@@ -157,6 +157,14 @@ hovering over it shows the whole of it. Selecting an email address opens that
 invite above the table, to edit its name, office, party and incumbent, or to
 send a new link, withdraw it, read its answers, or hide them.
 
+Selecting a column heading sorts by it. The first click sorts A to Z, newest
+first, incumbents first or answered first, by column. The second reverses it,
+and the third goes back to newest invite first. The counts above the table
+filter it: "7 answered" shows only those, and selecting it again or the total
+shows every row. Both choices last while the tab is open, so they survive the
+reload after an edit. Sorting and filtering happen in the page, in
+`assets/js/survey-admin.js`.
+
 The status is one of:
 
 - **answered**: a response exists. It links to the public page.

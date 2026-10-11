@@ -53,9 +53,10 @@ $queueView = static function (array $q): array {
             $status = survey_invite_status($invite);
             $sent   = survey_sent_at($invite);
             $row    = [
-                'id'     => $invite['id'],
-                'status' => $status,
-                'sent'   => $sent === '' ? '' : survey_time($sent, 'M j g:ia'),
+                'id'      => $invite['id'],
+                'status'  => $status,
+                'sent'    => $sent === '' ? '' : survey_time($sent, 'M j g:ia'),
+                'sent_at' => $sent,
             ];
         }
     }
@@ -649,9 +650,10 @@ require __DIR__ . '/includes/header.php';
         </form>
       </div>
     </div>
-    <p class="label-mono">
+    <p class="label-mono" data-tallies>
+      <button class="tally" type="button" data-filter="" aria-pressed="true"><span data-count><?= count($rows) ?></span> total</button>
 <?php foreach ($counts as $status => $count): ?>
-      <?= (int) $count ?> <?= e($status) ?><?= $status === 'withdrawn' ? '' : ' &middot;' ?>
+      &middot; <button class="tally" type="button" data-filter="<?= e($status) ?>" aria-pressed="false"><span data-count><?= (int) $count ?></span> <?= e($status) ?></button>
 <?php endforeach; ?>
     </p>
 
@@ -790,25 +792,25 @@ require __DIR__ . '/includes/header.php';
 
 <?php if ($rows !== []): ?>
     <div class="table-wrap mt-s">
-      <table class="invites">
-        <caption class="visually-hidden">Every invite, newest first. Select an email address to edit that invite.</caption>
+      <table class="invites" data-invites>
+        <caption class="visually-hidden">Every invite, newest first until a column heading sorts it. Select an email address to edit that invite.</caption>
         <thead>
           <tr>
-            <th scope="col">Email</th>
-            <th scope="col">Name</th>
-            <th scope="col">Office</th>
-            <th scope="col">Party</th>
-            <th scope="col"><abbr title="Incumbent">Inc.</abbr></th>
-            <th scope="col">Sent</th>
-            <th scope="col">Responded</th>
-            <th scope="col">Status</th>
+            <th scope="col" data-sort="text">Email</th>
+            <th scope="col" data-sort="text">Name</th>
+            <th scope="col" data-sort="text">Office</th>
+            <th scope="col" data-sort="text">Party</th>
+            <th scope="col" data-sort="flag"><abbr title="Incumbent">Inc.</abbr></th>
+            <th scope="col" data-sort="date">Sent</th>
+            <th scope="col" data-sort="date">Responded</th>
+            <th scope="col" data-sort="status">Status</th>
           </tr>
         </thead>
         <tbody>
 <?php foreach ($rows as ['invite' => $invite, 'status' => $status, 'response' => $response]):
         $i        = $invite['id'];
         $offSite  = $response !== null && !empty($response['hidden']); ?>
-          <tr id="i-<?= e($i) ?>"<?= $editing !== null && $editing['invite']['id'] === $i ? ' class="is-editing"' : '' ?>>
+          <tr id="i-<?= e($i) ?>" data-status="<?= e($status) ?>"<?= $editing !== null && $editing['invite']['id'] === $i ? ' class="is-editing"' : '' ?>>
             <td class="invites__email"><a class="invites__clip" href="/survey-admin?edit=<?= e($i) ?>#edit" title="<?= e($invite['email']) ?>"><?= e($invite['email']) ?></a></td>
 <?php   $name  = (string) ($invite['name'] ?? '') ?: (string) ($response['name'] ?? '');
         $party = (string) ($invite['party'] ?? ''); ?>
@@ -817,8 +819,8 @@ require __DIR__ . '/includes/header.php';
             <td><span class="invites__clip" title="<?= e($office) ?>"><?= e($office) ?></span></td>
             <td><span class="invites__clip invites__clip--short" title="<?= e($party) ?>"><?= e($party) ?></span></td>
             <td class="invites__inc"><?php if (!empty($invite['incumbent'])): ?><span aria-hidden="true">&check;</span><span class="visually-hidden">Incumbent</span><?php endif; ?></td>
-            <td class="invites__date" data-cell="sent"><?= e($date(survey_sent_at($invite))) ?></td>
-            <td class="invites__date"><?= e($date($response['submitted_at'] ?? '')) ?></td>
+            <td class="invites__date" data-cell="sent" data-sort="<?= e(survey_sent_at($invite)) ?>"><?= e($date(survey_sent_at($invite))) ?></td>
+            <td class="invites__date" data-sort="<?= e((string) ($response['submitted_at'] ?? '')) ?>"><?= e($date($response['submitted_at'] ?? '')) ?></td>
             <td data-cell="status">
 <?php if ($status === 'answered' && !$offSite): ?>
               <a class="status status--answered" href="/candidate-surveys/<?= e($response['slug']) ?>">answered</a>

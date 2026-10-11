@@ -1315,6 +1315,41 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
   white-space: nowrap;
 }
 .invites abbr { text-decoration: none; }
+
+/* Column headings sort the table. The page's script puts a button in each,
+   and the sorted column carries an arrow. */
+.invites__sort {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.invites__sort:hover,
+.invites th[aria-sort] .invites__sort { color: var(--accent-bright); }
+.invites th[aria-sort="ascending"] .invites__sort::after { content: " \2191"; }
+.invites th[aria-sort="descending"] .invites__sort::after { content: " \2193"; }
+
+/* The counts above the table. Each filters the table to its status, and the
+   total shows every row again. */
+.tally {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 3px;
+}
+.tally:hover { color: var(--accent-bright); }
+.tally[aria-pressed="true"] { color: var(--accent-bright); text-decoration-color: currentColor; }
 .invites td { color: var(--ink-85); }
 .invites tbody tr:hover { background: var(--bg-raised); }
 .invites tr:target,
