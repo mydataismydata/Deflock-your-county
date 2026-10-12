@@ -157,6 +157,12 @@ hovering over it shows the whole of it. Selecting an email address opens that
 invite above the table, to edit its name, office, party and incumbent, or to
 send a new link, withdraw it, read its answers, or hide them.
 
+"Copy a new link" makes a fresh link without emailing anyone, for passing on
+some other way. The link shows once, with a Copy button, and the old link
+stops working. A queued or unsent invite leaves the queue, so the queue cannot
+replace the copied link, and its Sent date becomes the time of the copy. An
+invite already emailed keeps its Sent date.
+
 Selecting a column heading sorts by it. The first click sorts A to Z, newest
 first, incumbents first or answered first, by column. The second reverses it,
 and the third goes back to newest invite first. The counts above the table

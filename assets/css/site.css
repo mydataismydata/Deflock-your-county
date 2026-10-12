@@ -1333,6 +1333,10 @@ a.row-name:hover svg { opacity: 1; transform: translate(2px, -2px); }
 .invites th[aria-sort="ascending"] .invites__sort::after { content: " \2191"; }
 .invites th[aria-sort="descending"] .invites__sort::after { content: " \2193"; }
 
+/* A new link, shown once, with its Copy button beside it. */
+.link-copy { display: flex; align-items: center; gap: 0.5rem; }
+.link-copy input { flex: 1; min-width: 0; }
+
 /* The counts above the table. Each filters the table to its status, and the
    total shows every row again. */
 .tally {

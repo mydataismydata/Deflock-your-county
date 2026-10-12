@@ -1,9 +1,10 @@
 /* ===========================================================================
    Deflock — the survey admin page
    ---------------------------------------------------------------------------
-   Only /survey-admin loads this. Three behaviours:
+   Only /survey-admin loads this. Four behaviours:
 
-     1. Import is one button: picking a file sends the form.
+     1. Import is one button: picking a file sends the form. A link shown
+        once after it is made has a Copy button.
      2. The invites table sorts by any column heading, and the counts above it
         filter it to one status. The choice lasts while the tab is open, so it
         survives the reload after an edit.
@@ -27,6 +28,23 @@
     file.form.classList.add('is-auto');
     file.addEventListener('change', function () {
       if (file.files.length > 0) { file.form.submit(); }
+    });
+  }
+
+  // The button stays hidden where the browser cannot write to the clipboard.
+  // The link can still be selected and copied by hand.
+  var copy = document.querySelector('[data-copy]');
+
+  if (copy && navigator.clipboard) {
+    var link = document.getElementById(copy.getAttribute('data-copy'));
+
+    copy.hidden = false;
+    copy.addEventListener('click', function () {
+      navigator.clipboard.writeText(link.value).then(function () {
+        copy.textContent = 'Copied';
+      }, function () {
+        link.select();
+      });
     });
   }
 

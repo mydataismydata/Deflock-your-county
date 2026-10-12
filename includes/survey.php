@@ -284,6 +284,34 @@ function survey_issue_link(array &$invite): string
 }
 
 /**
+ * Give an invite a fresh link without emailing it, for an admin to pass on
+ * some other way. Any earlier link stops working.
+ *
+ * A queued or refused invite leaves the queue, so the queue cannot replace
+ * this link later. An invite already emailed keeps the date it was emailed.
+ */
+function survey_copy_link(array &$invite): string
+{
+    // Invites from before the queue have no mail record, and their sent date
+    // comes from link_issued_at, which the new link is about to move.
+    if (!isset($invite['mail'])) {
+        $invite['mailed_at'] = survey_sent_at($invite);
+        $invite['mail']      = 'sent';
+    } elseif ($invite['mail'] !== 'sent') {
+        $invite['mail'] = 'copied';
+    }
+
+    unset($invite['mail_attempts'], $invite['mail_error']);
+    $invite['withdrawn_at'] = null;
+
+    $token = survey_issue_link($invite);
+    $invite['link_copied_at'] = $invite['link_issued_at'];
+    survey_invite_save($invite);
+
+    return $token;
+}
+
+/**
  * Record a new invite, with no link yet. survey_deliver() makes the link and
  * emails it, now or when the queue reaches it.
  *
@@ -356,11 +384,18 @@ function survey_invite_status(array $invite): string
     return ['queued' => 'queued', 'refused' => 'unsent'][$invite['mail'] ?? ''] ?? 'waiting';
 }
 
-/** When the invite's current link was emailed, or '' if it has not been. */
+/**
+ * When the invite's link was emailed, or '' if it has not been. A link copied
+ * by an admin and never emailed counts from when it was copied.
+ */
 function survey_sent_at(array $invite): string
 {
     if (isset($invite['mail'])) {
-        return $invite['mail'] === 'sent' ? (string) ($invite['mailed_at'] ?? '') : '';
+        return match ($invite['mail']) {
+            'sent'   => (string) ($invite['mailed_at'] ?? ''),
+            'copied' => (string) ($invite['link_copied_at'] ?? ''),
+            default  => '',
+        };
     }
 
     return (string) ($invite['link_issued_at'] ?? $invite['invited_at'] ?? '');

@@ -9,7 +9,7 @@ header('Cache-Control: no-store');
 header('X-Robots-Tag: noindex, nofollow');
 
 $errors  = [];
-$created = null;   // the link just made, shown once: ['email', 'link', 'mailed']
+$created = null;   // the link just made, shown once: ['email', 'link', 'mailed', 'copied'?]
 $imported = null;  // what an import did: ['rows', 'updated', 'queued', 'problems']
 $values  = ['login' => '', 'name' => '', 'email' => '', 'subject' => '', 'body' => ''];
 
@@ -217,6 +217,19 @@ if ($admin !== null && $action !== '') {
                 }
                 break;
 
+            // A fresh link shown here and not emailed, for an admin to pass on.
+            case 'copy-link':
+                if ($invite !== null && survey_invite_status($invite) !== 'answered') {
+                    $token   = survey_copy_link($invite);
+                    $created = [
+                        'email'  => $invite['email'],
+                        'link'   => survey_link($token),
+                        'mailed' => false,
+                        'copied' => true,
+                    ];
+                }
+                break;
+
             case 'withdraw':
                 if ($invite !== null && in_array(survey_invite_status($invite), ['waiting', 'queued', 'unsent'], true)) {
                     $invite['withdrawn_at'] = gmdate('c');
@@ -397,7 +410,7 @@ $date = static function (?string $iso, string $format = 'M j g:ia'): string {
 
 // What the last action did. The list's own buttons return the reader to the
 // list, so what they did prints there rather than above the invite form.
-$feedbackAt = in_array($requested, ['new-link', 'withdraw', 'hide', 'show', 'listing', 'export', 'import', 'queue-start', 'queue-pause'], true) ? 'invites' : 'invite';
+$feedbackAt = in_array($requested, ['new-link', 'copy-link', 'withdraw', 'hide', 'show', 'listing', 'export', 'import', 'queue-start', 'queue-pause'], true) ? 'invites' : 'invite';
 foreach (['withdrawn', 'hidden', 'shown', 'listed', 'started', 'paused'] as $flag) {
     if (survey_input($_GET, $flag) !== '') {
         $feedbackAt = 'invites';
@@ -444,8 +457,15 @@ $feedback = static function () use ($notice, $errors, $created, $imported): void
 <?php endif; ?>
 
 <?php if ($created !== null): ?>
-    <div class="notice <?= $created['mailed'] ? 'notice--good' : 'notice--bad' ?>" role="status">
-<?php if ($created['mailed']): ?>
+    <div class="notice <?= $created['mailed'] || !empty($created['copied']) ? 'notice--good' : 'notice--bad' ?>" role="status">
+<?php if (!empty($created['copied'])): ?>
+      <h2>A new link for <?= e($created['email']) ?></h2>
+      <p>
+        Nothing was emailed. Any earlier link for this invite has stopped
+        working. The link opens the survey for one set of answers. It is shown
+        here once and is not kept on the server, so copy it now.
+      </p>
+<?php elseif ($created['mailed']): ?>
       <h2>Sent to <?= e($created['email']) ?></h2>
       <p>
         This is the link in that email. It opens the survey for one set of
@@ -460,9 +480,10 @@ $feedback = static function () use ($notice, $errors, $created, $imported): void
         once and is not kept on the server.
       </p>
 <?php endif; ?>
-      <div class="field mt-s">
+      <div class="field link-copy mt-s">
         <label for="a-link" class="visually-hidden">Survey link for <?= e($created['email']) ?></label>
         <input id="a-link" type="text" readonly value="<?= e($created['link']) ?>">
+        <button class="pill pill--ghost pill--small" type="button" data-copy="a-link" hidden>Copy</button>
       </div>
     </div>
 <?php endif; ?>
@@ -748,6 +769,11 @@ require __DIR__ . '/includes/header.php';
           <input type="hidden" name="id" value="<?= e($i) ?>">
           <button class="accent-link textbutton" type="submit" name="action" value="new-link"><?= $status === 'queued' ? 'Send it now' : 'Send a new link' ?></button>
         </form>
+        <form method="post" action="/survey-admin#invites">
+          <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
+          <input type="hidden" name="id" value="<?= e($i) ?>">
+          <button class="accent-link textbutton" type="submit" name="action" value="copy-link">Copy a new link</button>
+        </form>
 <?php if ($status !== 'withdrawn'): ?>
         <form method="post" action="/survey-admin#i-<?= e($i) ?>">
           <input type="hidden" name="csrf" value="<?= e(survey_csrf()) ?>">
@@ -760,8 +786,10 @@ require __DIR__ . '/includes/header.php';
       </div>
 <?php if ($status !== 'answered'): ?>
       <p class="note mt-s">
-        A new link replaces the old one, so the old one stops working. It goes
-        out with the saved message, not with anything unsaved in the form above.
+        A new link replaces the old one, so the old one stops working. "Send a
+        new link" emails it with the saved message, not with anything unsaved in
+        the form above. "Copy a new link" emails nothing and shows the link here
+        to pass on yourself.
       </p>
 <?php endif; ?>
     </div>
